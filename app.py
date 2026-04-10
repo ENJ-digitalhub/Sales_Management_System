@@ -771,6 +771,13 @@ def render_app(template_name: str, **kwargs) -> str:
     Returns:
         str: Rendered HTML template
     """
+    # Get current user data if not already provided
+    if 'current_user' not in kwargs:
+        user_id = session.get("user_id")
+        if user_id:
+            user_data = db.query("SELECT * FROM users WHERE id = ?", (user_id,))
+            kwargs['current_user'] = user_data[0] if user_data else None
+    
     # Add common context variables
     context = {
         "user_id": session.get("user_id"),
@@ -778,7 +785,15 @@ def render_app(template_name: str, **kwargs) -> str:
         "role": session.get("role"),
         "is_admin": session.get("role") == "admin",
         "is_employee": session.get("role") == "user",
+        "role_theme": "admin" if session.get("role") == "admin" else "user",
+        "dashboard_url": url_for("admin") if session.get("role") == "admin" else url_for("employee"),
     }
+    
+    # Get notification count for admin users
+    if session.get("role") == "admin" and 'notification_count' not in kwargs:
+        pending_users = db.query("SELECT COUNT(*) as count FROM users WHERE approval_status = 'pending'")
+        context['notification_count'] = pending_users[0]['count'] if pending_users else 0
+    
     context.update(kwargs)
     return render_template(template_name, **context)
 
