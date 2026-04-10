@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("app-theme") || "light";
+            document.documentElement.dataset.theme = savedTheme;
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/setting.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body data-role-theme="{{ role_theme }}">
+    <main class="setting-page">
+        <section class="settings-topbar">
+            <a href="{{ dashboard_url }}" class="back-link"><i class="fa-solid fa-arrow-left"></i></a>
+            <div class="settings-top-actions">
+                {% if current_user_role == "admin" %}
+                <a href="{{ url_for('notifications') }}" class="settings-top-action {% if request.endpoint == 'notifications' %}active{% endif %}" aria-label="Notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    {% if notification_count > 0 %}
+                    <span class="notification-badge">{{ notification_count if notification_count < 100 else '99+' }}</span>
+                    {% endif %}
+                </a>
+                {% endif %}
+            </div>
+        </section>
+        <header class="profile-card">
+            <img src="{{ url_for('static', filename=current_user[12]) if current_user and current_user[12] else url_for('static', filename='img/default-avatar.svg') }}" alt="Avatar">
+            <div class="about">
+                <div class="you">You</div>
+                <div class="username">{{ current_user[1] }} {{ current_user[2] }}</div>
+                <div class="username">@{{ current_user[4] }}</div>
+                <div class="username">{{ current_user[3] or "No email yet" }}</div>
+            </div>
+            <a href="{{ url_for('profile_details') }}" class="edit-account-link" aria-label="Edit profile details">
+                <i class="fa-solid fa-pencil"></i>
+            </a>
+        </header>
+        <hr>
+        <div class="settings-feedback" id="settingsFeedback" hidden></div>
+        <section class="settings-list">
+            <a class="settings-item" href="{{ url_for('change_password') }}">Change Password</a>
+            <a class="settings-item" href="{{ url_for('account_details') }}">Account Details</a>
+            <a class="settings-item" href="{{ url_for('add_email') }}">Add Email</a>
+            <button type="button" class="settings-item" id="themeToggle">Theme</button>
+            <a href="{{ url_for('logout') }}" class="settings-logout">Logout</a>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/setting.js') }}"></script>
+</body>
+</html>

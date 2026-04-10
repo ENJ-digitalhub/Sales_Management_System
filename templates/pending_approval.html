@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Approval</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+</head>
+<body>
+    <div class="background">
+        <div class="button_box approval_box">
+            <h1>Approval Pending</h1>
+            <p id="approvalMessage">
+                Admin approval required before access{% if username %} for <strong>@{{ username }}</strong>{% endif %}.
+                Refresh this page after approval.
+            </p>
+            <button id="refreshApprovalBtn" type="button">Refresh Status</button>
+            <a href="{{ url_for('index') }}" class="approval-link">Back to sign in</a>
+        </div>
+    </div>
+    <script>
+        (function () {
+            const username = {{ username|tojson }};
+            const button = document.getElementById("refreshApprovalBtn");
+            const message = document.getElementById("approvalMessage");
+
+            async function checkStatus() {
+                if (!username) {
+                    window.location.href = "/";
+                    return;
+                }
+
+                const response = await fetch(`/api/pending-approval-status?username=${encodeURIComponent(username)}`);
+                const data = await response.json();
+                if (data.approved) {
+                    window.location.href = data.redirect || "/?approved=1";
+                    return;
+                }
+
+                if (data.declined) {
+                    message.textContent = "Your registration request was declined. Please contact an admin.";
+                    return;
+                }
+
+                if (!data.exists) {
+                    message.textContent = "This account no longer exists. Please contact an admin.";
+                    return;
+                }
+
+                message.innerHTML = `Admin approval required before access for <strong>@${username}</strong>. Refresh this page after approval.`;
+            }
+
+            button?.addEventListener("click", checkStatus);
+        })();
+    </script>
+</body>
+</html>

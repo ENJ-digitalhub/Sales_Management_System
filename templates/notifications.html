@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="notifications-page">
+    <div class="notifications-header">
+        <div>
+            <h1>Notifications</h1>
+            <p>Recent transactions and role updates carried out by other users.</p>
+        </div>
+        <button type="button" class="mark-read-btn" id="markAllNotificationsRead">Mark All as Read</button>
+    </div>
+    <div class="notifications-feedback" id="notificationsFeedback" hidden></div>
+
+    <section class="notifications-list">
+        {% if notifications %}
+            {% for item_id, activity_type, username, subject, event_type, amount, created_at, message in notifications %}
+                <article class="notification-card">
+                    <div class="notification-icon {{ activity_type }}">
+                        {% if activity_type == 'transaction' %}
+                            <i class="fa-solid {% if event_type == 'sale' %}fa-arrow-trend-up{% else %}fa-box-open{% endif %}"></i>
+                        {% else %}
+                            <i class="fa-solid {% if event_type == 'role_promoted' %}fa-user-shield{% else %}fa-user-minus{% endif %}"></i>
+                        {% endif %}
+                    </div>
+                    <div class="notification-body">
+                        {% if activity_type == 'transaction' %}
+                            <h2>@{{ username }}</h2>
+                            <p>
+                                {{ event_type|capitalize }} recorded for
+                                <strong>{{ subject }}</strong>
+                                at
+                                <strong>N{{ "{:,.2f}".format(amount) }}</strong>
+                            </p>
+                        {% else %}
+                            <h2>@{{ username }}</h2>
+                            <p>{{ message }}</p>
+                        {% endif %}
+                    </div>
+                    <time class="notification-time" datetime="{{ created_at }}">{{ created_at }}</time>
+                </article>
+            {% endfor %}
+        {% else %}
+            <div class="empty-notifications">
+                No recent activity from other users yet.
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+{% endblock %}

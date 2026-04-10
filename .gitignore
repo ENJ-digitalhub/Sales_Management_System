@@ -1,0 +1,42 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Python caches and bytecode
+__pycache__/
+*.py[cod]
+*.pyc.*
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local databases and runtime data
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.sqlite*
+data/*.pyc*
+
+# User uploads and generated assets
+static/uploads/
+
+# Logs
+*.log
+
+# IDE/editor
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db

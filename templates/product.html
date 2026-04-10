@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Product{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/product.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="product-page" data-user-role="{{ current_user_role }}">
+<div class="page-header">
+    <h1>Products</h1>
+{% if current_user_role == "admin" %}
+    <button class="actionBtn" type="button" id="productQuickAction">
+        <i class="fa-solid fa-plus"></i>
+        <span>Add Product</span>
+    </button>
+{% endif %}
+</div>
+<div class="status-banner" id="productStatus" hidden></div>
+<div class="product-grid" id="productGrid">
+{% if products %}
+{% for product_id, name, price, quantity, image_path in products %}
+<section
+    class="product-card"
+    data-product-id="{{ product_id }}"
+    data-product-name="{{ name }}"
+    data-product-price="{{ price }}"
+    data-product-quantity="{{ quantity }}"
+    data-product-image="{{ image_path }}"
+>
+    <img src="{{ url_for('static', filename=image_path) if image_path else url_for('static', filename='img/logo.png') }}" alt="{{ name }} image">
+    <div class="name">{{ name }}</div>
+    <div class="properties">
+        <div class="price"><abbr title="Price"><i class="fa-solid fa-naira-sign"></i>{{ "{:,.2f}".format(price) }}</abbr></div>
+        <div class="qty"><abbr title="Quantity">{{ quantity }}</abbr></div>
+    </div>
+    <div class="card-actions">
+        <button class="manageBtn" type="button">Open Actions</button>
+    </div>
+</section>
+{% endfor %}
+{% else %}
+<div class="empty-products" id="emptyProducts">No products added yet.</div>
+{% endif %}
+</div>
+</div>
+
+<div class="product-modal" id="productActionModal" hidden>
+    <div class="product-modal_content product-action_content">
+        <div class="product-modal_header">
+            <div>
+                <h2 id="productActionTitle">Product Actions</h2>
+                <p class="product-modal_meta" id="productActionMeta">Choose what to do with this product.</p>
+            </div>
+        </div>
+
+        <div class="action-switcher" id="productActionSwitcher">
+            <button type="button" class="action-pill active" data-action-view="add">Add</button>
+            <button type="button" class="action-pill" data-action-view="remove">Remove</button>
+            {% if current_user_role == "admin" %}
+            <button type="button" class="action-pill" data-action-view="edit">Edit</button>
+            <button type="button" class="action-pill action-pill-danger" data-action-view="delete">Delete</button>
+            {% endif %}
+        </div>
+
+        <section class="action-content active" id="productAddContent" data-action-content="add">
+            <form id="productAddForm" class="product-form">
+                <label for="addQuantity">Quantity</label>
+                <input id="addQuantity" name="quantity" type="number" min="1" step="1" required>
+
+                <div class="product-form_actions">
+                    <button type="button" class="secondaryBtn" id="cancelProductAddModal">Cancel</button>
+                    <button type="submit" class="primaryBtn">Add Quantity</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="action-content" id="productRemoveContent" data-action-content="remove" hidden>
+            <form id="productRemoveForm" class="product-form">
+                <label for="removeQuantity">Quantity</label>
+                <input id="removeQuantity" name="quantity" type="number" min="1" step="1" required>
+
+                <div class="reason-group" id="removeReasonGroup">
+                    <label for="removeReason">Reason for Removing</label>
+                    <textarea id="removeReason" name="reason" rows="3" placeholder="Why are you removing this stock?"></textarea>
+                </div>
+
+                <div class="product-form_actions">
+                    <button type="button" class="secondaryBtn" id="cancelProductRemoveModal">Cancel</button>
+                    <button type="submit" class="primaryBtn">Remove Quantity</button>
+                </div>
+            </form>
+        </section>
+
+        {% if current_user_role == "admin" %}
+        <section class="action-content" id="productEditContent" data-action-content="edit" hidden>
+            <form id="productEditForm" class="product-form">
+                <label for="editProductName">Product Name</label>
+                <input id="editProductName" name="name" type="text" required>
+
+                <label for="editProductPrice">Price</label>
+                <input id="editProductPrice" name="price" type="number" min="0" step="0.01" required>
+
+                <label for="editProductQuantity">Quantity</label>
+                <input id="editProductQuantity" name="quantity" type="number" min="0" step="1" required>
+
+                <div class="product-form_actions">
+                    <button type="button" class="secondaryBtn" id="cancelProductEditModal">Cancel</button>
+                    <button type="submit" class="primaryBtn">Save Changes</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="action-content" id="productDeleteContent" data-action-content="delete" hidden>
+            <div class="delete-panel" id="productDeletePanel">
+                <p>This will permanently delete the selected product from the list.</p>
+                <div class="product-form_actions">
+                    <button type="button" class="secondaryBtn" id="cancelProductDelete">Cancel</button>
+                    <button type="button" class="dangerBtn" id="confirmProductDelete">Delete Product</button>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</div>
+
+{% if current_user_role == "admin" %}
+<div class="product-modal" id="productModal" hidden>
+    <div class="product-modal_content">
+        <div class="product-modal_header">
+            <h2>Add Product</h2>
+        </div>
+        <form id="productForm" class="product-form">
+            <label for="productName">Product Name</label>
+            <input id="productName" name="name" type="text" required>
+
+            <label for="productImage">Product Image</label>
+            <input id="productImage" name="image" type="file" accept="image/*">
+
+            <label for="productPrice">Price</label>
+            <input id="productPrice" name="price" type="number" min="0" step="0.01" required>
+
+            <label for="productQuantity">Quantity</label>
+            <input id="productQuantity" name="quantity" type="number" min="0" step="1" required>
+
+            <div class="product-form_actions">
+                <button type="button" class="secondaryBtn" id="cancelProductModal">Cancel</button>
+                <button type="submit" class="primaryBtn">Save Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/product.js') }}"></script>
+{% endblock %}

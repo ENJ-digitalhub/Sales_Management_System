@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Report{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="report-page">
+<section class="report-hero">
+    <div>
+        <h1>Statistical Analysis</h1>
+        <p id="reportSubtitle">
+            {% if current_user_role == "admin" %}
+            Track sales, purchases, and staff activity from one themed report board.
+            {% else %}
+            Track sales and purchases from one themed report board.
+            {% endif %}
+        </p>
+    </div>
+</section>
+<section class="report-tabs">
+    <button class="tab-btn active" data-report="sales" type="button">Sales Report</button>
+    <button class="tab-btn" data-report="purchase" type="button">Purchase Report</button>
+    {% if current_user_role == "admin" %}
+    <button class="tab-btn" data-report="activity" type="button">User Activity Report</button>
+    {% endif %}
+</section>
+<section class="report-summary">
+    <div class="month-picker" id="reportCount">Current period</div>
+    <div class="amount" id="reportTotal">--</div>
+</section>
+<section class="report-grid" id="reportGrid">
+    <div class="stats graph">
+        <div class="stats-header">
+            <h2 id="chartTitle">Daily Summary</h2>
+            <p id="chartCaption">Daily totals</p>
+        </div>
+        <div class="bar-chart" id="reportChart"></div>
+    </div>
+    <div class="stats piechart">
+        <div class="stats-header">
+            <h2 id="pieTitle">Distribution</h2>
+            <p id="pieCaption">Status or action split</p>
+        </div>
+        <div class="pie-layout">
+            <div class="pie-visual" id="reportPie"></div>
+            <div class="pie-legend" id="reportPieLegend"></div>
+        </div>
+    </div>
+    <div class="stats leaderboard">
+        <div class="stats-header">
+            <h2 id="leaderboardTitle">Leaderboard</h2>
+            <p id="leaderboardCaption">Top performers</p>
+        </div>
+        <div class="leaderboard-list" id="reportLeaderboard"></div>
+    </div>
+</section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/report.js') }}"></script>
+{% endblock %}

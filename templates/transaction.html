@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Transaction{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/transaction.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="transaction-page">
+<div class="summary-cards">
+    <section>
+        <div class="amount count-up" data-value="{{ total_sales_value }}" data-format="currency">{{ total_sales }}</div>
+        <div class="description">Total Sales</div>
+    </section>
+    <section>
+        <div class="amount count-up" data-value="{{ total_expenses_value }}" data-format="currency">{{ total_expenses }}</div>
+        <div class="description">Total Expenses</div>
+    </section>
+    <section>
+        <div class="amount count-up" data-value="{{ profit_value }}" data-format="currency">{{ profit }}</div>
+        <div class="description">Profit</div>
+    </section>
+</div>
+<div class="filter-bar">
+    <div class="filter-dropdown">
+        <label class="filter-label" for="categoryFilterSelect">Category</label>
+        <div class="filter-select_wrap">
+            <select class="filter-select" id="categoryFilterSelect">
+                <option value="">All Category</option>
+                <option value="sale">Sales</option>
+                <option value="purchase">Purchases</option>
+            </select>
+            <i class="fa-solid fa-caret-down"></i>
+        </div>
+    </div>
+    <div class="filter-dropdown">
+        <label class="filter-label" for="statusFilterSelect">Status</label>
+        <div class="filter-select_wrap">
+            <select class="filter-select" id="statusFilterSelect">
+                <option value="">All Status</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="paid">Paid</option>
+                <option value="unpaid">Unpaid</option>
+            </select>
+            <i class="fa-solid fa-caret-down"></i>
+        </div>
+    </div>
+</div>
+<div class="history-panel" id="transactionHistory" data-initial-count="{{ initial_transaction_count }}">
+    {% if transactions %}
+        {% for transaction_id, username, product_name, transaction_type, transaction_status, amount, quantity, customer_name, invoice_path, proof_path, created_at in transactions %}
+        <article class="transaction-item" data-transaction-id="{{ transaction_id }}">
+            <div class="transaction-main">
+                <strong>@{{ username }}</strong>
+                <div class="transaction-badges">
+                    <span class="transaction-type {{ transaction_type }}">{{ transaction_type|capitalize }}</span>
+                    <span class="transaction-status {{ transaction_status }}">{{ transaction_status|capitalize }}</span>
+                </div>
+                <span>{{ product_name }}</span>
+            </div>
+            <div class="transaction-meta">
+                <strong>{{ "N{:,.2f}".format(amount) }}</strong>
+                <span>{{ created_at }}</span>
+            </div>
+        </article>
+        {% endfor %}
+    {% else %}
+    <p class="empty-state" id="emptyTransactions">No transactions yet...</p>
+    {% endif %}
+</div>
+<div class="load-indicator" id="transactionLoadIndicator" hidden>Loading more transactions...</div>
+<div class="scroll-sentinel" id="transactionScrollSentinel" aria-hidden="true"></div>
+
+<div id="transactionDetailModal" class="modal" hidden>
+    <div class="modal_content modal_card">
+        <div class="modal_header">
+            <div>
+                <h6>Transaction Details</h6>
+            </div>
+            <button id="detailModalClose" class="iconCloseBtn" type="button" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal_body" id="transactionDetailBody"></div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/count_up.js') }}"></script>
+<script src="{{ url_for('static', filename='js/transaction.js') }}"></script>
+{% endblock %}

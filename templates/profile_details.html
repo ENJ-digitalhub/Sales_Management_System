@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Details</title>
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("app-theme") || "light";
+            document.documentElement.dataset.theme = savedTheme;
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/setting.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body data-role-theme="{{ role_theme }}">
+<main class="setting-page">
+    <section class="settings-topbar">
+        <a href="{{ url_for('setting') }}" class="back-link"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2>Edit Profile</h2>
+    </section>
+    <div class="settings-feedback" id="settingsFeedback" hidden></div>
+    <section class="settings-panel" style="display: block;">
+        <form id="profileForm" class="single-panel-form" enctype="multipart/form-data">
+            <label for="profileFirstName">First Name</label>
+            <input id="profileFirstName" type="text" name="first_name" placeholder="First Name" value="{{ current_user[1] or '' }}" required>
+
+            <label for="profileLastName">Last Name</label>
+            <input id="profileLastName" type="text" name="last_name" placeholder="Last Name" value="{{ current_user[2] or '' }}" required>
+
+            <label for="profileImage">Profile Picture</label>
+            <input id="profileImage" type="file" name="image" accept="image/*">
+            <div class="profile-form-actions">
+                <button type="submit" class="settings-submit">Save Profile</button>
+                {% if current_user and current_user[12] %}
+                <button type="button" id="removeProfileImageButton" class="settings-submit settings-submit-danger">Remove Profile Picture</button>
+                {% endif %}
+            </div>
+        </form>
+    </section>
+</main>
+<script src="{{ url_for('static', filename='js/setting.js') }}"></script>
+</body>
+</html>

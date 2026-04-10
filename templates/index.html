@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Index</title>
+        <script>
+            (function () {
+                const savedTheme = localStorage.getItem("app-theme") || "light";
+                document.documentElement.dataset.theme = savedTheme;
+            })();
+        </script>
+        <link rel="stylesheet" href="../static/css/index.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+    <body>
+        <div class="background">
+            <div class="button_box">
+                <h1>WELCOME</h1>
+                <button id="loginBtn">Log In</button>
+                <div id="login" class="login_modal">
+                    <div class="modal_content">
+                        <div class="closeBtn">
+                            <i class="fa-solid fa-xmark"></i>
+                        </div>
+                        <form class="login_form">
+                            <div>
+                                <label for="username">Username: </label>
+                                <input type="text" name="username">
+                            </div>
+                            <div>
+                                <label for="password">Password: </label>
+                                <input type="password" name="password">
+                            </div>
+                            <a href="">Forgot Password?</a>
+                            <button>Submit</button>
+                        </form>
+                    </div>
+                </div>
+                <button id="signupBtn">Sign Up</button>
+                    <div id="signup" class="signup_modal">
+                        <div class="modal_content">
+                            <div class="closeBtn">
+                                <i class="fa-solid fa-xmark"></i>
+                            </div>
+                            <form class="signup_form">
+                                <div>
+                                    <label for="firstname">Firstname: </label>
+                                    <input type="text" name="firstname">
+                                </div>
+                                <div>
+                                    <label for="lastname">Lastname: </label>
+                                    <input type="text" name="lastname">
+                                </div>
+                                <div>
+                                    <label for="username">Username: </label>
+                                    <input type="text" name="username">
+                                </div>
+                                <div>
+                                    <label for="password">New Password: </label>
+                                    <input type="password" name="password">
+                                </div>
+                                <div>
+                                    <label for="password">Confirm Password: </label>
+                                    <input type="password" name="confirmPassword">
+                                </div>
+                                <a href="">Forgot Password?</a>
+                                <button type="submit">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <script src="../static/js/index.js"></script>
+    </body>
+</html> 

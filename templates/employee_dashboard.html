@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Dashboard{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/employee_dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="employee-page">
+<div class="dashboard-cards">
+    <section>
+        <div class="amount count-up" data-value="{{ sale_count }}" data-format="integer">{{ sale_count }}</div>
+        <div class="description">
+            <div>Number of Sales</div>
+        </div>
+    </section>
+    <section>
+        <div class="amount count-up" data-value="{{ total_sales_value }}" data-format="currency">{{ total_sales }}</div>
+        <div class="description">
+            <div>Total Sales</div>
+        </div>
+    </section>
+</div>
+<div class="main">
+    <h1>Services</h1>
+    <div class="services">
+        <button type="button" class="employeeActionBtn" data-modal="employeeQuickSale">
+            <i class="fa-solid fa-truck-fast"></i>
+            <p>Quick Add Sales</p>
+        </button>
+        <button type="button" class="employeeActionBtn" data-modal="employeeSale">
+            <i class="fa-solid fa-truck"></i>
+            <p>Add Sales</p>
+        </button>
+        <button type="button" class="employeeActionBtn" data-modal="employeePurchase">
+            <i class="fa-solid fa-dolly"></i>
+            <p>Add Purchase</p>
+        </button>
+        <button type="button" class="employeeActionBtn" data-modal="employeeCancelSale">
+            <i class="fa-solid fa-arrow-rotate-left"></i>
+            <p>Cancel Last Sales</p>
+        </button>
+    </div>
+</div>
+<div class="footer">
+    <section class="head">
+        <h1>Recent Transaction</h1>
+        <a href="{{ url_for('transaction') }}" class="view_all">View All <i class="fa-solid fa-angle-right"></i></a>
+    </section>
+    <div class="recent_transaction">
+        {% if recent_transactions %}
+            {% for transaction_id, username, product_name, transaction_type, amount, transaction_status, created_at in recent_transactions %}
+                <div class="recent_transaction_item">
+                    <strong>@{{ username }}</strong>
+                    {{ transaction_type|capitalize }}:
+                    {{ product_name }}
+                    for
+                    {{ "N{:,.2f}".format(amount) }}
+                    <span class="recent_transaction_status">{{ transaction_status|capitalize }}</span>
+                    <span>{{ created_at }}</span>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">No recent transactions</div>
+        {% endif %}
+    </div>
+</div>
+<div class="quick-actions-modal modal" id="employeeQuickSale">
+    <div class="modal_content modal_card">
+        <div class="modal_header">
+            <div>
+                <span class="modal_kicker">Employee Action</span>
+                <h6>Quick Add Sales</h6>
+            </div>
+        </div>
+        <p class="modal_intro">Record a simple sale from the floor with just the key numbers.</p>
+        <div class="modal_section">
+            <label for="employeeQuickItem">Item Sold</label>
+            <select id="employeeQuickItem"></select>
+        </div>
+        <div class="modal_section">
+            <label for="employeeQuickCustomer">Customer</label>
+            <input id="employeeQuickCustomer" type="text" placeholder="Customer name">
+            <label class="checkbox_row" for="employeeQuickDontSave">
+                <input type="checkbox" id="employeeQuickDontSave">
+                <span>Don't save customer name</span>
+            </label>
+        </div>
+        <div class="modal_section">
+            <label>Quantity</label>
+            <div class="input">
+                <input type="range" class="qtyrange" value="5" min="0">
+                <input type="number" class="qtybox" value="5" min="0">
+                <select class="qtyUnit">
+                    <option>Kg</option>
+                    <option>Bag</option>
+                </select>
+            </div>
+        </div>
+        <p class="pricetag" id="employeeQuickEstimate">Estimated total: N0.00</p>
+        <div class="modal_section">
+            <label for="employeeQuickAmount">Amount Paid</label>
+            <div class="input pay-row">
+                <input id="employeeQuickAmount" class="amtbox" type="number" placeholder="250000">
+                <label class="checkbox_row" for="employeeQuickUnpaid">
+                    <input type="checkbox" id="employeeQuickUnpaid">
+                    <span>Mark unpaid</span>
+                </label>
+            </div>
+        </div>
+        <div class="employee-actions">
+            <button class="closeBtn secondaryBtn" type="button"><i class="fa-solid fa-xmark"></i> Cancel</button>
+            <button class="submitBtn" type="button"><i class="fa-solid fa-check"></i> Save Sale</button>
+        </div>
+    </div>
+</div>
+<div class="quick-actions-modal modal" id="employeeSale">
+    <div class="modal_content modal_card">
+        <div class="modal_header">
+            <div>
+                <span class="modal_kicker">Sales Entry</span>
+                <h6>Add Sales</h6>
+            </div>
+        </div>
+        <p class="modal_intro">Create a more complete sale record with customer and payment information.</p>
+        <div class="modal_split">
+            <div class="modal_section">
+                <label for="employeeSaleItem">Product</label>
+                <select id="employeeSaleItem"></select>
+            </div>
+            <div class="modal_section">
+                <label for="employeeSaleCustomer">Customer</label>
+                <input id="employeeSaleCustomer" type="text" placeholder="Customer name">
+                <label class="checkbox_row" for="employeeSaleDontSave">
+                    <input type="checkbox" id="employeeSaleDontSave">
+                    <span>Don't save customer name</span>
+                </label>
+            </div>
+        </div>
+        <div class="modal_section">
+            <label>Quantity</label>
+            <div class="input">
+                <input type="range" class="qtyrange" value="1" min="0">
+                <input type="number" class="qtybox" value="1" min="0">
+                <select class="qtyUnit">
+                    <option>Kg</option>
+                    <option>Bag</option>
+                </select>
+            </div>
+        </div>
+        <p class="pricetag" id="employeeSaleEstimate">Estimated total: N0.00</p>
+        <div class="modal_section">
+            <label for="employeeSaleAmount">Amount Paid</label>
+            <input id="employeeSaleAmount" type="number" placeholder="250000">
+        </div>
+        <label class="checkbox_row" for="employeeSaleUnpaid">
+            <input type="checkbox" id="employeeSaleUnpaid">
+            <span>Mark as unpaid</span>
+        </label>
+        <div class="employee-actions">
+            <button class="closeBtn secondaryBtn" type="button"><i class="fa-solid fa-xmark"></i> Cancel</button>
+            <button class="submitBtn" type="button"><i class="fa-solid fa-check"></i> Submit Sale</button>
+        </div>
+    </div>
+</div>
+<div class="quick-actions-modal modal" id="employeePurchase">
+    <div class="modal_content modal_card">
+        <div class="modal_header">
+            <div>
+                <span class="modal_kicker">Purchase Upload</span>
+                <h6>Add Purchase</h6>
+            </div>
+        </div>
+        <p class="modal_intro">Log inventory coming in so the admin team can review and approve it later.</p>
+        <div class="modal_split">
+            <div class="modal_section">
+                <label for="employeePurchaseProduct">Product</label>
+                <select id="employeePurchaseProduct"></select>
+            </div>
+            <div class="modal_section">
+                <label for="employeePurchaseSupplier">Supplier</label>
+                <input id="employeePurchaseSupplier" type="text" placeholder="Supplier name">
+            </div>
+        </div>
+        <div class="modal_split">
+            <div class="modal_section">
+                <label>Quantity</label>
+                <div class="input">
+                    <input type="range" class="qtyrange" value="20" min="0">
+                    <input id="employeePurchaseQty" type="number" class="qtybox" value="20" min="0">
+                    <select class="qtyUnit">
+                        <option>Kg</option>
+                        <option>Bag</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal_section">
+                <label for="employeePurchasePrice">Price</label>
+                <input id="employeePurchasePrice" type="number" placeholder="180000">
+            </div>
+        </div>
+        <div class="modal_section">
+            <label for="employeePurchaseInvoice">Invoice File</label>
+            <input id="employeePurchaseInvoice" type="file" accept="image/*,.pdf">
+        </div>
+        <div class="modal_section">
+            <label for="employeePurchaseProof">Proof of Payment</label>
+            <input id="employeePurchaseProof" type="file" accept="image/*">
+        </div>
+        <p class="pricetag" id="employeePurchaseEstimate">Estimated total: N0.00</p>
+        <div class="employee-actions">
+            <button class="closeBtn secondaryBtn" type="button"><i class="fa-solid fa-xmark"></i> Cancel</button>
+            <button class="submitBtn" type="button"><i class="fa-solid fa-check"></i> Save Purchase</button>
+        </div>
+    </div>
+</div>
+<div class="quick-actions-modal modal" id="employeeCancelSale">
+    <div class="modal_content modal_card warning_modal">
+        <div class="modal_header">
+            <div>
+                <span class="modal_kicker">Last Action</span>
+                <h6>Cancel Last Sales</h6>
+            </div>
+        </div>
+        <div class="warning_icon">
+            <i class="fa-solid fa-trash-can"></i>
+        </div>
+        <p class="modal_intro">Review the last sale before you request to cancel it.</p>
+        <div class="warning_summary">
+            <div class="warning_row"><span>Item</span><strong>Rice</strong></div>
+            <div class="warning_row"><span>Quantity</span><strong>5 bags</strong></div>
+            <div class="warning_row"><span>Amount</span><strong>N95,000</strong></div>
+        </div>
+        <div class="warning_note">
+            <i class="fa-solid fa-circle-info"></i>
+            <p>This will usually need admin review before the record is fully removed.</p>
+        </div>
+        <div class="employee-actions">
+            <button class="closeBtn secondaryBtn" type="button"><i class="fa-solid fa-xmark"></i> Keep Sale</button>
+            <button class="submitBtn dangerBtn" type="button"><i class="fa-solid fa-trash"></i> Request Cancel</button>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/count_up.js') }}"></script>
+<script src="{{ url_for('static', filename='js/employee_dashboard.js') }}"></script>
+{% endblock %}

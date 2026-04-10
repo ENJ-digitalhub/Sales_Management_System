@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}User{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="user-page">
+<div class="page-header">
+    <h1>Team Members</h1>
+    <button class="add_member actionBtn" type="button" id="toggleAddUserForm"><i class="fa-solid fa-user-plus"></i> Add / Invite</button>
+</div>
+<section class="add-user-section" id="addUserSection" hidden>
+    <form id="addUserForm" class="add-user-form">
+        <input type="text" name="first_name" placeholder="First Name" required>
+        <input type="text" name="last_name" placeholder="Last Name" required>
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <label><input type="checkbox" name="is_active" checked> Active</label>
+        <button type="submit" class="actionBtn"><i class="fa-solid fa-user-plus"></i> Create User</button>
+    </form>
+</section>
+<div class="status-banner" id="userStatus" hidden></div>
+<section class="member-list" id="memberList">
+    {% for user_id, first_name, last_name, email, username, role, is_active, account_name, account_owner_name, bank_name, account_address, phone, image_path in users %}
+    <div class="member"
+        data-user-id="{{ user_id }}"
+        data-is-self="{{ 'true' if username == session['username'] else 'false' }}"
+        data-first-name="{{ first_name or '' }}"
+        data-last-name="{{ last_name or '' }}"
+        data-email="{{ email or '' }}"
+        data-username="{{ username or '' }}"
+        data-role="{{ role or '' }}"
+        data-is-active="{{ is_active or '' }}"
+        data-account-name="{{ account_name or '' }}"
+        data-account-owner-name="{{ account_owner_name or '' }}"
+        data-bank-name="{{ bank_name or '' }}"
+        data-account-address="{{ account_address or '' }}"
+        data-phone="{{ phone or '' }}"
+        data-image-path="{{ url_for('static', filename=image_path) if image_path else '' }}">
+        <div class="profile">
+            {% set user_image = image_path %}
+            {% if user_id and users %}{% endif %}
+            <img src="{{ url_for('static', filename=user_image) if user_image else url_for('static', filename='img/default-avatar.svg') }}" alt="Avatar">
+        </div>
+        <div class="about">
+            <div class="you">{% if username == session["username"] %}You{% else %}{{ first_name }} {{ last_name }}{% endif %}</div>
+            <div class="username">@{{ username }}</div>
+        </div>
+        <div class="status">
+            <div class="role-badge {{ role }}">{{ role|capitalize }}</div>
+            <div class="active-badge {{ 'active' if is_active == 'true' else 'deactivated' }}">{{ 'Active' if is_active == 'true' else 'Deactivated' }}</div>
+        </div>
+        <div class="member-actions">
+            {% if username != session["username"] %}
+                <label class="active-switch">
+                    <input type="checkbox" class="active-toggle" data-user-id="{{ user_id }}" {% if is_active == 'true' %}checked{% endif %}>
+                    <span>{{ 'Active' if is_active == 'true' else 'Deactivated' }}</span>
+                </label>
+                {% if role == "admin" %}
+                    <button type="button" class="role-toggle demote" data-user-id="{{ user_id }}" data-role="user">Make User</button>
+                {% else %}
+                    <button type="button" class="role-toggle promote" data-user-id="{{ user_id }}" data-role="admin">Make Admin</button>
+                {% endif %}
+            {% else %}
+                <button type="button" class="role-toggle self" disabled>Your Account</button>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</section>
+</div>
+
+<div class="user-modal" id="userDetailModal" hidden>
+    <div class="user-modal_content">
+        <div class="user-modal_header">
+            <div>
+                <h2 id="userDetailName">User Details</h2>
+                <p id="userDetailUsername" class="user-modal_subtitle">@username</p>
+            </div>
+        </div>
+        <div class="user-detail_profile">
+            <img id="userDetailImage" src="{{ url_for('static', filename='img/default-avatar.svg') }}" alt="Avatar">
+        </div>
+        <div class="user-detail_grid" id="userDetailGrid"></div>
+        <div class="user-modal_actions">
+            <button type="button" class="secondaryBtn" id="closeUserDetailModal">Close</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/user.js') }}"></script>
+{% endblock %}

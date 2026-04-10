@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sales Management System{% endblock %}</title>
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("app-theme") || "light";
+            document.documentElement.dataset.theme = savedTheme;
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    {% block head %}{% endblock %}
+</head>
+
+<body data-role-theme="{{ role_theme }}">
+    <header>
+        <nav class="nav-container" id="hero">
+            <div class="logo-group">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Company Logo" class="logo">
+                <img src="{{ url_for('static', filename='img/logo_name.png') }}" alt="Company Name" class="logo_name">
+            </div>
+            <div class="profile-group">
+                {% if current_user_role == "admin" %}
+                    <a href="{{ url_for('notifications') }}" class="notification-link {% if request.endpoint == 'notifications' %}active{% endif %}" aria-label="Notifications">
+                        <i class="fa-regular fa-bell"></i>
+                        {% if notification_count > 0 %}
+                        <span class="notification-badge">{{ notification_count if notification_count < 100 else '99+' }}</span>
+                        {% endif %}
+                    </a>
+                {% endif %}
+                <div class="user-menu">
+                    {% set user_image = current_user[12] if current_user and current_user|length > 12 else None %}
+                    <img src="{{ url_for('static', filename=user_image) if user_image else url_for('static', filename='img/default-avatar.svg') }}" alt="Avatar"
+                        class="profile_pic">
+                </div>
+                <a href="{{ url_for('logout') }}" class="logout-link" aria-label="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </nav>
+        <section class="menu">
+            <a href="{{ dashboard_url }}" class="{% if request.endpoint in ['admin', 'employee'] %}active{% endif %}">
+                <abbr title="Dashboard">
+                    <i class="fa-solid fa-tachograph-digital"></i>
+                </abbr>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('transaction') }}" class="{% if request.endpoint == 'transaction' %}active{% endif %}">
+                <abbr title="Transaction">
+                    <i class="fa-solid fa-left-right"></i>
+                </abbr>
+                <span>Transaction</span>
+            </a>
+
+            <a href="{{ url_for('product') }}" class="{% if request.endpoint == 'product' %}active{% endif %}">
+                <abbr title="Products">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                </abbr>
+                <span>Products</span>
+            </a>
+
+            <a href="{{ url_for('report') }}" class="{% if request.endpoint == 'report' %}active{% endif %}">
+                <abbr title="Reports">
+                    <i class="fa-solid fa-chart-column"></i>
+                </abbr>
+                <span>Reports</span>
+            </a>
+
+            {% if current_user_role == "admin" %}
+                <a href="{{ url_for('user_page') }}" class="{% if request.endpoint == 'user_page' %}active{% endif %}">
+                    <abbr title="User">
+                        <i class="fa-regular fa-user"></i>
+                    </abbr>
+                    <span>User</span>
+                </a>
+            {% endif %}
+
+            <a href="{{ url_for('setting') }}" class="{% if request.endpoint == 'setting' %}active{% endif %}">
+                <abbr title="Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </abbr>
+                <span>Settings</span>
+            </a>
+        </section>
+    </header>
+
+    <div class="content-shell">
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <a href="#hero" class="back-to-top">Back to Top</a>
+            <p>&copy; 2026 All rights reserved.</p>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/noble.ekwere.5" target="_blank"><i
+                        class="fa-brands fa-facebook"></i></a>
+                <a href="mailto:ekwerenoble2@gmail.com" target="_blank"><i class="fa-solid fa-envelope"></i></a>
+                <a href="https://t.me/ENJ_digitalhub" target="_blank"><i class="fa-brands fa-telegram"></i></a>
+                <a href="https://github.com/ENJ-digitalhub" target="_blank"><i class="fa-brands fa-github"></i></a>
+            </div>
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

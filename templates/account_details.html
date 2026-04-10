@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Details</title>
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("app-theme") || "light";
+            document.documentElement.dataset.theme = savedTheme;
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/setting.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body data-role-theme="{{ role_theme }}">
+<main class="setting-page">
+    <section class="settings-topbar">
+        <a href="{{ url_for('setting') }}" class="back-link"><i class="fa-solid fa-arrow-left"></i></a>
+        <h2>Account Details</h2>
+    </section>
+    <div class="settings-feedback" id="settingsFeedback" hidden></div>
+    <section class="settings-panel" style="display: block;">
+        <form id="accountForm" class="single-panel-form">
+            <label for="bankName">Bank Name</label>
+            <input id="bankName" type="text" name="bank_name" placeholder="Bank Name" value="{{ current_user[9] if current_user|length > 9 else '' }}" required>
+
+            <label for="accountNumber">Account Number</label>
+            <input id="accountNumber" type="text" name="account_name" placeholder="Account Number" value="{{ current_user[7] if current_user|length > 7 else '' }}" inputmode="numeric" pattern="\d{11}" minlength="11" maxlength="11" required>
+
+            <label for="accountOwnerName">Account Owner Name</label>
+            <input id="accountOwnerName" type="text" name="account_owner_name" placeholder="Account Owner Name" value="{{ current_user[8] if current_user|length > 8 else '' }}" required>
+            <button type="submit" class="settings-submit">Save Details</button>
+        </form>
+    </section>
+</main>
+<script src="{{ url_for('static', filename='js/setting.js') }}"></script>
+</body>
+</html>

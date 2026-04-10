@@ -1,0 +1,484 @@
+.user-page {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 30px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.page-header h1 {
+    color: var(--accent-color);
+    font-size: 1.8rem;
+}
+
+.status-banner {
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    background: #eef8f1;
+    color: #12733c;
+}
+
+.status-banner.error {
+    background: #fff1f1;
+    color: #b42318;
+}
+
+.add_member{
+    padding: 14px 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--surface-color);
+    color: var(--main-color);
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    border: none;
+    font: inherit;
+}
+
+.add_member:hover{
+    background-color: var(--main-color);
+    color: #fff;
+    transform: translateY(-4px);
+    box-shadow: var(--hover-shadow);
+}
+
+.add_member:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.member-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 25px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.member{
+    background: var(--surface-color);
+    width: 280px;
+    flex: 0 0 280px;
+    min-height: 340px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 18px 16px;
+    gap: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: var(--shadow);
+}
+
+.member:hover{
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+
+.profile{
+    flex-shrink: 0;
+}
+
+.profile img{
+    border: 2px solid var(--accent-color);
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.about{
+    width: 100%;
+    text-align: center;
+}
+
+.about .you{
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--main-color);
+}
+
+.about .username{
+    margin-top: 4px;
+    font-size: 0.88rem;
+    color: var(--muted-text);
+}
+
+.status{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.status div{
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.role-badge.admin {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.role-badge.user {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.member-actions {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.role-toggle {
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: none;
+    width: 100%;
+}
+
+.role-toggle.promote {
+    background: #f6f7fb;
+    color: var(--main-color);
+}
+
+.role-toggle.promote:hover {
+    background: var(--main-color);
+    color: #fff;
+}
+
+.role-toggle.demote {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.role-toggle.demote:hover {
+    background: #d32f2f;
+    color: #fff;
+}
+
+.role-toggle.self {
+    background: var(--surface-muted);
+    color: var(--muted-text);
+    cursor: default;
+    box-shadow: none;
+}
+
+.active-switch {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #f6f7fb;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.active-switch input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--main-color);
+}
+
+@media (max-width: 767px){
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .add_member{
+        justify-content: center;
+    }
+
+    .member-list {
+        gap: 14px;
+    }
+
+    .member{
+        min-height: 300px;
+        padding: 14px 12px;
+        gap: 14px;
+    }
+
+    .profile img{
+        width: 72px;
+        height: 72px;
+    }
+
+    .about .you,
+    .about .username{
+        font-size: 12px;
+    }
+
+    .member-actions,
+    .role-toggle,
+    .active-switch {
+        width: 100%;
+    }
+}
+
+.active-badge,
+.role-badge {
+    margin-top: 6px;
+    display: inline-block;
+}
+
+.active-badge.active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.active-badge.deactivated {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.add-user-section {
+    margin-bottom: 16px;
+    background: var(--surface-color);
+    border-radius: 15px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+}
+
+.add-user-form {
+    display: grid;
+    gap: 10px;
+}
+
+.add-user-form input,
+.add-user-form label,
+.add-user-form button {
+    width: 100%;
+}
+
+.user-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 40;
+}
+
+.user-modal[hidden] {
+    display: none;
+}
+
+.user-modal_content {
+    width: min(560px, 95vw);
+    max-height: calc(100vh - 40px);
+    padding: 32px;
+    border-radius: 16px;
+    background: var(--surface-color);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.user-modal_header h2 {
+    color: var(--accent-color);
+    font-size: 1.5rem;
+}
+
+.user-modal_subtitle {
+    margin-top: 6px;
+    color: var(--muted-text);
+}
+
+.user-detail_profile {
+    display: flex;
+    justify-content: center;
+}
+
+.user-detail_profile img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--accent-color);
+}
+
+.user-detail_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.user-detail_item {
+    background: var(--surface-muted);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.user-detail_item span {
+    font-size: 0.82rem;
+    color: var(--muted-text);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.user-detail_item strong {
+    color: var(--text-color);
+    font-size: 0.98rem;
+    line-height: 1.4;
+}
+
+.user-modal_actions {
+    display: flex;
+    justify-content: center;
+}
+
+.user-modal_actions .secondaryBtn {
+    min-width: 180px;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    background: #f0f0f0;
+    color: #4a5568;
+}
+
+.user-modal_actions .secondaryBtn:hover {
+    background: #e0e0e0;
+}
+
+@media (max-width: 1024px) {
+    .member-list {
+        gap: 18px;
+    }
+
+    .user-modal_content {
+        width: min(620px, 100%);
+    }
+}
+
+@media (max-width: 560px) {
+    .user-detail_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .user-modal {
+        padding: 12px;
+    }
+
+    .user-modal_content {
+        padding: 20px 16px;
+    }
+
+    .user-modal_actions .secondaryBtn {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 320px) {
+    .user-page {
+        margin-bottom: 14px;
+    }
+
+    .page-header {
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .page-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .add_member {
+        justify-content: center;
+        padding: 12px 14px;
+        font-size: 11px;
+    }
+
+    .member-list {
+        gap: 12px;
+    }
+
+    .member {
+        padding: 12px;
+        min-height: 0;
+    }
+
+    .profile img {
+        width: 64px;
+        height: 64px;
+    }
+
+    .about .you,
+    .about .username {
+        font-size: 11px;
+    }
+
+    .status div {
+        font-size: 9px;
+        padding: 4px 8px;
+    }
+
+    .role-toggle,
+    .active-switch {
+        font-size: 10px;
+        padding: 8px 10px;
+    }
+
+    .user-modal {
+        padding: 10px;
+    }
+
+    .user-modal_content {
+        padding: 18px 14px;
+        max-height: calc(100vh - 20px);
+    }
+
+    .user-detail_grid {
+        grid-template-columns: 1fr;
+    }
+}

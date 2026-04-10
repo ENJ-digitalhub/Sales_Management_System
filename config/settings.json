@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+  "application": {
+    "name": "BudgetCLI",
+    "description": "Command-line budget management system",
+    "author": "ENJ-digitalhub"
+  },
+  "database": {
+    "users_db_path": "data/users.db",
+    "user_data_directory": "data/",
+    "budget_db_name": "budget.db",
+    "default_allowance": 0,
+    "foreign_keys_enabled": true,
+    "pragmas": {
+      "journal_mode": "WAL",
+      "synchronous": "NORMAL",
+      "locking_mode": "NORMAL",
+      "busy_timeout": 5000
+    }
+  },
+  "security": {
+    "pin_length": 4,
+    "encryption_rotation": 7,
+    "max_login_attempts": 3,
+    "session_timeout_minutes": 30
+  },
+  "display": {
+    "terminal_width": 60,
+    "date_format": "YYYY-MM-DD",
+    "currency_symbol": "₦",
+    "decimal_places": 2,
+    "show_negative_balances_in_red": true
+  },
+  "features": {
+    "enable_auto_backup": false,
+    "backup_interval_hours": 24,
+    "enable_monthly_summaries": true,
+    "enable_balance_warnings": true,
+    "enable_quick_commands": true,
+    "default_category_labels": {
+      "expenses": ["Food", "Transport", "Entertainment", "Bills", "Shopping"],
+      "income": ["Salary", "Freelance", "Gift", "Investment", "Other"]
+    }
+  },
+  "logging": {
+    "enabled": true,
+    "level": "INFO",
+    "file_path": "data/budgetcli.log",
+    "max_file_size_mb": 10,
+    "backup_count": 5
+  },
+  "paths": {
+    "backup_directory": "data/backups/",
+    "export_directory": "data/exports/",
+    "template_directory": "config/templates/"
+  },
+  "commands": {
+    "quick_access": {
+      "today": "allowance show today",
+      "balance": "allowance total current",
+      "summary": "expenses show today && income show today"
+    }
+  }
+}
