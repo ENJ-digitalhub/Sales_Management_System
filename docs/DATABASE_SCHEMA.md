@@ -20,7 +20,8 @@ users
 - username (UNIQUE)
 - password_hash
 - role (admin | manager | employee)
-- phone_or_email
+- phone
+- email
 - account_name (nullable)
 - bank_name (nullable)
 - account_number (nullable)
@@ -102,7 +103,44 @@ sale_items
 
 ---
 
-# 📊 5. INVENTORY_LOGS TABLE
+# 🧾 5. PURCHASES TABLE
+
+```
+purchases
+- id (PK)
+- batch_number (UNIQUE)
+- user_id (FK → users.id)
+- total_cost
+- created_at
+```
+
+### Notes:
+
+* Represents a restocking event
+* No profit tracked here (pure cost flow)
+
+---
+
+# 🧾 6. PURCHASE_ITEMS TABLE
+
+```
+purchase_items
+- id (PK)
+- purchase_id (FK → purchases.id)
+- product_id (FK → products.id)
+- quantity
+- unit_cost
+- total_cost
+```
+
+### Notes:
+
+* Mirrors sale_items structure
+* Defines source of inventory cost
+
+---
+
+# 📊 7. INVENTORY_LOGS TABLE
 
 ```
 inventory_logs
@@ -110,7 +148,8 @@ inventory_logs
 - product_id (FK → products.id)
 - change_type (sale | restock | adjustment)
 - quantity_change
-- reference_id (sale_id or purchase_id)
+- reference_type (sale | purchase | adjustment)
+- reference_id
 - created_at
 ```
 
@@ -118,16 +157,17 @@ inventory_logs
 
 * Track every stock movement
 * Enables audit + debugging
+* Eliminates ambiguity between sales and purchases
 
 ---
 
-# 🧾 6. AUDIT_LOGS TABLE
+# 🧾 8. AUDIT_LOGS TABLE
 
 ```
 audit_logs
 - id (PK)
 - user_id (FK → users.id)
-- action_type
+- action_type (CREATE | UPDATE | DELETE | VIEW | LOGIN | LOGOUT | REGISTER | APPROVE | REJECT | CANCEL | RESTORE)
 - entity_type (sale | product | user | system)
 - entity_id
 - metadata (JSON)
@@ -141,7 +181,7 @@ audit_logs
 
 ---
 
-# 🔁 7. SYNC_QUEUE TABLE (CRITICAL)
+# 🔁 9. SYNC_QUEUE TABLE (CRITICAL)
 
 ```
 sync_queue
@@ -163,7 +203,7 @@ sync_queue
 
 ---
 
-# 📱 8. DEVICES TABLE
+# 📱 10. DEVICES TABLE
 
 ```
 devices
@@ -178,6 +218,7 @@ devices
 
 * One active session per user
 * New login invalidates previous device
+
 
 ---
 

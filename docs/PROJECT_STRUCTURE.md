@@ -25,7 +25,8 @@
 │
 ├── /database
 │   ├── schema.sql
-│   └── seed.sql
+│   ├── seed.sql
+|   └── erd.diagram.drawio
 │
 ├── /docs
 │   ├── README.md
