@@ -93,6 +93,7 @@ sale_items
 - quantity
 - unit_price
 - cost_price_at_sale
+- profit_at_sale
 - total_price
 ```
 
