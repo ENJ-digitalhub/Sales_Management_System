@@ -1,5 +1,3 @@
-
-
 # 🗄️ DATABASE SCHEMA — Sales Management System (Offline-First)
 
 ## 🧠 Design Principles
@@ -20,21 +18,21 @@ users
 - username (UNIQUE)
 - password_hash
 - role (admin | manager | employee)
-- phone
-- email
+- phone_or_email
 - account_name (nullable)
 - bank_name (nullable)
 - account_number (nullable)
 - pin_hash (nullable)
-- is_active (boolean)
+- is_active (boolean, default true)
 - created_at
 ```
 
 ### Notes:
 
-* Only one “true admin” exists via environment config
+* Only one "true admin" exists via environment config
 * PIN is optional (set after first login)
 * No sensitive banking credentials stored
+* Users are deactivated, never deleted
 
 ---
 
@@ -48,7 +46,8 @@ products
 - selling_price
 - cost_price
 - stock_quantity
-- is_active (boolean)
+- version (integer, default 1)        ← incremented on every update for conflict resolution
+- is_active (boolean, default true)   ← soft delete: false = hidden, not removed
 - created_at
 - updated_at
 ```
@@ -56,8 +55,9 @@ products
 ### Rules:
 
 * Stock can NEVER go below zero
-* Deleted products are permanently removed
-* Historical sales remain unaffected
+* Products are SOFT DELETED (is_active = false), never permanently removed
+* Historical sales retain full references to soft-deleted products
+* Version field enables conflict detection when admin edits product while devices are offline
 
 ---
 
@@ -78,8 +78,10 @@ sales
 
 ### Rules:
 
-* Editable only within 20 minutes
-* After that → locked permanently
+* Editable only within 20 minutes by the creating employee
+* After 20 minutes → requires manager authorization
+* Cancellation restores stock and is logged in audit_logs
+* All edits are logged regardless of who makes them
 
 ---
 
@@ -93,83 +95,44 @@ sale_items
 - quantity
 - unit_price
 - cost_price_at_sale
-- profit_at_sale
 - total_price
 ```
 
 ### Notes:
 
-* Each sale contains multiple items
-* Cost price is snapshotted to preserve profit history
+* Each sale contains one or more items
+* Cost price is snapshotted at time of sale to preserve profit history
+* References product even if product is later soft-deleted
 
 ---
 
-# 🧾 5. PURCHASES TABLE
-
-```
-purchases
-- id (PK)
-- batch_number (UNIQUE)
-- user_id (FK → users.id)
-- total_cost
-- created_at
-```
-
-### Notes:
-
-* Represents a restocking event
-* No profit tracked here (pure cost flow)
-
----
-
-# 🧾 6. PURCHASE_ITEMS TABLE
-
-```
-purchase_items
-- id (PK)
-- purchase_id (FK → purchases.id)
-- product_id (FK → products.id)
-- quantity
-- unit_cost
-- total_cost
-```
-
-### Notes:
-
-* Mirrors sale_items structure
-* Defines source of inventory cost
-
----
-
-# 📊 7. INVENTORY_LOGS TABLE
+# 📊 5. INVENTORY_LOGS TABLE
 
 ```
 inventory_logs
 - id (PK)
 - product_id (FK → products.id)
-- change_type (sale | restock | adjustment)
+- change_type (sale | restock | adjustment | cancellation)
 - quantity_change
-- reference_type (sale | purchase | adjustment)
-- reference_id
+- reference_id (sale_id or purchase_id)
 - created_at
 ```
 
 ### Purpose:
 
 * Track every stock movement
-* Enables audit + debugging
-* Eliminates ambiguity between sales and purchases
+* Enables full audit and debugging of stock history
 
 ---
 
-# 🧾 8. AUDIT_LOGS TABLE
+# 🧾 6. AUDIT_LOGS TABLE
 
 ```
 audit_logs
 - id (PK)
 - user_id (FK → users.id)
-- action_type (CREATE | UPDATE | DELETE | VIEW | LOGIN | LOGOUT | REGISTER | APPROVE | REJECT | CANCEL | RESTORE)
-- entity_type (sale | product | user | system)
+- action_type
+- entity_type (sale | product | user | purchase | system)
 - entity_id
 - metadata (JSON)
 - created_at
@@ -177,8 +140,50 @@ audit_logs
 
 ### Rules:
 
-* Immutable (cannot be deleted)
-* Logs ALL actions
+* Immutable — cannot be edited or deleted by anyone
+* Logs ALL critical actions: sales, edits, cancellations, product changes, user changes, purchase approvals
+
+---
+
+# 🛒 7. PURCHASES TABLE
+
+```
+purchases
+- id (PK)
+- created_by (FK → users.id)
+- approved_by (FK → users.id, nullable)
+- status (pending | approved | rejected)
+- total_cost
+- notes (nullable)
+- created_at
+- approved_at (nullable)
+```
+
+### Rules:
+
+* Any role can create a purchase entry
+* Only admin can approve a purchase
+* Stock is only updated AFTER approval
+* Rejected purchases do not affect inventory
+
+---
+
+# 🛒 8. PURCHASE_ITEMS TABLE
+
+```
+purchase_items
+- id (PK)
+- purchase_id (FK → purchases.id)
+- product_id (FK → products.id)
+- quantity
+- cost_price
+- total_cost
+```
+
+### Notes:
+
+* Each purchase contains one or more items
+* Cost price recorded at time of purchase entry
 
 ---
 
@@ -188,19 +193,21 @@ audit_logs
 sync_queue
 - id (PK)
 - device_id
+- transaction_id (UNIQUE)             ← idempotency key, UUID v4 generated on client
 - entity_type
 - payload (JSON)
-- status (pending | synced | failed)
-- retry_count
-- last_attempt_at
+- status (pending | synced | failed | conflict)
+- retry_count (default 0)
+- last_attempt_at (nullable)
 - created_at
 ```
 
 ### Behavior:
 
-* Stores offline actions
-* Retries up to 5 times
-* Uses idempotency keys to prevent duplicates
+* Stored in SQLite on the client device
+* Retries up to 5 times with exponential backoff
+* Uses transaction_id to prevent duplicate processing
+* Conflicts are isolated and escalated to manager — never auto-overwritten
 
 ---
 
@@ -211,25 +218,25 @@ devices
 - id (PK)
 - user_id (FK → users.id)
 - device_name
-- is_active
+- is_active (boolean)
 - last_seen_at
 ```
 
 ### Rules:
 
-* One active session per user
-* New login invalidates previous device
-
+* One active session per user at any time
+* New login invalidates previous device session immediately
 
 ---
 
 # ⚙️ SYSTEM GUARANTEES
 
-* No negative stock allowed
-* Server validates all incoming data
-* Duplicate transactions prevented via unique IDs
-* Offline data must pass validation before commit
-* All actions are logged
+* No negative stock allowed — enforced at DB and service layer
+* Server validates all incoming data — client data is never trusted
+* Duplicate transactions prevented via unique transaction_id (idempotency)
+* Offline data must pass full validation before commit
+* All actions are logged in audit_logs
+* Products are soft-deleted — historical integrity is preserved
 
 ---
 
@@ -240,5 +247,6 @@ Prepared for:
 * Multi-store architecture
 * Cloud sync
 * Distributed systems
+* Supplier management (purchase module expansion)
 
 Without breaking current schema

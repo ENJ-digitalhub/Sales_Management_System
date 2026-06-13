@@ -21,41 +21,40 @@ All mobile devices act as clients with temporary local storage and sync capabili
 ## 1.1 Admin/server goes offline
 
 **Scenario:**
-- PC server is shut down or hotspot is disabled.
+Server PC is shut down or hotspot is disabled.
 
 **Impact:**
-- Clients cannot sync data.
-- Sales may continue in offline queue mode (if enabled).
+Clients cannot sync data. Sales continue in offline queue mode.
 
 **Handling:**
-- Enable offline queue storage on mobile.
-- Show “Disconnected from server” UI state.
-- Prevent critical operations like final stock confirmation if sync is required.
+- Enable offline queue storage on mobile
+- Show "Disconnected from server" UI banner
+- Prevent operations that require server confirmation (e.g. purchase approval)
 
 ---
 
 ## 1.2 Device disconnects mid-transaction
 
 **Scenario:**
-- Network drops while sending a sale request.
+Network drops while sending a sale request.
 
 **Impact:**
-- Partial or failed transaction submission.
+Partial or failed transaction submission.
 
 **Handling:**
 - Mark transaction as `PENDING_SYNC`
-- Retry automatically when connection returns
-- Prevent duplicate submission using transaction IDs
+- Retry automatically with exponential backoff when connection returns
+- Prevent duplicate submission using unique transaction_id (UUID v4)
 
 ---
 
 ## 1.3 Wrong network connection
 
 **Scenario:**
-- Phone connects to different WiFi or mobile data.
+Phone connects to a different WiFi network or mobile data instead of the store network.
 
 **Impact:**
-- Cannot reach local server.
+Cannot reach local server.
 
 **Handling:**
 - Detect server unreachable state
@@ -68,58 +67,59 @@ All mobile devices act as clients with temporary local storage and sync capabili
 ## 2.1 Duplicate transactions
 
 **Scenario:**
-- Same sale is submitted twice due to retry or lag.
+Same sale is submitted twice due to retry or network lag.
 
 **Impact:**
-- Inventory becomes inaccurate.
+Inventory becomes inaccurate.
 
 **Handling:**
-- Use unique transaction IDs (idempotency keys)
-- Server rejects duplicates automatically
+- Each transaction carries a UUID v4 `transaction_id` generated on the client
+- Server rejects any transaction with a previously seen `transaction_id`
 
 ---
 
 ## 2.2 Conflicting offline sales
 
 **Scenario:**
-- Two devices sell same stock while offline.
+Two devices sell the same stock while both offline.
 
 **Impact:**
-- Stock may go negative or inconsistent on sync.
+Stock may go negative or become inconsistent on sync.
 
 **Handling:**
-- Server validates stock before accepting offline sync
-- Reject or partially accept conflicting sales
+- Server validates stock availability before accepting each offline transaction
+- First valid sync wins; remaining conflicting sales are rejected and flagged for manager review
 
 ---
 
 ## 2.3 Out-of-order sync events
 
 **Scenario:**
-- Device sends events in wrong order after reconnect.
+Device sends queued events in the wrong order after reconnecting.
 
 **Impact:**
-- Inventory calculations become incorrect.
+Inventory calculations become incorrect.
 
 **Handling:**
-- Server uses timestamps + event IDs to reorder or validate logic
+- Server uses its own timestamp (never device timestamp) plus event ordering to validate sequence
 
 ---
 
 ## 2.4 Partial sync failure
 
 **Scenario:**
-- Only part of queued transactions are successfully synced.
+Only part of a queued batch is successfully synced.
 
 **Impact:**
-- Incomplete data state.
+Incomplete data state on the server.
 
 **Handling:**
-- Track sync status per item:
+- Each item in the batch is tracked independently:
   - `pending`
   - `synced`
   - `failed`
-- Retry only failed items
+  - `conflict`
+- Only failed items are retried — successfully synced items are not re-sent
 
 ---
 
@@ -128,160 +128,194 @@ All mobile devices act as clients with temporary local storage and sync capabili
 ## 3.1 App crash before sync
 
 **Scenario:**
-- Phone shuts down before sending queued data.
+Phone shuts down or crashes before sending queued data.
 
 **Impact:**
-- Loss of unsynced transactions.
+Risk of losing unsynced transactions.
 
 **Handling:**
-- Use persistent storage (SQLite / IndexedDB)
-- Never rely on memory-only queues
+- Use persistent storage (SQLite) for the offline queue
+- Never rely on memory-only queues — all queue items are written to disk immediately
 
 ---
 
 ## 3.2 Cache becomes outdated
 
 **Scenario:**
-- Device stays offline for long period.
+Device stays offline for an extended period.
 
 **Impact:**
-- Wrong stock displayed to user.
+Wrong stock levels displayed to user.
 
 **Handling:**
 - Force full sync on reconnection
-- Refresh local cache from server
+- Refresh local product cache from server before resuming normal operations
 
 ---
 
 ## 3.3 Storage overflow
 
 **Scenario:**
-- Large number of offline transactions stored.
+Large number of offline transactions stored locally.
 
 **Impact:**
-- App slows or fails.
+App slows down or fails.
 
 **Handling:**
-- Implement queue size limits
-- Auto-sync when threshold is reached
+- Monitor queue size
+- Auto-sync when a threshold is reached
+- Queue size limits to be defined in a future iteration
 
 ---
 
 # 🧾 4. Inventory & Business Logic Edge Cases
 
-## 4.1 Negative stock prevention failure
+## 4.1 Insufficient stock at sale time
 
 **Scenario:**
-- Offline sales exceed actual stock.
+Any item in a sale has insufficient stock.
 
 **Impact:**
-- Inventory becomes invalid.
+Invalid inventory state if partial commits are allowed.
 
 **Handling:**
-- Server enforces stock validation on sync
-- Reject invalid sales or flag for review
+- Online mode: reject the ENTIRE sale — no partial commits allowed
+- Offline mode: allow sale optimistically, validate on sync
+- On sync rejection: flag for manager review, restore local stock delta
 
 ---
 
 ## 4.2 Simultaneous product updates
 
 **Scenario:**
-- Admin edits product while employees are offline.
+Admin edits a product (price, stock) while employees are offline.
 
 **Impact:**
-- Mismatched product state on sync.
+Mismatched product state on sync.
 
 **Handling:**
-- Versioning system for products
-- Server resolves conflicts using latest version or admin priority
+- Products have a `version` field incremented on every update
+- Server resolves conflicts by comparing version numbers and applying admin-side changes as authoritative
 
 ---
 
 ## 4.3 Deleted product used offline
 
 **Scenario:**
-- Product deleted on server but still used offline.
+Product is soft-deleted on server but still used in an offline sale.
 
 **Impact:**
-- Sync failure or orphaned transaction.
+Sync failure or orphaned transaction.
 
 **Handling:**
-- Server rejects invalid product references
+- Server rejects transactions referencing soft-deleted products
+- Conflict is escalated to manager for resolution
 - Device refreshes product list on reconnect
 
 ---
 
-# 🔐 5. Security Edge Cases
+# 🛒 5. Purchase Approval Edge Cases
 
-## 5.1 Unauthorized device access
+## 5.1 Purchase created while server offline
 
 **Scenario:**
-- Unknown device connects to network.
+Employee creates a purchase entry while disconnected.
 
 **Impact:**
-- Unauthorized sales or data access.
+Purchase exists locally but not on server.
 
 **Handling:**
-- Require authentication (JWT)
-- Whitelist allowed devices or users
+- Purchase is queued like any other offline transaction
+- Synced when connection is restored
+- Status remains `pending` until admin explicitly approves
+
+## 5.2 Purchase approved before sync completes
+
+**Scenario:**
+Admin approves a purchase from another device before the original purchase entry has finished syncing.
+
+**Impact:**
+Race condition on inventory update.
+
+**Handling:**
+- Server processes queue sequentially using transaction locking
+- Approval can only be granted against a committed purchase record
 
 ---
 
-## 5.2 Token reuse or tampering
+# 🔐 6. Security Edge Cases
+
+## 6.1 Unauthorized device access
 
 **Scenario:**
-- Stolen or modified authentication token.
+Unknown device connects to the store network.
 
 **Impact:**
-- Unauthorized API access.
+Unauthorized sales or data access.
 
 **Handling:**
-- Server-side token validation
-- Expiration + refresh mechanism
+- All devices require valid JWT authentication
+- Admin manages device whitelist — unknown devices are rejected at connection
 
 ---
 
-# 🔄 6. Sync Behavior Edge Cases
-
-## 6.1 Infinite retry loop
+## 6.2 Token reuse or tampering
 
 **Scenario:**
-- Device keeps retrying failed sync requests.
+Stolen or modified authentication token.
 
 **Impact:**
-- Server overload.
+Unauthorized API access.
 
 **Handling:**
-- Exponential backoff retry system
-- Max retry limits
+- Server-side token validation on every request
+- Token expiration and session invalidation on new login
 
 ---
 
-## 6.2 Conflicting reconciliation after reconnect
+# 🔄 7. Sync Behavior Edge Cases
+
+## 7.1 Infinite retry loop
 
 **Scenario:**
-- Multiple devices sync large backlog at once.
+Device keeps retrying failed sync requests.
 
 **Impact:**
-- Race conditions on server.
+Server overload.
 
 **Handling:**
-- Server processes queue sequentially per device or transaction locking
+- Exponential backoff: 1s → 2s → 4s → 8s → stop
+- Maximum 5 retries, then mark as FAILED and notify manager
 
 ---
 
-# ⚠️ 7. Time & Ordering Edge Cases
-
-## 7.1 Device time mismatch
+## 7.2 Multiple devices syncing large backlog simultaneously
 
 **Scenario:**
-- Phone clock is incorrect.
+Multiple devices reconnect and push large transaction backlogs at the same time.
 
 **Impact:**
-- Wrong transaction ordering.
+Race conditions on the server.
 
 **Handling:**
-- Always trust server timestamp, never device time
+- Server processes queue sequentially per device
+- Transaction locking prevents simultaneous writes to the same record
+
+---
+
+# ⚠️ 8. Time & Ordering Edge Cases
+
+## 8.1 Device time mismatch
+
+**Scenario:**
+Phone clock is set incorrectly.
+
+**Impact:**
+Wrong transaction ordering and incorrect edit window calculations.
+
+**Handling:**
+- Server timestamp is always authoritative
+- Device timestamp is used for display only, never for business logic
 
 ---
 
@@ -299,9 +333,11 @@ Clients are not trusted sources of truth.
 
 This system is resilient only if:
 
-- Every transaction is uniquely identified
-- Server is authoritative
-- Offline data is treated as temporary
-- Sync is always validated and reversible
+* Every transaction is uniquely identified with a UUID v4 transaction_id
+* Server is authoritative on all timestamps and stock values
+* Offline data is treated as temporary and unconfirmed
+* Sync is always validated before commit
+* Products are soft-deleted to preserve historical integrity
+* Sales are all-or-nothing — no partial commits
 
 Without these rules, offline-first systems silently corrupt data over time.

@@ -14,7 +14,7 @@
 
 * PIN is used for fast login after app reopen
 * Show PIN input screen if session exists
-* Fallback to full login if PIN fails
+* Fallback to full login if PIN fails or PIN is not set
 
 ### 1.3 Post-Login Redirect
 
@@ -47,8 +47,8 @@
 * Sales Dashboard
 * Purchase Dashboard (restocking)
 * Inventory Page
-* Reports Page (non-employee only)
-* Employee Management (admin only)
+* Reports Page (Admin and Manager only)
+* Employee Management (Admin only)
 
 ---
 
@@ -75,6 +75,13 @@
 * Cart resets automatically
 * Show success toast: "Sale completed"
 
+### 4.5 Sale Rejection
+
+* If server rejects sale due to insufficient stock:
+
+  * Show error toast identifying which product(s) caused the rejection
+  * Cart is preserved so user can adjust quantities and retry
+
 ---
 
 ## 5. PAYMENT UI
@@ -97,13 +104,13 @@ Display:
 * Price
 * Stock quantity
 
+Only active products (is_active = true) are shown.
+
 ### 6.2 Actions
 
 * Add product → allowed
 * Edit product → allowed
-* Delete product → allowed
-
-(Note: Backend will enforce role restrictions if needed)
+* Delete product → soft delete (product hidden from list, not permanently removed)
 
 ---
 
@@ -113,16 +120,26 @@ Display:
 
 * All roles can create purchase entries
 
-### 7.2 Approval
+### 7.2 Status Display
 
-* Purchases require admin approval before affecting inventory
+* Purchases show status: `pending`, `approved`, or `rejected`
+* Pending purchases show clearly in admin view awaiting action
+
+### 7.3 Approval (Admin only)
+
+* Admin sees "Approve" and "Reject" buttons on pending purchases
+* Approval triggers stock update
+* Rejection closes the purchase without stock change
 
 ---
 
 ## 8. REPORTS
 
-* Daily reports only
-* Summary view (no complex charts required initially)
+* Daily reports (default view)
+* Monthly summary available
+* Summary view — no complex charts required in Phase 1
+* Accessible by Admin and Manager only
+* Reports reflect only synced, committed data
 
 ---
 
@@ -130,8 +147,8 @@ Display:
 
 ### 9.1 User Creation
 
-* Users are NOT created by admin manually
 * Users sign up themselves
+* Admin is NOT required to manually create accounts
 
 ### 9.2 First Login
 
@@ -144,11 +161,13 @@ Display:
 * Password
 * Role
 * Phone / Email
-* Bank details
+* Bank details (optional)
 
 ### 9.4 Account Control
 
-* Users can be deactivated (not deleted)
+* Users can be **deactivated** (not deleted)
+* Deactivated users cannot log in
+* Their history and records remain intact
 
 ---
 
@@ -156,20 +175,25 @@ Display:
 
 ### Employee
 
-* Cannot view reports
+* Cannot view Reports tab
 * Can create sales
-* Can edit sales within 20 minutes
-* After 20 minutes → requires manager approval
+* Can edit own sales within 20 minutes
+* After 20 minutes → must request manager authorization
 
 ### Manager
 
 * Can edit any sale without time restriction
 * All edits are logged
 * Admin is notified of edits
+* Can approve late sale edit requests from employees
+* Can cancel sales
 
 ### Admin
 
-* Full access
+* Full access to all features
+* Can approve and reject purchases
+* Can deactivate user accounts
+* Can view full audit logs
 
 ---
 
@@ -177,12 +201,12 @@ Display:
 
 ### 11.1 Offline Indicator
 
-* Show persistent banner: "Offline Mode"
+* Show persistent banner: "Offline Mode — changes will sync when reconnected"
 
 ### 11.2 Behavior
 
-* No features disabled
-* All actions continue normally
+* All sales and purchase entry creation continue normally
+* Purchase approvals require server connection (admin action only)
 
 ### 11.3 Unsynced Data
 
@@ -190,25 +214,26 @@ Display:
 
 ### 11.4 Sync System
 
-* Automatic retry: 5 attempts
-* Manual "Sync Now" button available
+* Automatic sync triggers immediately on reconnection
+* Retry up to 5 times with exponential backoff
+* Manual "Sync Now" button available at all times
+* After 5 failures, item is marked FAILED and manager is notified
 
 ---
 
 ## 12. ERROR HANDLING
 
 * Show toast messages for errors
-* No blocking modals unless critical
+* No blocking modals unless action is critical (e.g. confirming a sale cancellation)
+* On sale rejection: preserve cart contents, show which item caused the rejection
 
 ---
 
 ## 13. UI STYLE
 
-* Balanced:
-
-  * Clean
-  * Fast
-  * Not overly decorative
+* Clean, fast, minimal
+* Prioritize speed and usability over decoration
+* Target non-technical users
 
 ---
 
@@ -223,8 +248,11 @@ Display:
 
 * Sales edits must trigger:
 
-  * Log entry
+  * Log entry (handled by backend)
   * Admin notification (handled by backend)
+* Purchase approvals and rejections:
+
+  * Logged automatically by backend
 
 ---
 
@@ -232,6 +260,5 @@ Display:
 
 * Keep UI fast and minimal
 * Prioritize speed over design complexity
-* All critical rules enforced by backend, not frontend
-
----
+* All critical business rules enforced by backend, not frontend
+* Frontend displays state — backend owns truth

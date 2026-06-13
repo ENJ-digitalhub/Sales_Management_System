@@ -44,7 +44,7 @@ Local SQLite Sync Queue
     ↓
 Sync Dispatcher (Background + Reconnect Trigger)
     ↓
-Batch API (/sync/push)
+Batch API (POST /sync)
     ↓
 Server Sync Engine
     ↓
@@ -67,7 +67,7 @@ Each offline action is stored as:
 {
   "id": "local_uuid",
   "transaction_id": "global_uuid_v4",
-  "entity_type": "sale | product | user | etc",
+  "entity_type": "sale | product | purchase | user",
   "operation": "CREATE | UPDATE | DELETE",
   "payload": { "...full request body..." },
   "status": "PENDING | SYNCED | FAILED | CONFLICT",
@@ -81,8 +81,7 @@ Rules:
 
 * Stored in SQLite
 * Survives app reload and restart
-* Fully persistent queue
-* No memory-only data allowed
+* Fully persistent — no memory-only data allowed
 
 ---
 
@@ -90,13 +89,15 @@ Rules:
 
 Strategy:
 
-* Each transaction uses UUID v4 generated on the client
+* Each transaction uses UUID v4 generated on the client at creation time
 * Server enforces uniqueness using `transaction_id`
 
 Behavior:
 
-* If `transaction_id` exists → ignore duplicate
+* If `transaction_id` already exists in the database → silently ignore
 * If new → process normally
+
+This prevents duplicate transactions from retry storms or network lag.
 
 ---
 
@@ -104,14 +105,14 @@ Behavior:
 
 Rules:
 
-* Server timestamp is authoritative
-* Device timestamp is for display only
+* Server timestamp is authoritative for all business logic
+* Device timestamp is stored for reference only — never used for ordering or edit window calculations
 
 Purpose:
 
 * Prevents clock manipulation
 * Avoids ordering bugs
-* Eliminates sync inconsistencies
+* Eliminates sync inconsistencies from misconfigured device clocks
 
 ---
 
@@ -129,21 +130,21 @@ Secondary:
 
 Interval continues until:
 
-* Success OR
-* Max retry reached (5 attempts)
+* All pending items are synced, OR
+* Max retries reached (5 attempts per item)
 
 ---
 
 # 7. 📡 SYNC BATCHING STRATEGY
 
 * Batch size: 10–20 transactions per request
-* Endpoint: `POST /sync/push`
+* Endpoint: `POST /sync`
 
 Purpose:
 
 * Reduce network overhead
 * Improve throughput
-* Prevent server overload
+* Prevent server overload from large backlogs
 
 ---
 
@@ -159,9 +160,9 @@ Exponential backoff strategy:
 
 After max failure:
 
-* Mark as `FAILED`
-* Notify user/manager
-* Require manual retry
+* Mark transaction as `FAILED`
+* Notify user and manager dashboard
+* Require manual retry — no automatic re-queuing
 
 ---
 
@@ -173,36 +174,54 @@ Conflicts are **never auto-overwritten**. They are isolated and escalated.
 
 ### A. Stock Conflict
 
-Example: offline sale exceeds available stock
+Scenario: offline sale quantity exceeds available server stock.
 
 Behavior:
 
-* Reject affected items
+* Reject the affected sale entirely (all-or-nothing rule applies)
 * Flag for manager decision
 
 ---
 
-### B. Deleted Product Conflict
+### B. Soft-Deleted Product Conflict
+
+Scenario: product was soft-deleted on server while device was offline.
 
 Behavior:
 
+* Server rejects transactions referencing `is_active = false` products
 * Flag for manager resolution
+* Device refreshes product list on reconnect
 
 ---
 
 ### C. Duplicate Transaction
 
+Scenario: same `transaction_id` submitted more than once.
+
 Behavior:
 
-* Server ignores duplicate via `transaction_id`
+* Server ignores duplicate silently
+* No error returned — idempotent by design
 
 ---
 
-### D. General Conflict
+### D. Purchase Conflict
+
+Scenario: purchase entry synced but product was soft-deleted before admin approves it.
 
 Behavior:
 
-* Isolate and flag
+* Server rejects the approval
+* Flag for manager resolution
+
+---
+
+### E. General Conflict
+
+Behavior:
+
+* Isolate, flag, and escalate
 
 ---
 
@@ -233,13 +252,13 @@ Re-sync or Commit
 ```
 Client sends batch
     ↓
-Server validates JWT
+Server validates JWT + device whitelist
     ↓
 For each transaction:
     ↓
-Idempotency check
+Idempotency check (transaction_id)
     ↓
-Validation (stock, product, etc.)
+Validation (stock, product is_active, etc.)
     ↓
 Conflict detection
     ↓
@@ -250,9 +269,9 @@ Return per-item result
 
 ## 10.2 Partial Failure Rule
 
-* Process ALL items in batch
-* Never stop mid-batch
-* Return individual results
+* Process ALL items in the batch
+* Never stop mid-batch on a single failure
+* Return individual result per item: `success | failed | conflict`
 
 ---
 
@@ -264,10 +283,10 @@ Endpoint:
 
 Data includes:
 
-* Products
+* Active products (is_active = true only)
 * Stock updates
 * Price changes
-* Deleted products
+* Soft-deleted product IDs (so client removes them from local cache)
 * User updates
 
 Transport:
@@ -281,13 +300,13 @@ Transport:
 
 Rules:
 
-* JWT required
-* `device_id` must match whitelist
-* Only ONE active device per user
+* JWT required on every request
+* `device_id` must match admin whitelist
+* Only ONE active device session per user
 
-If new login occurs:
+If new login occurs on a different device:
 
-* Old device is invalidated immediately
+* Old device session is invalidated immediately
 
 ---
 
@@ -295,17 +314,19 @@ If new login occurs:
 
 Stock Handling:
 
-* Client is allowed to proceed offline
-* Server validates and corrects during sync
+* Client applies optimistic stock deduction locally on offline sales
+* Server validates and corrects the actual stock during sync
+* If server rejects: local stock delta is reversed and manager is notified
 
 ---
 
 # 14. 🔄 PARTIAL SYNC FAILURE
 
-If item fails at position N:
+If an item fails at any position in the batch:
 
-* Continue processing remaining items
-* Retry only failed items later
+* Continue processing all remaining items
+* Retry only the failed items on next sync cycle
+* Successfully synced items are not re-sent
 
 ---
 
@@ -313,9 +334,9 @@ If item fails at position N:
 
 Used for:
 
-* Real-time stock updates
+* Real-time stock updates after sales and purchase approvals
 * Sync completion notifications
-* Conflict alerts
+* Conflict alerts to manager dashboard
 * Dashboard refresh triggers
 
 ---
@@ -324,9 +345,10 @@ Used for:
 
 If a transaction fails after max retries:
 
-* Notify user immediately
+* Mark as FAILED
+* Notify user immediately via in-app alert
 * Send to manager dashboard
-* Temporarily block affected operations if critical
+* Temporarily block affected operations if critical (e.g. further sales of conflicting product)
 
 ---
 
@@ -334,10 +356,8 @@ If a transaction fails after max retries:
 
 This Sync Engine guarantees:
 
-* No duplicate transactions
-* No silent data loss
-* Controlled offline operation
+* No duplicate transactions (idempotency via UUID v4)
+* No silent data loss (persistent SQLite queue)
+* Controlled offline operation (optimistic local, validated on sync)
 * Deterministic server reconciliation
-* Manager-controlled conflict resolution
-
----
+* Manager-controlled conflict resolution — no auto-overwrite
