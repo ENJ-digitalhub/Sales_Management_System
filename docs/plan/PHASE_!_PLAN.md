@@ -54,14 +54,14 @@ Covenant's route work is blocked on ENJ's `Product` model existing. **ENJ ships 
 ## 👤 Covenant — Backend API + Business Logic
 
 ### Execution Checklist
-- [ ] `requirements.txt`: Flask, SQLAlchemy>=2.0, python-dotenv, pytest
-- [ ] `backend/config.py`: `Config` class reading from `.env` (DB path, `SECRET_KEY`, `DEBUG`)
-- [ ] `backend/app.py`: `create_app()` factory — initializes Flask, registers blueprints, hooks into ENJ's session setup
-- [ ] `main.py`: imports `create_app()`, runs the dev server
-- [ ] `backend/routes/sales.py`: Blueprint with **one** route — `GET /products` (no auth, no other routes yet)
-- [ ] `backend/controllers/sales_controller.py`: handles the request/response shape for that route — separate from the route registration itself
-- [ ] `backend/services/sales_service.py`: `get_all_products()` — the actual business logic / DB query lives here, not in the controller
-- [ ] `backend/utils/validators.py`: at least one real validator (e.g. pagination params) wired into the controller
+- [*] `requirements.txt`: Flask, SQLAlchemy>=2.0, python-dotenv, pytest
+- [*] `backend/config.py`: `Config` class reading from `.env` (DB path, `SECRET_KEY`, `DEBUG`)
+- [*] `backend/app.py`: `create_app()` factory — initializes Flask, registers blueprints, hooks into ENJ's session setup
+- [*] `main.py`: imports `create_app()`, runs the dev server
+- [*] `backend/routes/sales.py`: Blueprint with **one** route — `GET /products` (no auth, no other routes yet)
+- [*] `backend/controllers/sales_controller.py`: handles the request/response shape for that route — separate from the route registration itself
+- [*] `backend/services/sales_service.py`: `get_all_products()` — the actual business logic / DB query lives here, not in the controller
+- [*] `backend/utils/validators.py`: at least one real validator (e.g. pagination params) wired into the controller
 
 ### Socratic Task Spec
 **Objective:** Build the Flask application factory and wire `GET /products` through the **full layer chain**: route → controller → service → model, using ENJ's `Session`.
