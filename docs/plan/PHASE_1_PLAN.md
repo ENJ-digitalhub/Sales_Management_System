@@ -24,7 +24,7 @@ Covenant's route work is blocked on ENJ's `Product` model existing. **ENJ ships 
 ## 👤 ENJ — Database + Sync Foundation
 
 ### Execution Checklist
-- [ ] `backend/models/models.py`: set up `Engine` + `sessionmaker` + `DeclarativeBase`
+- [x] `backend/models/models.py`: set up `Engine` + `sessionmaker` + `DeclarativeBase`
 - [ ] `Product` model (Mapped/mapped_column syntax) — fields: `id, name, category, selling_price, cost_price, stock_quantity, is_active, created_at, updated_at` (per `DATABASE_SCHEMA.md §2`)
 - [ ] `SyncQueue` model — fields: `id, device_id, entity_type, payload (JSON), status, retry_count, last_attempt_at, created_at` (per `DATABASE_SCHEMA.md §7`) — model only, no logic yet
 - [ ] `database/schema.sql`: hand-written reference schema matching the ORM models
