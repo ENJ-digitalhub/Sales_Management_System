@@ -1,7 +1,7 @@
 # backend/models/models.py
 from decimal import Decimal
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Numeric, Boolean, DateTime
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, ForeignKey
+from sqlalchemy import String, Numeric, Boolean, DateTime, JSON
 from datetime import datetime
 
 class Base(DeclarativeBase):
@@ -19,4 +19,19 @@ class Product(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime,default=datetime.now , onupdate=datetime.now)
+    pass
+
+class SyncQueue(Base):
+    __tablename__ = "sync_queue"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    transaction_id: Mapped[int] = mapped_column(ForeignKey("transactions.id") unique=True)
+    device_id: Mapped[int] = mapped_column(ForeignKey("devices.id"))
+    entity_type: Mapped[str] = mapped_column(String(20))
+    operation: Mapped[str] = mapped_column(String(20))
+    payload: Mapped[dict] = mapped_column(JSON)
+    status: Mapped[str] = mapped_column(String(20), default="pending")
+    retry_count: Mapped[int] = mapped_column(default=0)
+    last_attempt_at: Mapped[datetime | None] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     pass

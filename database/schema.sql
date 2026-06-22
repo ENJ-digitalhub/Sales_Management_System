@@ -189,6 +189,9 @@ CREATE TABLE IF NOT EXISTS sync_queue (
     retry_count     INTEGER NOT NULL DEFAULT 0,
     last_attempt_at TEXT,
     created_at      TEXT NOT NULL DEFAULT (datetime('now'))
+
+    FOREIGN KEY (transaction_id) REFERENCES transactions(id) ON DELETE SET NULL
+    FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE SET NULL
 );
 
 -- Notes:

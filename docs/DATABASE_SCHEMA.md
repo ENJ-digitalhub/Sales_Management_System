@@ -192,9 +192,10 @@ purchase_items
 ```
 sync_queue
 - id (PK)
-- device_id
-- transaction_id (UNIQUE)             ← idempotency key, UUID v4 generated on client
-- entity_type
+- device_id (FK → devices.id)
+- transaction_id (FK → transactions.id, UNIQUE)             ← idempotency key, UUID v4 generated on client
+- entity_type (sales | product | user)
+- operation (create | update | delete)
 - payload (JSON)
 - status (pending | synced | failed | conflict)
 - retry_count (default 0)
