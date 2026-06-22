@@ -4,9 +4,11 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import String, Numeric, Boolean, DateTime, JSON, ForeignKey
 from datetime import datetime
 
+"""Defines the base class for SQLAlchemy models"""
 class Base(DeclarativeBase):
     pass
 
+"""Defines the Product models"""
 class Product(Base):
     __tablename__ = "products"
 
@@ -21,12 +23,14 @@ class Product(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime,default=datetime.now , onupdate=datetime.now)
     pass
 
+
+"""Defines the SyncQueue model"""
 class SyncQueue(Base):
     __tablename__ = "sync_queue"
 
     id: Mapped[str] = mapped_column(primary_key=True)
-    transaction_id: Mapped[str] = mapped_column(ForeignKey("transactions.id"), unique=True)
-    device_id: Mapped[str] = mapped_column(ForeignKey("devices.id"))
+    transaction_id: Mapped[str] = mapped_column(unique=True) # FK
+    device_id: Mapped[str] = mapped_column() # FK
     entity_type: Mapped[str] = mapped_column(String(20))
     operation: Mapped[str] = mapped_column(String(20))
     payload: Mapped[dict] = mapped_column(JSON)
