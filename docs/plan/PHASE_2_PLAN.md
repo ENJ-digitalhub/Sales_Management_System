@@ -86,14 +86,14 @@ Execution Checklist
   - PyJWT
   - bcrypt
 - [X] "backend/routes/auth.py"
-- [ ] "backend/controllers/auth_controller.py"
-- [ ] "backend/services/auth_service.py"
-- [ ] "backend/utils/security.py"
-- [ ] Implement:
+- [X] "backend/controllers/auth_controller.py"
+- [X] "backend/services/auth_service.py"
+- [X] "backend/utils/security.py"
+- [X] Implement:
   - "POST /auth/login"
   - "GET /auth/me"
-- [ ] Add JWT verification middleware
-- [ ] Add role utility:
+- [X] Add JWT verification middleware
+- [X] Add role utility:
   - admin
   - manager
   - employee
