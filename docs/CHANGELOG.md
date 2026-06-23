@@ -4,3 +4,4 @@
 | ENJ | backend/models/models.py: set up Engine + sessionmaker + DeclarativeBase |
 | ENJ | Step 2 Done |
 | ENJ | Step 3 Done |
+| ENJ | All steps[Phase 1] Done |
