@@ -24,12 +24,12 @@ Covenant's route work is blocked on ENJ's `Product` model existing. **ENJ ships 
 ## 👤 ENJ — Database + Sync Foundation
 
 ### Execution Checklist
-- [x] `backend/models/models.py`: set up `Engine` + `sessionmaker` + `DeclarativeBase`
-- [x] `Product` model (Mapped/mapped_column syntax) — fields: `id, name, category, selling_price, cost_price, stock_quantity, is_active, created_at, updated_at` (per `DATABASE_SCHEMA.md §2`)
-- [x] `SyncQueue` model — fields: `id, device_id, entity_type, payload (JSON), status, retry_count, last_attempt_at, created_at` (per `DATABASE_SCHEMA.md §7`) — model only, no logic yet
-- [x] `database/schema.sql`: hand-written reference schema matching the ORM models
-- [x] `cli/cli.py`: implement `setup` (create tables), `seed` (insert 5–10 demo products), `reset` (drop + recreate) — must be idempotent, safe to rerun
-- [x] `backend/sync/queue.py`: stub only — function signatures `push_to_queue()`, `process_queue()` with docstrings, no real implementation yet
+- [ ] `backend/models/models.py`: set up `Engine` + `sessionmaker` + `DeclarativeBase`
+- [ ] `Product` model (Mapped/mapped_column syntax) — fields: `id, name, category, selling_price, cost_price, stock_quantity, is_active, created_at, updated_at` (per `DATABASE_SCHEMA.md §2`)
+- [ ] `SyncQueue` model — fields: `id, device_id, entity_type, payload (JSON), status, retry_count, last_attempt_at, created_at` (per `DATABASE_SCHEMA.md §7`) — model only, no logic yet
+- [ ] `database/schema.sql`: hand-written reference schema matching the ORM models
+- [ ] `cli/cli.py`: implement `setup` (create tables), `seed` (insert 5–10 demo products), `reset` (drop + recreate) — must be idempotent, safe to rerun
+- [ ] `backend/sync/queue.py`: stub only — function signatures `push_to_queue()`, `process_queue()` with docstrings, no real implementation yet
 
 ### Socratic Task Spec
 **Objective:** Define `Product` and `SyncQueue` using SQLAlchemy 2.0's modern declarative syntax, establish the Engine/Session lifecycle, and get `python cli/cli.py setup && python cli/cli.py seed` producing a populated SQLite database.
@@ -54,14 +54,14 @@ Covenant's route work is blocked on ENJ's `Product` model existing. **ENJ ships 
 ## 👤 Covenant — Backend API + Business Logic
 
 ### Execution Checklist
-- [X] `requirements.txt`: Flask, SQLAlchemy>=2.0, python-dotenv, pytest
-- [X] `backend/config.py`: `Config` class reading from `.env` (DB path, `SECRET_KEY`, `DEBUG`)
-- [X] `backend/app.py`: `create_app()` factory — initializes Flask, registers blueprints, hooks into ENJ's session setup
-- [X] `main.py`: imports `create_app()`, runs the dev server
-- [X] `backend/routes/sales.py`: Blueprint with **one** route — `GET /products` (no auth, no other routes yet)
-- [X] `backend/controllers/sales_controller.py`: handles the request/response shape for that route — separate from the route registration itself
-- [X] `backend/services/sales_service.py`: `get_all_products()` — the actual business logic / DB query lives here, not in the controller
-- [X] `backend/utils/validators.py`: at least one real validator (e.g. pagination params) wired into the controller
+- [*] `requirements.txt`: Flask, SQLAlchemy>=2.0, python-dotenv, pytest
+- [*] `backend/config.py`: `Config` class reading from `.env` (DB path, `SECRET_KEY`, `DEBUG`)
+- [*] `backend/app.py`: `create_app()` factory — initializes Flask, registers blueprints, hooks into ENJ's session setup
+- [*] `main.py`: imports `create_app()`, runs the dev server
+- [*] `backend/routes/sales.py`: Blueprint with **one** route — `GET /products` (no auth, no other routes yet)
+- [*] `backend/controllers/sales_controller.py`: handles the request/response shape for that route — separate from the route registration itself
+- [*] `backend/services/sales_service.py`: `get_all_products()` — the actual business logic / DB query lives here, not in the controller
+- [*] `backend/utils/validators.py`: at least one real validator (e.g. pagination params) wired into the controller
 
 ### Socratic Task Spec
 **Objective:** Build the Flask application factory and wire `GET /products` through the **full layer chain**: route → controller → service → model, using ENJ's `Session`.
