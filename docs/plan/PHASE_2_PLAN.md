@@ -82,10 +82,10 @@ Guiding questions for ENJ (don't answer yet — sit with these):
 
 Execution Checklist
 
-- [ ] "requirements.txt"
+- [X] "requirements.txt"
   - PyJWT
   - bcrypt
-- [ ] "backend/routes/auth.py"
+- [X] "backend/routes/auth.py"
 - [ ] "backend/controllers/auth_controller.py"
 - [ ] "backend/services/auth_service.py"
 - [ ] "backend/utils/security.py"
