@@ -23,16 +23,15 @@ users
 - bank_name (nullable)
 - account_number (nullable)
 - pin_hash (nullable)
-- is_active (boolean, default true)
+- is_active (boolean)
 - created_at
 ```
 
 ### Notes:
 
-* Only one "true admin" exists via environment config
+* Only one “true admin” exists via environment config
 * PIN is optional (set after first login)
 * No sensitive banking credentials stored
-* Users are deactivated, never deleted
 
 ---
 
@@ -46,8 +45,7 @@ products
 - selling_price
 - cost_price
 - stock_quantity
-- version (integer, default 1)        ← incremented on every update for conflict resolution
-- is_active (boolean, default true)   ← soft delete: false = hidden, not removed
+- is_active (boolean)
 - created_at
 - updated_at
 ```
@@ -55,9 +53,8 @@ products
 ### Rules:
 
 * Stock can NEVER go below zero
-* Products are SOFT DELETED (is_active = false), never permanently removed
-* Historical sales retain full references to soft-deleted products
-* Version field enables conflict detection when admin edits product while devices are offline
+* Deleted products are permanently removed
+* Historical sales remain unaffected
 
 ---
 
@@ -78,10 +75,8 @@ sales
 
 ### Rules:
 
-* Editable only within 20 minutes by the creating employee
-* After 20 minutes → requires manager authorization
-* Cancellation restores stock and is logged in audit_logs
-* All edits are logged regardless of who makes them
+* Editable only within 20 minutes
+* After that → locked permanently
 
 ---
 
@@ -100,9 +95,8 @@ sale_items
 
 ### Notes:
 
-* Each sale contains one or more items
-* Cost price is snapshotted at time of sale to preserve profit history
-* References product even if product is later soft-deleted
+* Each sale contains multiple items
+* Cost price is snapshotted to preserve profit history
 
 ---
 
@@ -112,7 +106,7 @@ sale_items
 inventory_logs
 - id (PK)
 - product_id (FK → products.id)
-- change_type (sale | restock | adjustment | cancellation)
+- change_type (sale | restock | adjustment)
 - quantity_change
 - reference_id (sale_id or purchase_id)
 - created_at
@@ -121,7 +115,7 @@ inventory_logs
 ### Purpose:
 
 * Track every stock movement
-* Enables full audit and debugging of stock history
+* Enables audit + debugging
 
 ---
 
@@ -132,7 +126,7 @@ audit_logs
 - id (PK)
 - user_id (FK → users.id)
 - action_type
-- entity_type (sale | product | user | purchase | system)
+- entity_type (sale | product | user | system)
 - entity_id
 - metadata (JSON)
 - created_at
@@ -140,104 +134,58 @@ audit_logs
 
 ### Rules:
 
-* Immutable — cannot be edited or deleted by anyone
-* Logs ALL critical actions: sales, edits, cancellations, product changes, user changes, purchase approvals
+* Immutable (cannot be deleted)
+* Logs ALL actions
 
 ---
 
-# 🛒 7. PURCHASES TABLE
-
-```
-purchases
-- id (PK)
-- created_by (FK → users.id)
-- approved_by (FK → users.id, nullable)
-- status (pending | approved | rejected)
-- total_cost
-- notes (nullable)
-- created_at
-- approved_at (nullable)
-```
-
-### Rules:
-
-* Any role can create a purchase entry
-* Only admin can approve a purchase
-* Stock is only updated AFTER approval
-* Rejected purchases do not affect inventory
-
----
-
-# 🛒 8. PURCHASE_ITEMS TABLE
-
-```
-purchase_items
-- id (PK)
-- purchase_id (FK → purchases.id)
-- product_id (FK → products.id)
-- quantity
-- cost_price
-- total_cost
-```
-
-### Notes:
-
-* Each purchase contains one or more items
-* Cost price recorded at time of purchase entry
-
----
-
-# 🔁 9. SYNC_QUEUE TABLE (CRITICAL)
+# 🔁 7. SYNC_QUEUE TABLE (CRITICAL)
 
 ```
 sync_queue
 - id (PK)
-- device_id (FK → devices.id)
-- transaction_id (FK → transactions.id, UNIQUE)             ← idempotency key, UUID v4 generated on client
-- entity_type (sales | product | user)
-- operation (create | update | delete)
+- device_id
+- entity_type
 - payload (JSON)
-- status (pending | synced | failed | conflict)
-- retry_count (default 0)
-- last_attempt_at (nullable)
+- status (pending | synced | failed)
+- retry_count
+- last_attempt_at
 - created_at
 ```
 
 ### Behavior:
 
-* Stored in SQLite on the client device
-* Retries up to 5 times with exponential backoff
-* Uses transaction_id to prevent duplicate processing
-* Conflicts are isolated and escalated to manager — never auto-overwritten
+* Stores offline actions
+* Retries up to 5 times
+* Uses idempotency keys to prevent duplicates
 
 ---
 
-# 📱 10. DEVICES TABLE
+# 📱 8. DEVICES TABLE
 
 ```
 devices
 - id (PK)
 - user_id (FK → users.id)
 - device_name
-- is_active (boolean)
+- is_active
 - last_seen_at
 ```
 
 ### Rules:
 
-* One active session per user at any time
-* New login invalidates previous device session immediately
+* One active session per user
+* New login invalidates previous device
 
 ---
 
 # ⚙️ SYSTEM GUARANTEES
 
-* No negative stock allowed — enforced at DB and service layer
-* Server validates all incoming data — client data is never trusted
-* Duplicate transactions prevented via unique transaction_id (idempotency)
-* Offline data must pass full validation before commit
-* All actions are logged in audit_logs
-* Products are soft-deleted — historical integrity is preserved
+* No negative stock allowed
+* Server validates all incoming data
+* Duplicate transactions prevented via unique IDs
+* Offline data must pass validation before commit
+* All actions are logged
 
 ---
 
@@ -248,6 +196,5 @@ Prepared for:
 * Multi-store architecture
 * Cloud sync
 * Distributed systems
-* Supplier management (purchase module expansion)
 
 Without breaking current schema

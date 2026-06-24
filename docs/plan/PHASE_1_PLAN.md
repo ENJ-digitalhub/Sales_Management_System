@@ -6,7 +6,7 @@
 **Team:**
 | Person | Owns |
 |---|---|
-| **Obinna** | `frontend/`, offline queue (client-side) |
+| **Goodness** | `frontend/`, offline queue (client-side) |
 | **Covenant** | `backend/app.py`, `config.py`, `routes/`, `controllers/`, `services/`, `utils/`, `main.py` |
 | **ENJ** | `backend/models/`, `backend/sync/`, `database/`, `cli/cli.py` |
 
@@ -84,7 +84,7 @@ Covenant's route work is blocked on ENJ's `Product` model existing. **ENJ ships 
 
 ---
 
-## 👤 Obinna — Frontend + Offline Engine
+## 👤 Goodness — Frontend + Offline Engine
 
 ### Execution Checklist
 - [ ] `frontend/index.html` shell + `frontend/assets/styles.css` base styles
@@ -107,7 +107,7 @@ Covenant's route work is blocked on ENJ's `Product` model existing. **ENJ ships 
 
 **Expected Output:** Loading the page fetches and displays the live product list from Covenant's endpoint. Separately, you can manually push a fake offline-queue record into your local store and read it back out, proving the storage shape works.
 
-**Guiding questions for Obinna (don't answer yet — sit with these):**
+**Guiding questions for Goodness (don't answer yet — sit with these):**
 1. `localStorage` is synchronous and string-only; `IndexedDB` is async and structured. Given this queue will eventually hold hundreds of pending sales, which one actually fits — and why does that matter for Phase 2?
 2. What does your queue record need that a normal "create sale" request doesn't?
 
@@ -128,7 +128,7 @@ A Phase 1 feature is **only** done if:
 
 ## 🗓️ Suggested Day-by-Day
 
-| Day | ENJ | Covenant | Obinna |
+| Day | ENJ | Covenant | Goodness |
 |---|---|---|---|
 | 1 | Engine/Session setup, start `Product` model | `requirements.txt`, `config.py` skeleton | `index.html` shell, CSS base |
 | 2 | **Ship `Product` model** (unblocks Covenant), start `SyncQueue` model | `app.py` factory, blueprint skeleton | `login.html` static |

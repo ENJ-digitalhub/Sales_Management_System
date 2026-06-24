@@ -1,5 +1,6 @@
+# backend/routes/sales.py
 from flask import Blueprint
-from backend.api.controllers.sales_controller import get_products_controller
+from backend.controllers.sales_controller import get_products_controller
 
 sales_bp = Blueprint('sales', __name__)
 

@@ -39,12 +39,12 @@ CREATE TABLE IF NOT EXISTS products (
     id              TEXT PRIMARY KEY,               -- UUID v4
     name            TEXT NOT NULL,
     category        TEXT,                           -- Optional
-    selling_price   REAL NOT NULL CHECK (selling_price >= 0),
-    cost_price      REAL NOT NULL CHECK (cost_price >= 0),
+    selling_price   NUMERIC(10, 2) NOT NULL CHECK (selling_price >= 0),
+    cost_price      NUMERIC(10, 2) NOT NULL CHECK (cost_price >= 0),
     stock_quantity  INTEGER NOT NULL DEFAULT 0 CHECK (stock_quantity >= 0),
     is_active       INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at      TEXT NOT NULL DEFAULT (datetime('now'))
+    updated_at      TEXT NOT NULL DEFAULT (datetime('now'))  -- updated at application level
 );
 
 -- Notes:
@@ -61,8 +61,8 @@ CREATE TABLE IF NOT EXISTS sales (
     id              TEXT PRIMARY KEY,               -- UUID v4
     receipt_number  TEXT NOT NULL UNIQUE,           -- Human-readable receipt ID
     user_id         TEXT NOT NULL,
-    total_amount    REAL NOT NULL CHECK (total_amount >= 0),
-    profit_at_sale  REAL NOT NULL DEFAULT 0,        -- Snapshot of profit at time of sale
+    total_amount    NUMERIC(10, 2) NOT NULL CHECK (total_amount >= 0),
+    profit_at_sale  NUMERIC(10, 2) NOT NULL DEFAULT 0,        -- Snapshot of profit at time of sale
     payment_method  TEXT NOT NULL CHECK (payment_method IN ('cash', 'transfer', 'pos')),
     status          TEXT NOT NULL DEFAULT 'completed' CHECK (status IN ('completed', 'edited', 'cancelled')),
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
@@ -84,9 +84,9 @@ CREATE TABLE IF NOT EXISTS sale_items (
     sale_id             TEXT NOT NULL,
     product_id          TEXT NOT NULL,
     quantity            INTEGER NOT NULL CHECK (quantity > 0),
-    unit_price          REAL NOT NULL CHECK (unit_price >= 0),      -- Price at time of sale
-    cost_price_at_sale  REAL NOT NULL CHECK (cost_price_at_sale >= 0), -- Snapshot for profit tracking
-    total_price         REAL NOT NULL CHECK (total_price >= 0),
+    unit_price          NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0),      -- Price at time of sale
+    cost_price_at_sale  NUMERIC(10, 2) NOT NULL CHECK (cost_price_at_sale >= 0), -- Snapshot for profit tracking
+    total_price         NUMERIC(10, 2) NOT NULL CHECK (total_price >= 0),
 
     FOREIGN KEY (sale_id)    REFERENCES sales(id)    ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS purchases (
     id              TEXT PRIMARY KEY,               -- UUID v4
     user_id         TEXT NOT NULL,                  -- Who created the purchase entry
     status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
-    total_cost      REAL NOT NULL DEFAULT 0 CHECK (total_cost >= 0),
+    total_cost      NUMERIC(10, 2) NOT NULL DEFAULT 0 CHECK (total_cost >= 0),
     notes           TEXT,
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
     approved_by     TEXT,                           -- Admin user_id who approved (nullable)
@@ -127,8 +127,8 @@ CREATE TABLE IF NOT EXISTS purchase_items (
     purchase_id TEXT NOT NULL,
     product_id  TEXT NOT NULL,
     quantity    INTEGER NOT NULL CHECK (quantity > 0),
-    cost_price  REAL NOT NULL CHECK (cost_price >= 0),
-    total_cost  REAL NOT NULL CHECK (total_cost >= 0),
+    cost_price  NUMERIC(10, 2) NOT NULL CHECK (cost_price >= 0),
+    total_cost  NUMERIC(10, 2) NOT NULL CHECK (total_cost >= 0),
 
     FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id)  REFERENCES products(id)  ON DELETE RESTRICT

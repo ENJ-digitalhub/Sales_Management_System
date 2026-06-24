@@ -15,28 +15,32 @@ class CLI:
     def __init__(self) -> None:
         pass
 
-    """Creates all tables in the database. Should be run once during initial setup."""
     def setup(self):
+        """Creates all tables in the database. Should be run once during initial setup."""
         Base.metadata.create_all(engine)
         pass
 
-    """Deletes all tables and recreates them. Use with caution as this will erase all data."""
     def reset(self):
+        """Deletes all tables and recreates them. Use with caution as this will erase all data."""
         Base.metadata.drop_all(engine)
         Base.metadata.create_all(engine)
         pass
 
-    """Seeds the database with initial data for testing and development purposes."""
     def seed(self):
+        """Seeds the database with initial data for testing and development purposes."""
         try:
             with SessionLocal() as session:
                 # Create & Add User
-                product1 = Product(id="P01", name="John Doe", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
-                product2 = Product(id="P02", name="Jane Doe", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
-                product3 = Product(id="P03", name="John Smith", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
-                product4 = Product(id="P04", name="Jane Smith", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
-                product5 = Product(id="P05", name="John Appleseed", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
+                product1 = Product(id="P01", name="Rice", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
+                product2 = Product(id="P02", name="Vegetable Oil", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
+                product3 = Product(id="P03", name="Sugar", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
+                product4 = Product(id="P04", name="Flour", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
+                product5 = Product(id="P05", name="Tomato Paste", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
 
+                existing = session.query(Product).first()
+                if existing:
+                    print("Already seeded. Skipping.")
+                    return
 
                 session.add_all([product1, product2, product3, product4, product5])
 
@@ -47,6 +51,7 @@ class CLI:
                 # Get all product
                 all_product = session.query(Product).all()
                 print(F"All Products: {all_product}")
+
 
         except Exception as e:
             print(f"Error: {e}")
