@@ -1,37 +1,40 @@
-from flask import request, jsonify
+from flask import request, jsonify, g
 from backend.services.auth_service import AuthService
 
-def login_controller():
-    """Handles the incoming request/response payload lifecycle for user logins."""
-    body = request.get_json()
-    if not body:
-        return jsonify({"error": "Missing valid JSON request body"}), 400
-        
-    username = body.get("username")
-    password = body.get("password")
-    
-    if not username or not password:
-        return jsonify({"error": "Username and password fields are strictly required"}), 400
+class AuthController:
 
-    # Delegate authentication operation to the service layer
-    token = AuthService.authenticate_user(username, password)
-    if not token:
-        return jsonify({"error": "Invalid username or password credentials"}), 401
-        
-    return jsonify({"token": token}), 200
+    @staticmethod
+    def login():
+        """Handles POST /auth/login payload verification."""
+        data = request.get_json() or {}
+        username = data.get('username')
+        password = data.get('password')
 
-def me_controller():
-    """Extracts identity context from request object claims data."""
-    # Context injected by your secure custom middleware decorator
-    claims = getattr(request, "user_claims", {})
-    user_id = claims.get("sub")
-    
-    if not user_id:
-        return jsonify({"error": "Identity identification context lost"}), 400
+        if not username or not password:
+            return jsonify({"success": False, "error": "Invalid credentials"}), 401
+
+        # Delegate business logic to service layer
+        result = AuthService.authenticate_user(username, password)
         
-    # Delegate data lookup to the service layer
-    profile = AuthService.get_profile_data(user_id)
-    if not profile:
-        return jsonify({"error": "User profile records not found"}), 404
-        
-    return jsonify(profile), 200
+        if not result:
+            # Keep error payload matching locked contract exactly
+            return jsonify({"success": False, "error": "Invalid credentials"}), 401
+
+        # Match exact locked payload contract for 200 OK
+        return jsonify({
+            "success": True,
+            "token": result["token"],
+            "user": result["user"]
+        }), 200
+
+    @staticmethod
+    def get_me():
+        """Handles GET /auth/me payload response."""
+        # g.current_user was extracted and populated by login_required middleware
+        if not hasattr(g, 'current_user') or not g.current_user:
+            return jsonify({"success": False, "error": "Token missing or invalid"}), 401
+            
+        return jsonify({
+            "success": True,
+            "user": g.current_user
+        }), 200

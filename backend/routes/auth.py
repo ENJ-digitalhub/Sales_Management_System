@@ -1,9 +1,12 @@
 from flask import Blueprint
-from backend.controllers.auth_controller import login_controller, me_controller
-from backend.utils.auth import secure
+from backend.controllers.auth_controller import AuthController
+from backend.utils.auth_decorators import login_required
 
-auth_bp = Blueprint("auth", __name__)
+# Create the Blueprint with the required prefix
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-# Route Registration
-auth_bp.post("/login")(login_controller)
-auth_bp.get("/me")(secure()(me_controller))  # Protected with our custom PyJWT middleware wrapper
+# Bind public login endpoint to controller
+auth_bp.route('/login', methods=['POST'])(AuthController.login)
+
+# Bind protected profile endpoint to controller using custom middleware
+auth_bp.route('/me', methods=['GET'])(login_required(AuthController.get_me))
