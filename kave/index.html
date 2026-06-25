@@ -160,44 +160,110 @@
           <h2>Built for Real Retail Challenges</h2>
         </div>
 
-        <div class="product__panel fade-in">
-          <div class="product__panel-top">
-            <span class="product__tag">KAVE RetailOS</span>
-            <span class="product__signal" data-status>
+        <div class="product__layout">
+
+          <!-- 3D device mockup — pure CSS, no images -->
+          <div class="device-stage fade-in" aria-hidden="true">
+            <div class="device-stage__glow"></div>
+            <div class="device">
+              <div class="device__screen">
+                <div class="device__statusbar">
+                  <span>9:41</span>
+                  <span class="device__signal-icon">
+                    <span></span><span></span><span></span><span></span>
+                  </span>
+                </div>
+
+                <div class="device__app-header">
+                  <span class="device__app-title">RetailOS</span>
+                  <span class="device__sync">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    Synced offline
+                  </span>
+                </div>
+
+                <div class="device__stat-row">
+                  <div class="device__stat">
+                    <span class="device__stat-label">Today's sales</span>
+                    <span class="device__stat-value">₦128,400</span>
+                  </div>
+                  <div class="device__stat">
+                    <span class="device__stat-label">Items low</span>
+                    <span class="device__stat-value device__stat-value--warn">3</span>
+                  </div>
+                </div>
+
+                <div class="device__list">
+                  <div class="device__list-row">
+                    <span>Bag of Rice (50kg)</span>
+                    <span class="device__list-qty">42 left</span>
+                  </div>
+                  <div class="device__list-row">
+                    <span>Cooking Oil 5L</span>
+                    <span class="device__list-qty">17 left</span>
+                  </div>
+                  <div class="device__list-row">
+                    <span>Detergent 1kg</span>
+                    <span class="device__list-qty device__list-qty--low">4 left</span>
+                  </div>
+                  <div class="device__list-row">
+                    <span>Soft Drinks (crate)</span>
+                    <span class="device__list-qty">29 left</span>
+                  </div>
+                </div>
+
+                <div class="device__cta">Record a sale</div>
+              </div>
+            </div>
+
+            <!-- floating card behind/beside the phone -->
+            <div class="device-card device-card--sync">
               <span class="status-dot" aria-hidden="true"></span>
-              Works offline
-            </span>
-          </div>
-
-          <p class="product__lede">
-            A retail management system designed for small shops — built to keep working
-            when the connection doesn't.
-          </p>
-
-          <div class="product__features">
-            <div class="feature">
-              <span class="feature__index">01</span>
-              <h3>Offline-first</h3>
-              <p>Works without stable internet, so sales never have to wait on signal.</p>
-            </div>
-            <div class="feature">
-              <span class="feature__index">02</span>
-              <h3>Accurate tracking</h3>
-              <p>Tracks sales and inventory accurately, in real time, on the floor.</p>
-            </div>
-            <div class="feature">
-              <span class="feature__index">03</span>
-              <h3>Fewer mistakes</h3>
-              <p>Reduces human errors that come from manual logs and memory.</p>
-            </div>
-            <div class="feature">
-              <span class="feature__index">04</span>
-              <h3>Simple to use</h3>
-              <p>Simple and easy to use — no training manual required.</p>
+              <span>3 sales queued — will sync when signal returns</span>
             </div>
           </div>
 
-          <a href="#contact" class="link-arrow">Explore KAVE RetailOS <span aria-hidden="true">→</span></a>
+          <!-- Copy + features -->
+          <div class="product__panel fade-in">
+            <div class="product__panel-top">
+              <span class="product__tag">KAVE RetailOS</span>
+              <span class="product__signal" data-status>
+                <span class="status-dot" aria-hidden="true"></span>
+                Works offline
+              </span>
+            </div>
+
+            <p class="product__lede">
+              A retail management system designed for small shops — built to keep working
+              when the connection doesn't.
+            </p>
+
+            <div class="product__features">
+              <div class="feature">
+                <span class="feature__index">01</span>
+                <h3>Offline-first</h3>
+                <p>Works without stable internet, so sales never have to wait on signal.</p>
+              </div>
+              <div class="feature">
+                <span class="feature__index">02</span>
+                <h3>Accurate tracking</h3>
+                <p>Tracks sales and inventory accurately, in real time, on the floor.</p>
+              </div>
+              <div class="feature">
+                <span class="feature__index">03</span>
+                <h3>Fewer mistakes</h3>
+                <p>Reduces human errors that come from manual logs and memory.</p>
+              </div>
+              <div class="feature">
+                <span class="feature__index">04</span>
+                <h3>Simple to use</h3>
+                <p>Simple and easy to use — no training manual required.</p>
+              </div>
+            </div>
+
+            <a href="#contact" class="link-arrow">Explore KAVE RetailOS <span aria-hidden="true">→</span></a>
+          </div>
+
         </div>
       </div>
     </section>
