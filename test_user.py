@@ -3,8 +3,8 @@ from sqlalchemy import create_engine, text
 from backend.utils.security import hash_password
 
 # 1. Ensure the instance directory exists and link to SQLite file
-os.makedirs("instance", exist_ok=True)
-DATABASE_URL = "sqlite:///instance/sms.db"
+os.makedirs("database", exist_ok=True)
+DATABASE_URL = "sqlite:///instance/shop.db"
 engine = create_engine(DATABASE_URL)
 
 print("🚀 Running pure schema injection...")
