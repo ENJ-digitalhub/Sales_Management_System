@@ -2,7 +2,7 @@
 from flask import Flask, g
 from backend.config import Config
 from backend.routes.sales import sales_bp
-<<<<<<< HEAD
+
 from backend.routes.auth import auth_bp
 from backend.routes.inventory import inventory_bp
 
@@ -15,7 +15,7 @@ def create_app(config_class=Config):
     app.register_blueprint(auth_bp)
     app.register_blueprint(inventory_bp)
 
-=======
+
 from backend.database import get_db
         
 def create_app():
@@ -35,5 +35,6 @@ def create_app():
         
     # Register blueprints
     app.register_blueprint(sales_bp, url_prefix='/api')
->>>>>>> 3ddff42b1e607c5b755af7b336e976c561e28f83
+    app.register_blueprint(auth_bp, url_prefix='/api')
+    app.register_blueprint(inventory_bp, url_prefix='/api')
     return app
