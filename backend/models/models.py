@@ -5,10 +5,11 @@ from sqlalchemy import String, Numeric, Boolean, DateTime, JSON, ForeignKey
 from datetime import datetime
 
 class Base(DeclarativeBase):
+    """Defines the base class for SQLAlchemy models"""
     pass
 
-"""Defines the Product models"""
 class Product(Base):
+    """Defines the Product models"""
     __tablename__ = "products"
 
     id: Mapped[str] = mapped_column(primary_key=True)
