@@ -1,25 +1,45 @@
-from backend.database import SessionLocal
-from backend.models.models import Product
+import os
+from sqlalchemy import create_engine, text
 
-def seed_inventory():
-    print("Connecting to storage engine to populate product rows...")
-    
-    with SessionLocal() as session:
-        # Check if products already exist to avoid duplication crashes
-        existing_count = session.query(Product).count()
-        if existing_count > 0:
-            print(f"Inventory already populated with {existing_count} items. Skipping mock seeder.")
-            return
+os.makedirs("database", exist_ok=True)
+DATABASE_URL = "sqlite:///database/shop.db"
+engine = create_engine(DATABASE_URL)
 
-        mock_items = [
-            Product(name="Wireless Mouse", description="Ergonomic 2.4GHz wireless mouse", price=25.50, stock_quantity=120),
-            Product(name="Mechanical Keyboard", description="RGB backlit clicky mechanical switches", price=79.99, stock_quantity=45),
-            Product(name="Type-C USB Hub", description="5-in-1 multi-port adapter with HDMI out", price=34.95, stock_quantity=60)
+print("🚀 Creating products table...")
+
+with engine.begin() as connection:
+    connection.execute(text("""
+        CREATE TABLE IF NOT EXISTS products (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            sku VARCHAR(50) NOT NULL UNIQUE,
+            name VARCHAR(150) NOT NULL,
+            category VARCHAR(80) NOT NULL,
+            cost_price NUMERIC(10, 2) NOT NULL,
+            selling_price NUMERIC(10, 2) NOT NULL,
+            stock_quantity INTEGER NOT NULL DEFAULT 0,
+            is_active BOOLEAN DEFAULT 1
+        );
+    """))
+    print("📋 'products' table verified/created successfully.")
+
+    try:
+        connection.execute(text("DELETE FROM products WHERE sku IN ('SKU-001', 'SKU-002', 'SKU-003');"))
+
+        sample_products = [
+            {"sku": "SKU-001", "name": "Bag of Rice (50kg)", "category": "Grains", "cost_price": 32000.00, "selling_price": 38000.00, "stock_quantity": 42, "is_active": True},
+            {"sku": "SKU-002", "name": "Cooking Oil 5L", "category": "Cooking", "cost_price": 9500.00, "selling_price": 11500.00, "stock_quantity": 17, "is_active": True},
+            {"sku": "SKU-003", "name": "Detergent 1kg", "category": "Household", "cost_price": 1200.00, "selling_price": 1800.00, "stock_quantity": 4, "is_active": True},
         ]
 
-        session.add_all(mock_items)
-        session.commit()
-        print("🎉 Success! Added 3 default testing products to your inventory schema.")
+        for p in sample_products:
+            connection.execute(
+                text("""
+                    INSERT INTO products (sku, name, category, cost_price, selling_price, stock_quantity, is_active)
+                    VALUES (:sku, :name, :category, :cost_price, :selling_price, :stock_quantity, :is_active);
+                """),
+                p
+            )
+        print(f"✅ Success! {len(sample_products)} sample products seeded.")
 
-if __name__ == "__main__":
-    seed_inventory()
+    except Exception as e:
+        print(f"❌ Product seeding failed: {e}")

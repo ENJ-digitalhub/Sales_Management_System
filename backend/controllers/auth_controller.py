@@ -13,10 +13,9 @@ class AuthController:
         if not username or not password:
             return jsonify({"success": False, "error": "Invalid credentials"}), 401
 
-        # Delegate business logic to service layer
-        result = AuthService.authenticate_user(username, password)
-        
-        if not result:
+        try:
+            result = AuthService.authenticate_user(username, password)
+        except ValueError:
             # Keep error payload matching locked contract exactly
             return jsonify({"success": False, "error": "Invalid credentials"}), 401
 
@@ -30,10 +29,9 @@ class AuthController:
     @staticmethod
     def get_me():
         """Handles GET /auth/me payload response."""
-        # g.current_user was extracted and populated by login_required middleware
         if not hasattr(g, 'current_user') or not g.current_user:
             return jsonify({"success": False, "error": "Token missing or invalid"}), 401
-            
+
         return jsonify({
             "success": True,
             "user": g.current_user

@@ -11,19 +11,18 @@ class AuthService:
 
         with get_session() as session:
             user = session.query(User).filter(User.username == username, User.is_active == True).first()
-            
+
             if not user or not verify_password(password, user.password_hash):
                 raise ValueError("Invalid credentials")
-            
-            # Extract attributes before the session closes
+
             token = generate_token(user.id, user.role)
             user_data = {
                 "id": str(user.id),
-                "name": user.name, # Assuming your schema has a display name
+                "name": user.name,
                 "username": user.username,
                 "role": user.role
             }
-            
+
         return {"token": token, "user": user_data}
 
     @staticmethod
@@ -32,17 +31,19 @@ class AuthService:
         try:
             payload = decode_token(token)
             user_id = payload.get("user_id")
-            
+
             with get_session() as session:
                 user = session.query(User).filter(User.id == user_id, User.is_active == True).first()
                 if not user:
                     raise ValueError("Token missing or invalid")
-                
+
                 return {
                     "id": str(user.id),
                     "name": user.name,
                     "username": user.username,
                     "role": user.role
                 }
+        except ValueError:
+            raise
         except Exception:
             raise ValueError("Token missing or invalid")

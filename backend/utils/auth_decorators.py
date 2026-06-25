@@ -2,6 +2,7 @@ from functools import wraps
 from flask import request, jsonify, g
 from backend.services.auth_service import AuthService
 
+
 def login_required(f):
     """
     Decorator to verify valid JWT presence in the Authorization Header.
@@ -10,24 +11,27 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get('Authorization')
-        
+
         # Check if header exists and follows the 'Bearer <token>' format
         if not auth_header or not auth_header.startswith('Bearer '):
             return jsonify({"success": False, "error": "Token missing or invalid"}), 401
-            
+
         # Extract the token string
         token = auth_header.split(" ")[1]
-        user_data = AuthService.get_current_user_by_token(token)
-        
-        # If token is expired, invalid, or user doesn't exist anymore
-        if not user_data:
+
+        # verify_current_user raises ValueError if the token is missing,
+        # expired, malformed, or the user no longer exists / is inactive
+        try:
+            user_data = AuthService.verify_current_user(token)
+        except ValueError:
             return jsonify({"success": False, "error": "Token missing or invalid"}), 401
-            
+
         # Store user context globally in Flask 'g' for this request scope
         g.current_user = user_data
         return f(*args, **kwargs)
-        
+
     return decorated_function
+
 
 def roles_allowed(*roles):
     """
