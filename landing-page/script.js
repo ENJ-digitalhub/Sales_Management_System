@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LocalLedger — Landing Page Behaviour
+   RetailOS — Landing Page Behaviour
    No frameworks. Three jobs: mobile nav, the hero sync console demo,
    and the beta signup form.
    ========================================================================== */
@@ -162,10 +162,9 @@
 
   /* ---------------------------------------------------------------------
      3. Beta signup form
-        This is a static landing page with no backend wired up yet.
-        Replace the block marked below with a real submission
-        (e.g. POST to your /sync or signup endpoint) when one exists.
      --------------------------------------------------------------------- */
+  emailjs.init('oNZdWmbCiQOiu5Kgu');
+
   var betaForm = document.getElementById('betaForm');
   var formSuccess = document.getElementById('formSuccess');
 
@@ -178,23 +177,78 @@
       var willingPay = document.getElementById('willingPay');
 
       var valid = storeName.value.trim() && contactInfo.value.trim() && willingPay.value.trim();
-      if (!valid) {
-        betaForm.reportValidity();
-        return;
-      }
+      if (!valid) { betaForm.reportValidity(); return; }
 
-      // --- Wire this up to a real endpoint when one is available ---
-      var submission = {
-        storeName: storeName.value.trim(),
-        contactInfo: contactInfo.value.trim(),
-        willingPay: willingPay.value.trim(),
-        submittedAt: new Date().toISOString()
-      };
-      console.log('Beta signup captured (no backend wired yet):', submission);
-      // ---------------------------------------------------------------
+      var submitBtn = betaForm.querySelector('[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
 
-      betaForm.hidden = true;
-      if (formSuccess) formSuccess.hidden = false;
+      emailjs.send('service_zh2141t', 'template_6ysnzme', {
+        store_name: storeName.value.trim(),
+        contact_info: contactInfo.value.trim(),
+        willing_pay: willingPay.value.trim(),
+        submitted_at: new Date().toLocaleString()
+      })
+        .then(function () {
+          betaForm.hidden = true;
+          if (formSuccess) formSuccess.hidden = false;
+        })
+        .catch(function (err) {
+          console.error('EmailJS error:', err);
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Request a beta spot';
+          alert('Something went wrong. Please try again.');
+        });
     });
+  }
+
+  /* ---------------------------------------------------------------------
+     4. Screenshot carousel
+     --------------------------------------------------------------------- */
+  var gallery = document.querySelector('.shot-gallery');
+  var shotTrack = document.querySelector('.shot-track');
+  var shotSlides = document.querySelectorAll('.shot');
+  var shotDotsContainer = document.getElementById('shotDots');
+  var shotPrev = document.getElementById('shotPrev');
+  var shotNext = document.getElementById('shotNext');
+  var shotIndex = 0;
+  var shotTotal = shotSlides.length;
+  var shotTimer = null;
+
+  if (shotTrack && shotTotal > 0) {
+
+    // Build dots
+    shotSlides.forEach(function (_, i) {
+      var dot = document.createElement('button');
+      dot.className = 'shot-dot' + (i === 0 ? ' is-active' : '');
+      dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+      dot.addEventListener('click', function () { goToShot(i); resetShotTimer(); });
+      shotDotsContainer.appendChild(dot);
+    });
+
+    function updateShot() {
+      shotTrack.style.transform = 'translateX(-' + (shotIndex * 100) + '%)';
+      document.querySelectorAll('.shot-dot').forEach(function (d, i) {
+        d.classList.toggle('is-active', i === shotIndex);
+      });
+    }
+
+    function goToShot(n) {
+      shotIndex = (n + shotTotal) % shotTotal;
+      updateShot();
+    }
+
+    function nextShot() { goToShot(shotIndex + 1); }
+    function prevShot() { goToShot(shotIndex - 1); }
+
+    function resetShotTimer() {
+      clearInterval(shotTimer);
+      shotTimer = setInterval(nextShot, 5000);
+    }
+
+    if (shotPrev) shotPrev.addEventListener('click', function () { prevShot(); resetShotTimer(); });
+    if (shotNext) shotNext.addEventListener('click', function () { nextShot(); resetShotTimer(); });
+
+    resetShotTimer();
   }
 })();

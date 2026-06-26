@@ -1,426 +1,541 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LocalLedger — Run Your Store Without Needing the Internet</title>
-<meta name="description" content="LocalLedger turns the PC you already own into your store's private server. Staff phones connect over your shop Wi-Fi, sales record instantly, and nothing depends on a network signal you can't control.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RetailOS — Run Your Store Without Needing the Internet</title>
+  <meta name="description"
+    content="RetailOS turns the PC you already own into your store's private server. Staff phones connect over your shop Wi-Fi, sales record instantly, and nothing depends on a network signal you can't control.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-<!-- ================= HEADER ================= -->
-<header class="site-header" id="siteHeader">
-  <div class="container header-inner">
-    <a href="#hero" class="logo" aria-label="LocalLedger home">
-      <svg class="logo-mark" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-        <rect x="2" y="6" width="11" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
-        <circle cx="22" cy="14" r="4" stroke="currentColor" stroke-width="2"/>
-        <path d="M13.5 14H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 3.2"/>
-      </svg>
-      <span>LocalLedger</span>
-    </a>
-
-    <nav class="main-nav" id="mainNav" aria-label="Primary">
-      <a href="#problem">Problem</a>
-      <a href="#features">Features</a>
-      <a href="#how-it-works">How it works</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#faq">FAQ</a>
-    </nav>
-
-    <div class="header-actions">
-      <a href="#cta" class="btn btn-primary btn-small">Join the beta</a>
-      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </div>
-</header>
-
-<main id="main">
-
-  <!-- ================= HERO ================= -->
-  <section class="hero" id="hero">
-    <div class="container hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow">› Offline-first sales &amp; inventory system</p>
-        <h1>Run your store's books even when the internet doesn't show up.</h1>
-        <p class="hero-sub">LocalLedger turns the PC you already own into your store's private server. Staff phones connect over your own shop Wi-Fi, sales record instantly, and nothing about your books depends on a network signal you don't control.</p>
-        <div class="hero-actions">
-          <a href="#cta" class="btn btn-primary">Reserve a beta spot</a>
-          <a href="#how-it-works" class="btn btn-ghost">See how it works</a>
-        </div>
-        <p class="hero-trust">Built for provision stores &amp; supermarkets. Early access limited to the first 5 stores.</p>
-      </div>
-
-      <div class="hero-visual">
-        <div class="console" role="group" aria-label="Live demo of LocalLedger's offline sync console">
-          <div class="console-bar">
-            <span class="console-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-            <span class="console-title">STORE-PC · LOCAL SERVER</span>
-            <span class="status-pill is-online" id="statusPill">● ONLINE</span>
-          </div>
-          <div class="console-body" id="consoleLog" aria-live="polite"></div>
-          <div class="console-foot">
-            <button class="btn btn-mini" id="wifiToggle" type="button">Simulate Wi-Fi drop</button>
-            <span class="console-caption">Try it — see what happens when the network disappears.</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= PROBLEM ================= -->
-  <section class="section" id="problem">
-    <div class="container">
-      <p class="eyebrow">› The problem</p>
-      <h2>Most stores are still running on hope and a notebook.</h2>
-      <div class="card-grid card-grid-3">
-        <article class="card">
-          <span class="card-tag">Manual bookkeeping</span>
-          <p>Paper records get lost, miscounted, or rewritten after the fact. There's no real way to know what actually happened on the shop floor today.</p>
-        </article>
-        <article class="card">
-          <span class="card-tag">Excel limitations</span>
-          <p>Spreadsheets don't stop two staff from editing the same stock count at once, don't show who changed what, and fall apart the moment a formula breaks.</p>
-        </article>
-        <article class="card">
-          <span class="card-tag">Internet dependency</span>
-          <p>Most POS apps stop working the second your data bundle finishes or the router loses power. Sales shouldn't have to pause for a network problem.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= SOLUTION ================= -->
-  <section class="section section-soft" id="solution">
-    <div class="container solution-grid">
-      <div>
-        <p class="eyebrow">› The solution</p>
-        <h2>One PC. One source of truth. Every phone in the shop connected to it.</h2>
-        <p class="lead">LocalLedger installs on a PC inside your store and becomes the one place every sale, price and stock count actually lives. Staff phones connect over the shop's own Wi-Fi and record sales straight from the counter. If the Wi-Fi or the internet ever drops, every phone keeps working — and quietly catches the PC up the moment the connection is back.</p>
-        <p class="lead">No cloud subscription required just to keep selling.</p>
-      </div>
-      <ul class="solution-points">
-        <li><span class="point-mark" aria-hidden="true">✓</span>The store PC is the only record that counts — staff phones never argue with each other.</li>
-        <li><span class="point-mark" aria-hidden="true">✓</span>Sales keep recording with no Wi-Fi and no mobile data at all.</li>
-        <li><span class="point-mark" aria-hidden="true">✓</span>Every action is tied to the staff member who did it, automatically.</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ================= FEATURES ================= -->
-  <section class="section" id="features">
-    <div class="container">
-      <p class="eyebrow">› What you get</p>
-      <h2>Built around the way small stores actually run.</h2>
-
-      <div class="feature-list">
-        <article class="feature-row">
-          <div class="feature-icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 4h14v16l-3.5-2-3.5 2-3.5-2L5 20V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          </div>
-          <div class="feature-copy">
-            <h3>Report-ready, every single day</h3>
-            <p>Every sale, restock and edit is already organized into the reports your store needs — daily totals, monthly summaries, who sold what. No manual tallying at closing time.</p>
-          </div>
-        </article>
-
-        <article class="feature-row">
-          <div class="feature-icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 8a13 13 0 0 1 18 0M6.5 11.5a8 8 0 0 1 11 0M10 15a3.2 3.2 0 0 1 4 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="19" r="1.2" fill="currentColor"/><path d="M3 3l18 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          </div>
-          <div class="feature-copy">
-            <h3>Offline-first, not offline-sometimes</h3>
-            <p>Staff can keep selling, scanning carts and totaling sales with zero internet and zero shop Wi-Fi. The moment a connection returns, everything syncs back to the store PC on its own.</p>
-          </div>
-        </article>
-
-        <article class="feature-row">
-          <div class="feature-icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 6h12M4 11h16M4 16h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M19 14l1.6 1.6L17 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="feature-copy">
-            <h3>Replaces the notebook under the counter</h3>
-            <p>Every transaction is timestamped, attributed to the staff member who made it, and stored permanently — so it's never your handwriting standing between you and your money.</p>
-          </div>
-        </article>
-
-        <article class="feature-row">
-          <div class="feature-icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="7" height="7" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="4" width="7" height="7" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="15" width="7" height="5" rx="1.2" stroke="currentColor" stroke-width="1.6"/><rect x="14" y="15" width="7" height="5" rx="1.2" stroke="currentColor" stroke-width="1.6"/></svg>
-          </div>
-          <div class="feature-copy">
-            <h3>Multiple stores, one view <span class="badge badge-roadmap">Roadmap</span></h3>
-            <p>LocalLedger's architecture is being built to grow from a single shop into managing several store locations from one dashboard — without changing how your staff use it day to day. Not part of the current beta release.</p>
-          </div>
-        </article>
-
-        <article class="feature-row">
-          <div class="feature-icon" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c1-3.6 4-5.5 7-5.5s6 1.9 7 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M16.5 5.5l1.4 1.4L21 3.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="feature-copy">
-            <h3>Built-in accountability</h3>
-            <p>Every login, sale, edit and stock change is logged by name and time. You can see exactly what happened on the shop floor without standing over anyone's shoulder.</p>
-          </div>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= HOW IT WORKS ================= -->
-  <section class="section section-soft" id="how-it-works">
-    <div class="container">
-      <p class="eyebrow">› How it works</p>
-      <h2>From box to first sale in four steps.</h2>
-      <ol class="steps">
-        <li class="step">
-          <span class="step-index">00</span>
-          <h3>Install LocalLedger on the store PC</h3>
-          <p>One setup, run once on the computer that stays in the shop. This PC becomes your store's private server — no internet required to do this.</p>
-        </li>
-        <li class="step">
-          <span class="step-index">01</span>
-          <h3>Connect staff phones to the shop Wi-Fi</h3>
-          <p>Any Android phone on the same local network can reach the store PC instantly. No app store account, no data bundle needed.</p>
-        </li>
-        <li class="step">
-          <span class="step-index">02</span>
-          <h3>Staff record sales from their phones</h3>
-          <p>Add items to a cart, pick a payment method, complete the sale. It's recorded against that staff member automatically.</p>
-        </li>
-        <li class="step">
-          <span class="step-index">03</span>
-          <h3>Reports and stock update on their own</h3>
-          <p>Online or offline, every sale feeds straight into your stock levels and daily reports — no extra step at closing time.</p>
-        </li>
-      </ol>
-    </div>
-  </section>
-
-  <!-- ================= SCREENSHOTS ================= -->
-  <section class="section" id="screenshots">
-    <div class="container">
-      <p class="eyebrow">› Inside LocalLedger</p>
-      <h2>A simple interface, built to be used standing up at a counter.</h2>
-      <div class="shot-grid">
-        <figure class="shot shot-tall">
-          <img src="img/moblie-sales-screen.png" alt="Mobile sales screen on an Android phone in dark mode with an orange accent colour. A search bar and category filter sit at the top, followed by a scrollable grid of product cards each showing a name, price and stock count. Below, a sticky cart panel lists three added items with quantity steppers, a running total, and a large orange 'Complete Sale' button pinned to the bottom of the screen.">
-          <figcaption>Sales screen — built for one-handed use at the counter</figcaption>
-        </figure>
-        <figure class="shot">
-          <img src="img/inventory-list.png" alt="Inventory list screen showing a vertical table of products with columns for product name, selling price and stock quantity. One row near the bottom is highlighted with a small amber warning icon next to a low stock count of 2 units. A floating circular orange button with a plus icon sits in the bottom right corner for adding a new product.">
-          <figcaption>Inventory list with low-stock highlighting</figcaption>
-        </figure>
-        <figure class="shot">
-          <img src="img/admin-report-dashboard.png" alt="Admin reports dashboard on a desktop-width screen showing three summary cards at the top for today's total sales, total profit and number of transactions, followed by a simple bar chart comparing daily sales across the past seven days, and a small table below listing each staff member alongside their individual sales total for the day.">
-          <figcaption>Daily reports — totals, profit and staff performance</figcaption>
-        </figure>
-        <figure class="shot">
-          <img src="img/offilne-sync-component.png" alt="Close-up of the offline sync indicator component as it would appear inside the mobile app: a small rounded status pill reading 'Not Synced' in amber sits beside a sale entry in a transaction history list, with a secondary row showing a second sale already marked 'Synced' in green with a checkmark icon, illustrating how unsynced and synced records are distinguished in the interface.">
-          <figcaption>Clear sync status on every transaction</figcaption>
-        </figure>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= BENEFITS ================= -->
-  <section class="section section-soft" id="benefits">
-    <div class="container">
-      <p class="eyebrow">› Why it matters</p>
-      <h2>What changes for you, not just your software.</h2>
-      <div class="card-grid card-grid-3 benefits-grid">
-        <article class="card card-flat"><h3>Stop losing money to stock you can't account for</h3></article>
-        <article class="card card-flat"><h3>Spend less time at closing — reports build themselves</h3></article>
-        <article class="card card-flat"><h3>Catch problems early instead of at month-end</h3></article>
-        <article class="card card-flat"><h3>Keep selling no matter what the network is doing</h3></article>
-        <article class="card card-flat"><h3>Know exactly who did what, without asking</h3></article>
-        <article class="card card-flat"><h3>Run the shop from your phone, not a drawer of receipts</h3></article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= MARKET VALIDATION ================= -->
-  <section class="section" id="validation">
-    <div class="container validation-inner">
-      <p class="eyebrow">› Where this stands today</p>
-      <h2>We asked real store owners before we asked you.</h2>
-      <p class="lead">Before this page existed, we spoke with shop owners about how they currently track sales and stock. Three real stores have already reached out asking to be early users of LocalLedger — without seeing a single ad. The beta program below is how we're turning that interest into our first real deployments.</p>
-    </div>
-  </section>
-
-  <!-- ================= ABOUT ================= -->
-  <section class="section section-soft" id="about">
-    <div class="container about-inner">
-      <p class="eyebrow">› About ENJ0Y</p>
-      <h2>Built by ENJ0Y</h2>
-      <p class="lead">LocalLedger is built by ENJ0Y, a small team building practical software for stores the rest of the software industry tends to overlook — businesses dealing with unreliable power, unreliable internet, and zero patience for software that gets in the way of selling. The system is built by Ekwere Noble and Swingle Noble.</p>
-    </div>
-  </section>
-
-  <!-- ================= PRICING ================= -->
-  <section class="section" id="pricing">
-    <div class="container">
-      <p class="eyebrow">› Pricing</p>
-      <h2>Simple enough to explain on a phone call.</h2>
-      <p class="lead lead-narrow">Final pricing for each tier is being shaped directly by conversations with our first 10 beta stores — tell us what's fair below and it helps set the number for everyone after you.</p>
-
-      <div class="card-grid card-grid-3 pricing-grid">
-        <article class="price-card">
-          <h3>Phone Based</h3>
-          <p class="price-tag">One-time setup fee</p>
-          <p class="price-desc">Run your entire system from your phone. Perfect for small shops, kiosks, and single-owner businesses.</p>
-          <ul class="price-list">
-            <li>Sales &amp; inventory management</li>
-            <li>Offline-first on every device</li>
-            <li>Cheap, Portable &amp; Easy to Use.</li>
-          </ul>
-          <a href="#cta" class="btn btn-outline btn-block">Join the beta</a>
-        </article>
-
-        <article class="price-card price-card-highlight">
-          <span class="badge badge-accent">Most asked about</span>
-          <h3>Computer Based</h3>
-          <p class="price-tag">One-time licence + support</p>
-          <p class="price-desc">Run from a laptop or desktop. Faster, more stable, and built for shops with staff and higher daily sales.</p>
-          <ul class="price-list">
-            <li>Everything in Phone Based</li>
-            <li>Software updates included</li>
-            <li></li>
-          </ul>
-          <a href="#cta" class="btn btn-primary btn-block">Join the beta</a>
-        </article>
-
-        <article class="price-card">
-          <h3>Dedicated Setup</h3>
-          <p class="price-tag">Custom — talk to us</p>
-          <p class="price-desc">For supermarkets and high-volume businesses. Built for speed, multiple counters, and future expansion.</p>
-          <ul class="price-list">
-            <li>Everything in Computer Based</li>
-            <li>Multi-counter setup guidance</li>
-            <li>First access to multi-store tools</li>
-          </ul>
-          <a href="#cta" class="btn btn-outline btn-block">Talk to us</a>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= CTA ================= -->
-  <section class="section cta-section" id="cta">
-    <div class="container cta-inner">
-      <p class="eyebrow">› Beta access</p>
-      <h2>We're onboarding the first 10 stores. That's it.</h2>
-      <p class="lead">Goal: find 10 stores willing to run LocalLedger early, tell us what it's worth to them, and help shape final pricing before public launch. No payment is taken on this form.</p>
-
-      <form class="beta-form" id="betaForm" novalidate>
-        <div class="form-row">
-          <label for="storeName">Store name</label>
-          <input type="text" id="storeName" name="storeName" placeholder="e.g. Grace Provisions" required>
-        </div>
-        <div class="form-row">
-          <label for="contactInfo">Contact info (phone or email)</label>
-          <input type="text" id="contactInfo" name="contactInfo" placeholder="e.g. 080xxxxxxxx or you@store.com" required>
-        </div>
-        <div class="form-row">
-          <label for="willingPay">What would you be willing to pay for this?</label>
-          <input type="text" id="willingPay" name="willingPay" placeholder="e.g. ₦15,000 one-time, or 'not sure yet'" required>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">Request a beta spot</button>
-        <p class="form-note">Limited to the first 5 stores. We'll reach out directly using the contact info you provide.</p>
-      </form>
-
-      <div class="form-success" id="formSuccess" hidden>
-        <h3>Got it — thank you.</h3>
-        <p>Your store is on the early access list. Someone from ENJ0Y will reach out using the contact info you shared.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= FAQ ================= -->
-  <section class="section" id="faq">
-    <div class="container">
-      <p class="eyebrow">› Questions</p>
-      <h2>Frequently asked questions</h2>
-      <div class="faq-list">
-        <details class="faq-item">
-          <summary>Do I need internet to use LocalLedger?</summary>
-          <p>No. The core system runs entirely on the PC inside your store. Internet is only relevant for possible future cloud features — it is not required to record sales, manage stock, or generate reports today.</p>
-        </details>
-        <details class="faq-item">
-          <summary>What happens if a phone loses connection mid-sale?</summary>
-          <p>The sale is saved on the phone and marked as pending. LocalLedger retries the sync automatically once the connection comes back, and uses a unique ID per transaction so the same sale is never recorded twice.</p>
-        </details>
-        <details class="faq-item">
-          <summary>Can two staff oversell the same item while both are offline?</summary>
-          <p>Both sales are accepted locally so neither staff member is blocked mid-sale. When both reconnect, the store PC checks real stock levels and flags any conflicting sale for a manager to review and resolve — it's never silently ignored.</p>
-        </details>
-        <details class="faq-item">
-          <summary>Do I need special POS hardware?</summary>
-          <p>No. LocalLedger runs on a regular PC and ordinary Android phones connected to the same Wi-Fi network. No proprietary terminals required.</p>
-        </details>
-        <details class="faq-item">
-          <summary>Is my data backed up anywhere besides the store PC?</summary>
-          <p>In the current beta, your data lives on your store PC — that's the whole point of not depending on anyone else's server. Cloud backup and remote access are on our future roadmap, not part of this release.</p>
-        </details>
-        <details class="faq-item">
-          <summary>How many staff or devices can connect at once?</summary>
-          <p>As many as your shop Wi-Fi can support. There's no artificial device limit built into the core system.</p>
-        </details>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<!-- ================= FOOTER ================= -->
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <div class="footer-brand">
-      <a href="#hero" class="logo">
-        <svg class="logo-mark" width="24" height="24" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-          <rect x="2" y="6" width="11" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
-          <circle cx="22" cy="14" r="4" stroke="currentColor" stroke-width="2"/>
-          <path d="M13.5 14H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="1 3.2"/>
+  <!-- ================= HEADER ================= -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="#hero" class="logo" aria-label="RetailOS home">
+        <svg class="logo-mark" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <rect x="2" y="6" width="11" height="16" rx="2" stroke="currentColor" stroke-width="2" />
+          <circle cx="22" cy="14" r="4" stroke="currentColor" stroke-width="2" />
+          <path d="M13.5 14H18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-dasharray="1 3.2" />
         </svg>
-        <span>LocalLedger</span>
+        <span>RetailOS</span>
       </a>
-      <p>Offline-first sales &amp; inventory for stores that can't afford to wait on the internet.</p>
-      <p class="footer-company">A product by ENJ0Y</p>
-    </div>
 
-    <nav class="footer-nav" aria-label="Footer">
-      <div>
-        <h4>Product</h4>
+      <nav class="main-nav" id="mainNav" aria-label="Primary">
         <a href="#problem">Problem</a>
         <a href="#features">Features</a>
         <a href="#how-it-works">How it works</a>
         <a href="#pricing">Pricing</a>
-      </div>
-      <div>
-        <h4>Company</h4>
-        <a href="#about">About ENJ0Y</a>
-        <a href="#validation">Early traction</a>
         <a href="#faq">FAQ</a>
-      </div>
-      <div>
-        <h4>Get started</h4>
-        <a href="#cta">Join the beta</a>
-      </div>
-    </nav>
-  </div>
-  <div class="container footer-bottom">
-    <p>© 2026 ENJ0Y. LocalLedger is in early beta.</p>
-  </div>
-</footer>
+      </nav>
 
-<script src="script.js"></script>
+      <div class="header-actions">
+        <a href="#cta" class="btn btn-primary btn-small">Join the beta</a>
+        <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mainNav"
+          aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ================= HERO ================= -->
+    <section class="hero" id="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">› Offline-first sales &amp; inventory system</p>
+          <h1>Run your store's books even when the internet doesn't show up.</h1>
+          <p class="hero-sub">RetailOS turns the PC you already own into your store's private server. No cloud account.
+            No subscription server. The PC in your shop is the server — staff phones connect to it directly over your
+            shop's own Wi-Fi, sales record instantly, and nothing about your books depends on a network signal you don't
+            control.</p>
+          <div class="hero-actions">
+            <a href="#cta" class="btn btn-primary">Reserve a beta spot</a>
+            <a href="#how-it-works" class="btn btn-ghost">See how it works</a>
+          </div>
+          <p class="hero-trust">Built for provision stores &amp; supermarkets. Early access limited to the first 5
+            stores.</p>
+        </div>
+
+        <div class="hero-visual">
+          <div class="console" role="group" aria-label="Live demo of RetailOS's offline sync console">
+            <div class="console-bar">
+              <span class="console-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="console-title">STORE-PC · LOCAL SERVER</span>
+              <span class="status-pill is-online" id="statusPill">● ONLINE</span>
+            </div>
+            <div class="console-body" id="consoleLog" aria-live="polite"></div>
+            <div class="console-foot">
+              <button class="btn btn-mini" id="wifiToggle" type="button">Simulate Wi-Fi drop</button>
+              <span class="console-caption">Try it — see what happens when the network disappears.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PROBLEM ================= -->
+    <section class="section" id="problem">
+      <div class="container">
+        <p class="eyebrow">› The problem</p>
+        <h2>Most stores are still running on hope and a notebook.</h2>
+        <div class="card-grid card-grid-3">
+          <article class="card">
+            <span class="card-tag">Manual bookkeeping</span>
+            <p>Paper records get lost, miscounted, or rewritten after the fact. There's no real way to know what
+              actually happened on the shop floor today.</p>
+          </article>
+          <article class="card">
+            <span class="card-tag">Excel limitations</span>
+            <p>Spreadsheets don't stop two staff from editing the same stock count at once, don't show who changed what,
+              and fall apart the moment a formula breaks.</p>
+          </article>
+          <article class="card">
+            <span class="card-tag">Internet dependency</span>
+            <p>Most POS apps stop working the second your data bundle finishes or the router loses power. Sales
+              shouldn't have to pause for a network problem.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SOLUTION ================= -->
+    <section class="section section-soft" id="solution">
+      <div class="container solution-grid">
+        <div>
+          <p class="eyebrow">› The solution</p>
+          <h2>One PC. One source of truth. Every phone in the shop connected to it.</h2>
+          <p class="lead">RetailOS installs on a PC inside your store and becomes the one place every sale, price and
+            stock count actually lives. Staff phones connect over the shop's own Wi-Fi and record sales straight from
+            the counter. If the Wi-Fi or the internet ever drops, every phone keeps working — and quietly catches the PC
+            up the moment the connection is back.</p>
+          <p class="lead">No cloud subscription required just to keep selling.</p>
+        </div>
+        <ul class="solution-points">
+          <li><span class="point-mark" aria-hidden="true">✓</span>The store PC is the only record that counts — staff
+            phones never argue with each other.</li>
+          <li><span class="point-mark" aria-hidden="true">✓</span>Sales keep recording with no Wi-Fi and no mobile data
+            at all.</li>
+          <li><span class="point-mark" aria-hidden="true">✓</span>Every action is tied to the staff member who did it,
+            automatically.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= FEATURES ================= -->
+    <section class="section" id="features">
+      <div class="container">
+        <p class="eyebrow">› What you get</p>
+        <h2>Built around the way small stores actually run.</h2>
+
+        <div class="feature-list">
+          <article class="feature-row">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M5 4h14v16l-3.5-2-3.5 2-3.5-2L5 20V4Z" stroke="currentColor" stroke-width="1.6"
+                  stroke-linejoin="round" />
+                <path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="feature-copy">
+              <h3>Report-ready, every single day</h3>
+              <p>Every sale, restock and edit is already organized into the reports your store needs — daily totals,
+                monthly summaries, who sold what. No manual tallying at closing time.</p>
+            </div>
+          </article>
+
+          <article class="feature-row">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M3 8a13 13 0 0 1 18 0M6.5 11.5a8 8 0 0 1 11 0M10 15a3.2 3.2 0 0 1 4 0" stroke="currentColor"
+                  stroke-width="1.6" stroke-linecap="round" />
+                <circle cx="12" cy="19" r="1.2" fill="currentColor" />
+                <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="feature-copy">
+              <h3>Offline-first, not offline-sometimes</h3>
+              <p>Staff can keep selling, scanning carts and totaling sales with zero internet and zero shop Wi-Fi. The
+                moment a connection returns, everything syncs back to the store PC on its own.</p>
+            </div>
+          </article>
+
+          <article class="feature-row">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M4 6h12M4 11h16M4 16h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                <path d="M19 14l1.6 1.6L17 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </div>
+            <div class="feature-copy">
+              <h3>Replaces the notebook under the counter</h3>
+              <p>Every transaction is timestamped, attributed to the staff member who made it, and stored permanently —
+                so it's never your handwriting standing between you and your money.</p>
+            </div>
+          </article>
+
+          <article class="feature-row">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="4" width="7" height="7" rx="1.2" stroke="currentColor" stroke-width="1.6" />
+                <rect x="14" y="4" width="7" height="7" rx="1.2" stroke="currentColor" stroke-width="1.6" />
+                <rect x="3" y="15" width="7" height="5" rx="1.2" stroke="currentColor" stroke-width="1.6" />
+                <rect x="14" y="15" width="7" height="5" rx="1.2" stroke="currentColor" stroke-width="1.6" />
+              </svg>
+            </div>
+            <div class="feature-copy">
+              <h3>Multiple stores, one view <span class="badge badge-roadmap">Roadmap</span></h3>
+              <p>RetailOS's architecture is being built to grow from a single shop into managing several store locations
+                from one dashboard — without changing how your staff use it day to day. Not part of the current beta
+                release.</p>
+            </div>
+          </article>
+
+          <article class="feature-row">
+            <div class="feature-icon" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6" />
+                <path d="M5 20c1-3.6 4-5.5 7-5.5s6 1.9 7 5.5" stroke="currentColor" stroke-width="1.6"
+                  stroke-linecap="round" />
+                <path d="M16.5 5.5l1.4 1.4L21 3.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </div>
+            <div class="feature-copy">
+              <h3>Built-in accountability</h3>
+              <p>Every login, sale, edit and stock change is logged by name and time. You can see exactly what happened
+                on the shop floor without standing over anyone's shoulder.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HOW IT WORKS ================= -->
+    <section class="section section-soft" id="how-it-works">
+      <div class="container">
+        <p class="eyebrow">› How it works</p>
+        <h2>From box to first sale in four steps.</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-index">00</span>
+            <h3>Install RetailOS on the store PC</h3>
+            <p>One setup, run once on the computer that stays in the shop. This PC becomes your store's private server —
+              no internet required to do this.</p>
+          </li>
+          <li class="step">
+            <span class="step-index">01</span>
+            <h3>Connect staff phones to the shop Wi-Fi</h3>
+            <p>Any Android phone on the same local network can reach the store PC instantly. No app store account, no
+              data bundle needed.</p>
+          </li>
+          <li class="step">
+            <span class="step-index">02</span>
+            <h3>Staff record sales from their phones</h3>
+            <p>Add items to a cart, pick a payment method, complete the sale. It's recorded against that staff member
+              automatically.</p>
+          </li>
+          <li class="step">
+            <span class="step-index">03</span>
+            <h3>Reports and stock update on their own</h3>
+            <p>Online or offline, every sale feeds straight into your stock levels and daily reports — no extra step at
+              closing time.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================= SCREENSHOTS ================= -->
+    <section class="section" id="screenshots">
+      <div class="container">
+        <p class="eyebrow">› Inside RetailOS</p>
+        <h2>A simple interface, built to be used standing up at a counter.</h2>
+
+        <div class="shot-gallery">
+          <div class="shot-track">
+
+            <figure class="shot">
+              <div class="shot-placeholder">
+                <img src="img/mobile-sales-screen.png" alt="Mobile Sales Screen">
+              </div>
+              <figcaption>Sales screen — built for one-handed use at the counter</figcaption>
+            </figure>
+
+            <figure class="shot">
+              <div class="shot-placeholder">
+                <img src="img/inventory-list.png" alt="Inventory List Screen">
+              </div>
+              <figcaption>Inventory list with low-stock highlighting</figcaption>
+            </figure>
+
+            <figure class="shot">
+              <div class="shot-placeholder">
+                <img src="img/admin-report-dashboard.png" alt="Admin Reports Dashboard">
+              </div>
+              <figcaption>Daily reports — totals, profit and staff performance</figcaption>
+            </figure>
+
+            <figure class="shot">
+              <div class="shot-placeholder">
+                <img src="img/offilne-sync-component.png" alt="Offline Sync Status">
+              </div>
+              <figcaption>Clear sync status on every transaction</figcaption>
+            </figure>
+
+          </div>
+
+          <div class="shot-controls">
+            <button class="shot-btn" id="shotPrev" aria-label="Previous screenshot">&#8592;</button>
+            <div class="shot-dots" id="shotDots"></div>
+            <button class="shot-btn" id="shotNext" aria-label="Next screenshot">&#8594;</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= BENEFITS ================= -->
+    <section class="section section-soft" id="benefits">
+      <div class="container">
+        <p class="eyebrow">› Why it matters</p>
+        <h2>What changes for you, not just your software.</h2>
+        <div class="card-grid card-grid-3 benefits-grid">
+          <article class="card card-flat">
+            <h3>Stop losing money to stock you can't account for</h3>
+          </article>
+          <article class="card card-flat">
+            <h3>Spend less time at closing — reports build themselves</h3>
+          </article>
+          <article class="card card-flat">
+            <h3>Catch problems early instead of at month-end</h3>
+          </article>
+          <article class="card card-flat">
+            <h3>Keep selling no matter what the network is doing</h3>
+          </article>
+          <article class="card card-flat">
+            <h3>Know exactly who did what, without asking</h3>
+          </article>
+          <article class="card card-flat">
+            <h3>Run the shop from your phone, not a drawer of receipts</h3>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MARKET VALIDATION ================= -->
+    <section class="section" id="validation">
+      <div class="container validation-inner">
+        <p class="eyebrow">› Where this stands today</p>
+        <h2>We asked real store owners before we asked you.</h2>
+        <p class="lead">Before we wrote a single line of code, we sat down with owners of mini supermarkets and larger
+          retail stores to understand how they actually run their shops. They told us they're already using POS machines
+          — but still keeping paper notebooks on the side because they don't trust what the POS shows them. That's the
+          problem RetailOS is built to solve.</p>
+      </div>
+    </section>
+
+    <!-- ================= ABOUT ================= -->
+    <section class="section section-soft" id="about">
+      <div class="container about-inner">
+        <p class="eyebrow">› About KAVE</p>
+        <h2>Built by KAVE</h2>
+        <p class="lead">RetailOS is built by KAVE — a small team that started by talking to the people this system is
+          actually for. Mini supermarkets and larger retail stores in Nigeria that are already using POS machines, but
+          still keeping a paper notebook on the side because they don't fully trust what the machine tells them. These
+          are the stores the rest of the software industry tends to overlook. We're building the system that earns that
+          trust back.</p>
+      </div>
+    </section>
+
+    <!-- ================= PRICING ================= -->
+    <section class="section" id="pricing">
+      <div class="container">
+        <p class="eyebrow">› Pricing</p>
+        <h2>Simple enough to explain on a phone call.</h2>
+        <p class="lead lead-narrow">Final pricing for each tier is being shaped directly by conversations with our first
+          10 beta stores — tell us what's fair below and it helps set the number for everyone after you.</p>
+
+        <div class="card-grid card-grid-3 pricing-grid">
+          <article class="price-card">
+            <h3>Starter</h3>
+            <p class="price-tag">One-time setup fee</p>
+            <p class="price-desc">For a single small shop. Install on your PC, connect as many staff phones as you need,
+              keep using it for as long as you run the business.</p>
+            <ul class="price-list">
+              <li>Sales &amp; inventory management</li>
+              <li>Offline-first on every device</li>
+              <li>Daily &amp; monthly reports</li>
+            </ul>
+            <a href="#cta" class="btn btn-outline btn-block">Join the beta</a>
+          </article>
+
+          <article class="price-card price-card-highlight">
+            <span class="badge badge-accent">Most asked about</span>
+            <h3>Standard</h3>
+            <p class="price-tag">One-time licence + low annual support</p>
+            <p class="price-desc">For a shop that's growing — adds ongoing updates, support and priority fixes on top of
+              everything in Starter.</p>
+            <ul class="price-list">
+              <li>Everything in Starter</li>
+              <li>Software updates included</li>
+              <li>Direct support line to KAVE</li>
+            </ul>
+            <a href="#cta" class="btn btn-primary btn-block">Join the beta</a>
+          </article>
+
+          <article class="price-card">
+            <h3>Supermarket</h3>
+            <p class="price-tag">Custom — talk to us</p>
+            <p class="price-desc">For larger supermarkets with multiple counters and higher transaction volume. Pricing
+              scoped to your setup.</p>
+            <ul class="price-list">
+              <li>Everything in Standard</li>
+              <li>Multi-counter setup guidance</li>
+              <li>First access to multi-store tools</li>
+            </ul>
+            <a href="#cta" class="btn btn-outline btn-block">Talk to us</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CTA ================= -->
+    <section class="section cta-section" id="cta">
+      <div class="container cta-inner">
+        <p class="eyebrow">› Beta access</p>
+        <h2>We're onboarding the first 10 stores. That's it.</h2>
+        <p class="lead">Goal: find 10 stores willing to run RetailOS early, tell us what it's worth to them, and help
+          shape final pricing before public launch. No payment is taken on this form.</p>
+
+        <form class="beta-form" id="betaForm" novalidate>
+          <div class="form-row">
+            <label for="storeName">Store name</label>
+            <input type="text" id="storeName" name="storeName" placeholder="e.g. Grace Provisions" required>
+          </div>
+          <div class="form-row">
+            <label for="contactInfo">Contact info (phone or email)</label>
+            <input type="text" id="contactInfo" name="contactInfo" placeholder="e.g. 080xxxxxxxx or you@store.com"
+              required>
+          </div>
+          <div class="form-row">
+            <label for="willingPay">What would you be willing to pay for this?</label>
+            <input type="text" id="willingPay" name="willingPay" placeholder="e.g. ₦15,000 one-time, or 'not sure yet'"
+              required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Request a beta spot</button>
+          <p class="form-note">Limited to the first 10 stores. We'll reach out directly using the contact info you
+            provide.</p>
+        </form>
+
+        <div class="form-success" id="formSuccess" hidden>
+          <h3>Got it — thank you.</h3>
+          <p>Your store is on the early access list. Someone from KAVE will reach out using the contact info you shared.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FAQ ================= -->
+    <section class="section" id="faq">
+      <div class="container">
+        <p class="eyebrow">› Questions</p>
+        <h2>Frequently asked questions</h2>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>Do I need internet to use RetailOS?</summary>
+            <p>No. The core system runs entirely on the PC inside your store. Internet is only relevant for possible
+              future cloud features — it is not required to record sales, manage stock, or generate reports today.</p>
+          </details>
+          <details class="faq-item">
+            <summary>What happens if a phone loses connection mid-sale?</summary>
+            <p>The sale is saved on the phone and marked as pending. RetailOS retries the sync automatically once the
+              connection comes back, and uses a unique ID per transaction so the same sale is never recorded twice.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Can two staff oversell the same item while both are offline?</summary>
+            <p>Both sales are accepted locally so neither staff member is blocked mid-sale. When both reconnect, the
+              store PC checks real stock levels and flags any conflicting sale for a manager to review and resolve —
+              it's never silently ignored.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Do I need special POS hardware?</summary>
+            <p>No. RetailOS runs on a regular PC and ordinary Android phones connected to the same Wi-Fi network. No
+              proprietary terminals required.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Is my data backed up anywhere besides the store PC?</summary>
+            <p>In the current beta, your data lives on your store PC — that's the whole point of not depending on anyone
+              else's server. Cloud backup and remote access are on our future roadmap, not part of this release.</p>
+          </details>
+          <details class="faq-item">
+            <summary>How many staff or devices can connect at once?</summary>
+            <p>As many as your shop Wi-Fi can support. There's no artificial device limit built into the core system.
+            </p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="#hero" class="logo">
+          <svg class="logo-mark" width="24" height="24" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <rect x="2" y="6" width="11" height="16" rx="2" stroke="currentColor" stroke-width="2" />
+            <circle cx="22" cy="14" r="4" stroke="currentColor" stroke-width="2" />
+            <path d="M13.5 14H18" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-dasharray="1 3.2" />
+          </svg>
+          <span>RetailOS</span>
+        </a>
+        <p>Offline-first sales &amp; inventory for stores that can't afford to wait on the internet.</p>
+        <p class="footer-company">A product by KAVE</p>
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer">
+        <div>
+          <h4>Product</h4>
+          <a href="#problem">Problem</a>
+          <a href="#features">Features</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#pricing">Pricing</a>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <a href="#about">About KAVE</a>
+          <a href="#validation">Early traction</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div>
+          <h4>Get started</h4>
+          <a href="#cta">Join the beta</a>
+        </div>
+      </nav>
+    </div>
+    <div class="container footer-bottom">
+      <p>© 2026 KAVE. RetailOS is in early beta.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </body>
+
 </html>
