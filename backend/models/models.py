@@ -22,11 +22,6 @@ class Product(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     updated_at: Mapped[datetime] = mapped_column(DateTime,default=datetime.now , onupdate=datetime.now)
     pass
-
-<<<<<<< HEAD
-=======
-
->>>>>>> a42e0680ca5389a118a3e26d2010d39f54282c44
 class SyncQueue(Base):
     """Defines the SyncQueue model"""
     __tablename__ = "sync_queue"
