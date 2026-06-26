@@ -190,8 +190,12 @@
         submitted_at: new Date().toLocaleString()
       })
         .then(function () {
+          betaForm.reset();
           betaForm.hidden = true;
-          if (formSuccess) formSuccess.hidden = false;
+          if (formSuccess){
+            submitBtn.textContent = 'Sent'
+            formSuccess.hidden = false;
+          } 
         })
         .catch(function (err) {
           console.error('EmailJS error:', err);
