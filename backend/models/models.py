@@ -24,8 +24,8 @@ class Product(Base):
     pass
 
 
-"""Defines the SyncQueue model"""
 class SyncQueue(Base):
+    """Defines the SyncQueue model"""
     __tablename__ = "sync_queue"
 
     id: Mapped[str] = mapped_column(primary_key=True)
@@ -39,3 +39,4 @@ class SyncQueue(Base):
     last_attempt_at: Mapped[datetime | None] = mapped_column(DateTime)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
     pass
+

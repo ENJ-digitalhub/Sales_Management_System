@@ -5,45 +5,89 @@
 ```
 /sales-management-system
 │
-├── /backend
-│   ├── /routes
-│   ├── /controllers
-│   ├── /services
-│   ├── /models
-│   ├── /sync
-│   ├── /utils
+├── .env.example
+├── backend/
 │   ├── app.py
-│   └── config.py
+│   ├── config.py
+│   ├── database.py
+│   ├── extensions.py
+│   ├── init_db.py
+│   ├── controllers/
+│   │   ├── _init_.py
+│   │   └── sales_controller.py
+│   ├── models/
+│   │   ├── _init_.py
+│   │   └── models.py
+│   ├── routes/
+│   │   ├── _init_.py
+│   │   └── sales.py
+│   ├── services/
+│   │   ├── _init_.py
+│   │   └── sales_service.py
+│   ├── sync/
+│   │   ├── __init__.py
+│   │   └── queue.py
+│   └── utils/
+│       ├── _init_.py
+│       └── validators.py
 │
-├── /frontend
-│   ├── /pages
-│   ├── /components
-│   ├── /modules
-│   ├── /services
-│   ├── /assets
-│   └── index.html
-│
-├── /database
-│   ├── schema.sql
-│   ├── seed.sql
-|   └── erd.diagram.drawio
-│
-├── /docs
-│   ├── README.md
-│   ├── EDGE_CASES.md
-│   ├── SYSTEM_DESIGN.md
-│   ├── DATABASE_SCHEMA.md
-│   ├── API_SPEC.md
-│   ├── SYNC_ENGINE.md
-│   ├── TEST_PLAN.md
-│   └── PROJECT_STRUCTURE.md
-│
-├── /cli
+├── cli/
+│   ├── __init__.py
 │   └── cli.py
 │
-├── requirements.txt
-└── main.py
+├── database/
+│   ├── db.py
+│   ├── erd.diagram.drawio
+│   ├── schema.sql
+│   ├── seed.sql
+│   └── shop.db
+│
+├── docs/
+│   ├── __init__.py
+│   ├── API_SPEC.md
+│   ├── CHANGELOG.md
+│   ├── DATABASE_SCHEMA.md
+│   ├── EDGE_CASE.md
+│   ├── FRONTEND_SPEC.md
+│   ├── QUICKSTART.md
+│   ├── SYNC_ENGINE.md
+│   ├── SYSTEM_DESIGN.md
+│   ├── TEST_PLAN.md
+│   ├── PROJECT_STRUCTURE.md
+│   └── plan/
+│
+├── frontend/
+│   ├── __init__.py
+│   ├── index.html
+│   ├── assets/
+│   │   ├── __init__.py
+│   │   └── styles.css
+│   ├── components/
+│   │   ├── __init__.py
+│   │   └── button.js
+│   ├── modules/
+│   │   ├── __init__.py
+│   │   └── auth.js
+│   ├── pages/
+│   │   ├── __init__.py
+│   │   ├── dashboard.html
+│   │   └── login.html
+│   └── services/
+│       ├── __init__.py
+│       └── api.js
+│
+├── landing-page/
+│   ├── index.html
+│   ├── script.js
+│   ├── style.css
+│   └── img/
+│
+├── main.py
+├── README.md
+└── requirements.txt
 ```
+
+> Note: generated `__pycache__` folders are not shown.
 
 ---
 
@@ -51,51 +95,81 @@
 
 ### `/backend`
 
-Core system logic lives here. Handles all business operations, validation, and data processing.
-
-#### `/routes`
-
-Defines API endpoints and request paths.
+Core backend functionality lives here. It contains API wiring and application services.
 
 #### `/controllers`
 
-Handles incoming requests and returns responses. Acts as bridge between routes and services.
+Children:
 
-#### `/services`
+* `_init_.py`
+* `sales_controller.py`
 
-Contains business logic:
-
-* sales processing
-* inventory updates
-* reporting calculations
+Handles request orchestration and delegates business logic to services.
 
 #### `/models`
 
-Defines database interaction layer (ORM or raw queries).
+Children:
+
+* `_init_.py`
+* `models.py`
+
+Defines data models and database interaction logic.
+
+#### `/routes`
+
+Children:
+
+* `_init_.py`
+* `sales.py`
+
+Defines API endpoints and request paths.
+
+#### `/services`
+
+Children:
+
+* `_init_.py`
+* `sales_service.py`
+
+Contains business logic such as sales processing, inventory updates, and reporting.
 
 #### `/sync`
 
-Implements offline sync engine logic:
+Children:
 
-* queue processing
-* retry handling
-* conflict resolution
+* `__init__.py`
+* `queue.py`
+
+Handles synchronization logic and background queue processing.
 
 #### `/utils`
 
-Helper functions:
+Children:
 
-* validators
-* formatters
-* shared utilities
+* `_init_.py`
+* `validators.py`
+
+Shared helper utilities, validators, and formatting logic.
 
 #### `app.py`
 
-Initializes backend app, middleware, and routes.
+Initializes the backend app, middleware, and route registration.
 
 #### `config.py`
 
-Stores environment configurations (ports, secrets, flags).
+Loads environment configuration and application settings.
+
+#### `database.py`
+
+Encapsulates database connection setup and helpers.
+
+#### `extensions.py`
+
+Registers Flask extensions and shared application resources.
+
+#### `init_db.py`
+
+Provides database initialization and seeding helpers.
 
 ---
 
@@ -103,105 +177,140 @@ Stores environment configurations (ports, secrets, flags).
 
 ### `/frontend`
 
-Handles user interface and interaction logic.
-
-#### `/pages`
-
-Each screen of the app:
-
-* login
-* dashboard
-* inventory
-* reports
-
-#### `/components`
-
-Reusable UI elements:
-
-* buttons
-* modals
-* cards
-* inputs
-
-#### `/modules`
-
-Feature-based logic:
-
-* auth
-* sales
-* inventory
-* sync handling
-
-#### `/services`
-
-Handles API calls to backend.
+Implements the main UI and client-side application logic.
 
 #### `/assets`
 
-Static files:
+Children:
 
-* CSS
-* images
-* icons
+* `__init__.py`
+* `styles.css`
+
+Contains static assets such as stylesheets and images used by the frontend.
+
+#### `/components`
+
+Children:
+
+* `__init__.py`
+* `button.js`
+
+Contains reusable UI components and widgets.
+
+#### `/modules`
+
+Children:
+
+* `__init__.py`
+* `auth.js`
+
+Contains feature-specific JavaScript logic.
+
+#### `/pages`
+
+Children:
+
+* `__init__.py`
+* `dashboard.html`
+* `login.html`
+
+Contains page templates for the app views.
+
+#### `/services`
+
+Children:
+
+* `__init__.py`
+* `api.js`
+
+Manages API calls between the frontend and backend.
 
 #### `index.html`
 
-Main entry point for the frontend.
+The main frontend entry point.
 
 ---
 
-## 4. 🗄️ Database Structure
+## 4. 🌐 Landing Page
+
+### `/landing-page`
+
+Contains a separate static marketing or landing page.
+
+#### Files
+
+* `index.html`
+* `script.js`
+* `style.css`
+
+#### `/img`
+
+Contains the Inmage asset we need.
+
+---
+
+## 5. 🗄️ Database Structure
 
 ### `/database`
 
-#### `schema.sql`
+Children:
 
-Defines all database tables and relationships.
+* `db.py`
+* `erd.diagram.drawio`
+* `schema.sql`
+* `seed.sql`
+* `shop.db`
 
-#### `seed.sql`
-
-Optional demo/test data for development.
+Manages the local database schema, seed data, and development database file.
 
 ---
 
-## 5. 📚 Documentation
+## 6. 📚 Documentation
 
 ### `/docs`
 
-Contains all system documentation:
+Contains project documentation and planning artifacts.
 
-* System design
-* API contracts
-* Edge cases
-* Testing strategy
+#### Files
+
+* `__init__.py`
+* `API_SPEC.md`
+* `CHANGELOG.md`
+* `DATABASE_SCHEMA.md`
+* `EDGE_CASE.md`
+* `FRONTEND_SPEC.md`
+* `QUICKSTART.md`
+* `SYNC_ENGINE.md`
+* `SYSTEM_DESIGN.md`
+* `TEST_PLAN.md`
+* `PROJECT_STRUCTURE.md`
+
+#### `/plan`
+
+Contains the plans to build the project.
 
 ---
 
-## 6. ⚙️ CLI Tools
+## 7. ⚙️ CLI Tools
 
 ### `/cli`
 
-Contains developer utilities:
+Children:
 
-#### `cli.py`
+* `__init__.py`
+* `cli.py`
 
-Commands:
-
-* setup
-* reset-db
-* seed-demo
+Contains developer CLI utilities.
 
 ---
 
-## 7. 🚀 Entry Points
+## 8. 🚀 Root Files
 
-#### `main.py`
+Children:
 
-Starts the backend server.
-
-#### `requirements.txt`
-
-Defines all Python dependencies.
+* `main.py`
+* `README.md`
+* `requirements.txt`
 
 ---
 
@@ -213,6 +322,6 @@ This structure enforces:
 * scalability
 * maintainability
 
-Each folder has a single responsibility.
+Each folder now has the real children listed for easy navigation.
 
 No logic should exist outside its designated layer.
