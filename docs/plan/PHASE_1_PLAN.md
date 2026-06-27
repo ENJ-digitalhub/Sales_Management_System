@@ -92,7 +92,7 @@ Covenant's route work is blocked on ENJ's `Product` model existing. **ENJ ships 
 - [x] `frontend/services/api.js` — fetch wrapper that calls `GET /products`
 - [x] A page that renders the product list returned from that call (name, price, stock — per `FRONTEND_SPEC.md §6.1`)
 - [x] Local offline-queue storage scaffold (IndexedDB, or localStorage as a Week-1 placeholder) with a record shape matching `SYNC_ENGINE.md §3` (`transaction_id`, `entity_type`, `operation`, `payload`, `status`, `retry_count`, `created_at`)
-- [ ] No sync/dispatch logic yet — just confirm you can write a record into the store and read it back
+- [x] No sync/dispatch logic yet — just confirm you can write a record into the store and read it back
 
 ### Socratic Task Spec
 **Objective:** Build the page shell, the API fetch layer, and the client-side offline queue *storage shape* — without implementing any real sync logic yet.
