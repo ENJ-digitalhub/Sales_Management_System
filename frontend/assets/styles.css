@@ -276,6 +276,56 @@ label {
   margin-bottom: 14px;
 }
 
+/* ---------- Products ---------- */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.product-category {
+  font-size: 0.78rem;
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-price,
+.product-stock {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  gap: 2px;
+}
+
+.stock-low span:last-child {
+  color: var(--warn);
+  font-weight: 600;
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 760px) {
   main { padding: 20px 16px; }
