@@ -87,7 +87,7 @@ Covenant's route work is blocked on ENJ's `Product` model existing. **ENJ ships 
 ## 👤 Goodness — Frontend + Offline Engine
 
 ### Execution Checklist
-- [ ] `frontend/index.html` shell + `frontend/assets/styles.css` base styles
+- [x] `frontend/index.html` shell + `frontend/assets/styles.css` base styles
 - [ ] `frontend/pages/login.html` — static layout only, no real auth wiring yet (per `FRONTEND_SPEC.md §1`)
 - [ ] `frontend/services/api.js` — fetch wrapper that calls `GET /products`
 - [ ] A page that renders the product list returned from that call (name, price, stock — per `FRONTEND_SPEC.md §6.1`)
