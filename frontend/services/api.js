@@ -51,7 +51,7 @@ const api = {
 
 /* ---------- Products ---------- */
 const ProductsAPI = {
-  getAll: () => api.get('/products'),
+  getAll: () => api.get('/api/products'),
 };
 
 export { api, ProductsAPI };

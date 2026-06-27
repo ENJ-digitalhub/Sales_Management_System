@@ -80,7 +80,7 @@
     async function loadProducts() {
       try {
         const data = await ProductsAPI.getAll();
-        renderProducts(data.products);
+        renderProducts(data.items);
       } catch (err) {
         loadingState.hidden = true;
         errorState.hidden = false;

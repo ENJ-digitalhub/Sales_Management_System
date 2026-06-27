@@ -116,11 +116,11 @@ Covenant's route work is blocked on ENJ's `Product` model existing. **ENJ ships 
 ## ✅ Definition of Done — Phase 1 (whole team)
 
 A Phase 1 feature is **only** done if:
-- [ ] Server boots with zero errors (`python main.py`)
-- [ ] `GET /products` returns real seeded data, not a hardcoded stub
-- [ ] The call path visibly passes through route → controller → service → model (not route → model directly)
-- [ ] Frontend renders that live data, not mock JSON
-- [ ] `cli.py setup` / `seed` / `reset` all run cleanly and are rerunnable
+- [x] Server boots with zero errors (`python main.py`)
+- [x] `GET /products` returns real seeded data, not a hardcoded stub
+- [x] The call path visibly passes through route → controller → service → model (not route → model directly)
+- [x] Frontend renders that live data, not mock JSON
+- [x] `cli.py setup` / `seed` / `reset` all run cleanly and are rerunnable
 
 **Out of scope this week (do not touch):** auth, sales creation, sync push/pull, conflict resolution, reports. Per the team's own rule — scope creep kills Phase 1.
 
