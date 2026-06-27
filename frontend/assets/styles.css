@@ -232,6 +232,50 @@ label {
 .mt-3 { margin-top: 24px; }
 .mt-4 { margin-top: 32px; }
 
+/* ---------- Login ---------- */
+.login-wrap {
+  min-height: calc(100vh - var(--header-h));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-card h2 {
+  margin-bottom: 6px;
+}
+
+.login-card p {
+  margin-bottom: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.login-error {
+  background: rgba(231, 76, 60, 0.12);
+  border: 1px solid #e74c3c;
+  border-radius: var(--radius-sm);
+  color: #e74c3c;
+  font-size: 0.88rem;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 760px) {
   main { padding: 20px 16px; }
