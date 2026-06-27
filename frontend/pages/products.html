@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products — Sales Management System</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <h1>Sales Management System</h1>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <div class="page-header mt-2">
+        <h2>Products</h2>
+      </div>
+
+      <div id="loadingState" class="text-muted mt-2">
+        Loading products...
+      </div>
+
+      <div id="errorState" class="login-error mt-2" hidden>
+        Could not load products. Check your connection to the store PC.
+      </div>
+
+      <div id="emptyState" class="text-muted mt-2" hidden>
+        No products found. Add your first product to get started.
+      </div>
+
+      <div id="productList" class="product-grid mt-3" hidden></div>
+
+    </div>
+  </main>
+
+  <script type="module" src="../services/api.js"></script>
+  <script type="module">
+    import { ProductsAPI } from '../services/api.js';
+
+    const loadingState = document.getElementById('loadingState');
+    const errorState   = document.getElementById('errorState');
+    const emptyState   = document.getElementById('emptyState');
+    const productList  = document.getElementById('productList');
+
+    function renderProducts(products) {
+      loadingState.hidden = true;
+
+      if (!products || products.length === 0) {
+        emptyState.hidden = false;
+        return;
+      }
+
+      productList.hidden = false;
+      productList.innerHTML = products.map(product => `
+        <article class="card product-card">
+          <div class="product-name">${product.name}</div>
+          <div class="product-category text-faint text-mono">
+            ${product.category || 'Uncategorised'}
+          </div>
+          <div class="product-meta mt-2">
+            <div class="product-price">
+              <span class="text-faint">Price</span>
+              <span class="text-accent">₦${Number(product.selling_price).toLocaleString()}</span>
+            </div>
+            <div class="product-stock ${product.stock_quantity <= 5 ? 'stock-low' : ''}">
+              <span class="text-faint">Stock</span>
+              <span>${product.stock_quantity} units</span>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    async function loadProducts() {
+      try {
+        const data = await ProductsAPI.getAll();
+        renderProducts(data.items);
+      } catch (err) {
+        loadingState.hidden = true;
+        errorState.hidden = false;
+        console.error('Failed to load products:', err);
+      }
+    }
+
+    loadProducts();
+  </script>
+
+</body>
+</html>

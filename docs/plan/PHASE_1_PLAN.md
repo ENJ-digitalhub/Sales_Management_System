@@ -87,12 +87,12 @@ Covenant's route work is blocked on ENJ's `Product` model existing. **ENJ ships 
 ## 👤 Goodness — Frontend + Offline Engine
 
 ### Execution Checklist
-- [ ] `frontend/index.html` shell + `frontend/assets/styles.css` base styles
-- [ ] `frontend/pages/login.html` — static layout only, no real auth wiring yet (per `FRONTEND_SPEC.md §1`)
-- [ ] `frontend/services/api.js` — fetch wrapper that calls `GET /products`
-- [ ] A page that renders the product list returned from that call (name, price, stock — per `FRONTEND_SPEC.md §6.1`)
-- [ ] Local offline-queue storage scaffold (IndexedDB, or localStorage as a Week-1 placeholder) with a record shape matching `SYNC_ENGINE.md §3` (`transaction_id`, `entity_type`, `operation`, `payload`, `status`, `retry_count`, `created_at`)
-- [ ] No sync/dispatch logic yet — just confirm you can write a record into the store and read it back
+- [x] `frontend/index.html` shell + `frontend/assets/styles.css` base styles
+- [x] `frontend/pages/login.html` — static layout only, no real auth wiring yet (per `FRONTEND_SPEC.md §1`)
+- [x] `frontend/services/api.js` — fetch wrapper that calls `GET /products`
+- [x] A page that renders the product list returned from that call (name, price, stock — per `FRONTEND_SPEC.md §6.1`)
+- [x] Local offline-queue storage scaffold (IndexedDB, or localStorage as a Week-1 placeholder) with a record shape matching `SYNC_ENGINE.md §3` (`transaction_id`, `entity_type`, `operation`, `payload`, `status`, `retry_count`, `created_at`)
+- [x] No sync/dispatch logic yet — just confirm you can write a record into the store and read it back
 
 ### Socratic Task Spec
 **Objective:** Build the page shell, the API fetch layer, and the client-side offline queue *storage shape* — without implementing any real sync logic yet.
@@ -116,11 +116,11 @@ Covenant's route work is blocked on ENJ's `Product` model existing. **ENJ ships 
 ## ✅ Definition of Done — Phase 1 (whole team)
 
 A Phase 1 feature is **only** done if:
-- [ ] Server boots with zero errors (`python main.py`)
-- [ ] `GET /products` returns real seeded data, not a hardcoded stub
-- [ ] The call path visibly passes through route → controller → service → model (not route → model directly)
-- [ ] Frontend renders that live data, not mock JSON
-- [ ] `cli.py setup` / `seed` / `reset` all run cleanly and are rerunnable
+- [x] Server boots with zero errors (`python main.py`)
+- [x] `GET /products` returns real seeded data, not a hardcoded stub
+- [x] The call path visibly passes through route → controller → service → model (not route → model directly)
+- [x] Frontend renders that live data, not mock JSON
+- [x] `cli.py setup` / `seed` / `reset` all run cleanly and are rerunnable
 
 **Out of scope this week (do not touch):** auth, sales creation, sync push/pull, conflict resolution, reports. Per the team's own rule — scope creep kills Phase 1.
 

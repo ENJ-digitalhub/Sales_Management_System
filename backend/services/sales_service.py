@@ -10,14 +10,14 @@ class SalesService:
         offset = (page - 1) * per_page
         
         # 1. Total row count query
-        total_count = db.execute(select(func.count(Product.id))).scalar() or 0
-        
+        total_count = db.execute(select(func.count(Product.id)).where(Product.is_active == True)).scalar() or 0   
+             
         # 2. Paginated data rows query
-        stmt = select(Product).offset(offset).limit(per_page)
+        stmt = select(Product).where(Product.is_active == True).offset(offset).limit(per_page)
         products = db.execute(stmt).scalars().all()
         
         return {
-            "items": [
+            "products": [
                 {
                     "id": p.id,
                     "name": p.name,
