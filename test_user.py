@@ -6,7 +6,7 @@ os.makedirs("database", exist_ok=True)
 DATABASE_URL = "sqlite:///database/shop.db"
 engine = create_engine(DATABASE_URL)
 
-print("🚀 Running pure schema injection...")
+print("🚀 Running schema injection...")
 
 with engine.begin() as connection:
     connection.execute(text("""
@@ -16,53 +16,27 @@ with engine.begin() as connection:
             username VARCHAR(50) NOT NULL UNIQUE,
             password_hash VARCHAR(255) NOT NULL,
             role VARCHAR(20) NOT NULL,
-            is_active BOOLEAN DEFAULT 1
+            phone_or_email VARCHAR(150),
+            account_name VARCHAR(150),
+            bank_name VARCHAR(100),
+            account_number VARCHAR(50),
+            pin_hash VARCHAR(255),
+            is_active BOOLEAN DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     """))
-    print("📋 Pure SQL: 'users' table verified/created successfully.")
+    print("📋 'users' table verified/created.")
 
-    try:
-        connection.execute(text("DELETE FROM users WHERE username = 'covenant';"))
-
-        connection.execute(
-            text("""
-                INSERT INTO users (name, username, password_hash, role, is_active)
-                VALUES (:name, :username, :password_hash, :role, :is_active);
-            """),
-            {
-                "name": "Covenant Johnson",
-                "username": "covenant",
-                "password_hash": hash_password("password123"),
-                "role": "admin",
-                "is_active": True
-            }
-        )
-        print("✅ Success! Test account 'covenant' with password 'password123' is ready.")
-
-    except Exception as e:
-        print(f"❌ Account injection failed: {e}")
-        import os
-from sqlalchemy import create_engine, text
-from backend.utils.security import hash_password
-
-os.makedirs("database", exist_ok=True)
-DATABASE_URL = "sqlite:///database/shop.db"
-engine = create_engine(DATABASE_URL)
-
-print("🚀 Running pure schema injection...")
-
-with engine.begin() as connection:
     connection.execute(text("""
-        CREATE TABLE IF NOT EXISTS users (
+        CREATE TABLE IF NOT EXISTS devices (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name VARCHAR(100) NOT NULL,
-            username VARCHAR(50) NOT NULL UNIQUE,
-            password_hash VARCHAR(255) NOT NULL,
-            role VARCHAR(20) NOT NULL,
-            is_active BOOLEAN DEFAULT 1
+            user_id INTEGER NOT NULL REFERENCES users(id),
+            device_name VARCHAR(150) NOT NULL,
+            is_active BOOLEAN DEFAULT 1,
+            last_seen_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     """))
-    print("📋 Pure SQL: 'users' table verified/created successfully.")
+    print("📋 'devices' table verified/created.")
 
     try:
         connection.execute(text("DELETE FROM users WHERE username IN ('covenant', 'testemployee');"))
@@ -73,22 +47,20 @@ with engine.begin() as connection:
                 "username": "covenant",
                 "password_hash": hash_password("password123"),
                 "role": "admin",
-                "is_active": True
             },
             {
                 "name": "Test Employee",
                 "username": "testemployee",
                 "password_hash": hash_password("password123"),
                 "role": "employee",
-                "is_active": True
             }
         ]
 
         for u in test_users:
             connection.execute(
                 text("""
-                    INSERT INTO users (name, username, password_hash, role, is_active)
-                    VALUES (:name, :username, :password_hash, :role, :is_active);
+                    INSERT INTO users (name, username, password_hash, role)
+                    VALUES (:name, :username, :password_hash, :role);
                 """),
                 u
             )

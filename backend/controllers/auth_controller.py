@@ -1,38 +1,43 @@
+# backend/controllers/auth_controller.py
 from flask import request, jsonify, g
+from backend.models.database import get_session
 from backend.services.auth_service import AuthService
+
 
 class AuthController:
 
     @staticmethod
     def login():
-        """Handles POST /auth/login payload verification."""
+        """Handles POST /auth/login."""
         data = request.get_json() or {}
-        username = data.get('username')
-        password = data.get('password')
-
-        if not username or not password:
-            return jsonify({"success": False, "error": "Invalid credentials"}), 401
+        username = data.get("username")
+        password = data.get("password")
+        device_id = data.get("device_id")
 
         try:
-            result = AuthService.authenticate_user(username, password)
-        except ValueError:
-            # Keep error payload matching locked contract exactly
-            return jsonify({"success": False, "error": "Invalid credentials"}), 401
+            with get_session() as session:
+                result = AuthService.login(session, username, password, device_id)
+        except ValueError as e:
+            return jsonify({"success": False, "message": str(e)}), 401
 
-        # Match exact locked payload contract for 200 OK
-        return jsonify({
-            "success": True,
-            "token": result["token"],
-            "user": result["user"]
-        }), 200
+        return jsonify({"success": True, **result}), 200
 
     @staticmethod
-    def get_me():
-        """Handles GET /auth/me payload response."""
-        if not hasattr(g, 'current_user') or not g.current_user:
-            return jsonify({"success": False, "error": "Token missing or invalid"}), 401
+    def logout():
+        """Handles POST /auth/logout."""
+        data = request.get_json() or {}
+        device_id = data.get("device_id")
 
-        return jsonify({
-            "success": True,
-            "user": g.current_user
-        }), 200
+        try:
+            with get_session() as session:
+                AuthService.logout(session, device_id, g.current_user["id"])
+        except ValueError as e:
+            return jsonify({"success": False, "message": str(e)}), 403
+
+        return jsonify({"success": True}), 200
+
+    @staticmethod
+    def verify():
+        """Handles GET /auth/verify. g.current_user was already populated
+        and DB-verified by require_auth."""
+        return jsonify({"valid": True, "user": g.current_user}), 200
