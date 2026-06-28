@@ -1,3 +1,4 @@
 base.txt
 .env
 __pycache__/
+.venv
