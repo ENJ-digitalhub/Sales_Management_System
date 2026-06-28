@@ -99,8 +99,8 @@ By end of phase: a real user can log in with username + password, receive a JWT,
 ## 👤 ENJ — Models + Schema + CLI
 
 ### Execution Checklist
-- [ ] `backend/models/models.py`: add `User` model — fields: `id, name, username, password_hash, role, phone_or_email, account_name, bank_name, account_number, pin_hash, is_active, created_at` (per `DATABASE_SCHEMA.md §1`)
-- [ ] `backend/models/models.py`: add `Device` model — fields: `id, user_id, device_name, is_active, last_seen_at` (per `DATABASE_SCHEMA.md §8`)
+- [x] `backend/models/models.py`: add `User` model — fields: `id, name, username, password_hash, role, phone_or_email, account_name, bank_name, account_number, pin_hash, is_active, created_at` (per `DATABASE_SCHEMA.md §1`)
+- [x] `backend/models/models.py`: add `Device` model — fields: `id, user_id, device_name, is_active, last_seen_at` (per `DATABASE_SCHEMA.md §8`)
 - [ ] `backend/utils/security.py`: `hash_password(plain: str) -> str` and `verify_password(plain: str, hashed: str) -> bool` using bcrypt
 - [ ] `database/schema.sql`: add `users` and `devices` tables matching the ORM models
 - [ ] `cli/cli.py`: extend `seed` to insert one user per role (admin, manager, employee) with hashed passwords — use `security.py`, never store plain text

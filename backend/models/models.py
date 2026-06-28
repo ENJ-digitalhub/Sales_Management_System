@@ -1,7 +1,7 @@
 # backend/models/models.py
 from decimal import Decimal
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Numeric, Boolean, DateTime, JSON, CheckConstraint
+from sqlalchemy import String, Numeric, Boolean, DateTime, JSON, CheckConstraint, ForeignKey
 from datetime import datetime
 import uuid
 
@@ -66,3 +66,12 @@ class User(Base):
         CheckConstraint("role IN ('admin', 'manager', 'employee')", name="valid_role"),
     )
     
+class Device(Base):
+    """Define the Device model"""
+    __tablename__ = "devices"
+    
+    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id: Mapped[str] = mapped_column(ForeignKey(User.id))
+    device_name: Mapped[str] = mapped_column(String(20))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    last_seen_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
