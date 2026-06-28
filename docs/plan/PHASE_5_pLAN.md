@@ -1,279 +1,279 @@
-# 🚀 Phase 5 — Reports
-## Sales Management System (Offline-First POS)
+🚀 Phase 5 — Reporting + Audit + Operational Visibility Week
 
-**Stack:** Flask · Raw SQLAlchemy 2.0 · SQLite · Vanilla JS
+Sales Management System (Offline-First POS)
 
-**Team:**
-| Person | Owns |
-|---|---|
-| **Goodness** | `frontend/` — reports UI, daily/monthly/yearly views, employee performance display |
-| **Covenant** | `backend/routes/`, `controllers/`, `services/` — report endpoints, data aggregation |
-| **ENJ** | No new models this phase — buffer, help unblock, review queries for correctness |
+Stack confirmed: Flask (latest, app factory pattern) · Raw SQLAlchemy 2.0 (no Flask-SQLAlchemy extension) · SQLite · Vanilla JS frontend · JWT · Offline Queue
 
----
+Team:
 
-## 🎯 Phase 5 Goal (one sentence)
-
-By end of phase: admins and managers can view real-time daily, monthly, and yearly sales reports — including total revenue, profit, transaction count, and employee performance — all computed live from the DB with no precomputed cache.
-
-### ⚠️ Critical dependencies
-- Goodness's report UI is blocked on Covenant's report endpoints — **Covenant ships all three report endpoints by Day 3**
-- Reports must never include unsynced data — only committed DB records count
-- All response contracts locked below — agree before coding
+Person| Owns
+Obinna| "frontend/", reports UI, dashboard rendering, export experience
+Covenant| "backend/routes/", "controllers/", "services/", reports APIs, audit enforcement
+ENJ| "backend/models/", "database/", report queries, audit persistence
 
 ---
 
-## 🔒 Locked Contracts (agree before coding)
+🎯 Phase 5 Goal (one sentence)
 
-### GET /reports/daily — Response
-```json
-{
-  "success": true,
-  "report": {
-    "date": "YYYY-MM-DD",
-    "total_sales": "number",
-    "total_profit": "number",
-    "transaction_count": "number",
-    "payment_breakdown": {
-      "cash": "number",
-      "transfer": "number",
-      "pos": "number"
-    },
-    "top_products": [
-      {
-        "product_id": "uuid",
-        "name": "string",
-        "quantity_sold": "number",
-        "revenue": "number"
-      }
-    ],
-    "employee_performance": [
-      {
-        "user_id": "uuid",
-        "name": "string",
-        "transaction_count": "number",
-        "total_sales": "number"
-      }
-    ]
-  }
-}
-```
+By end of week: the system becomes observable — users can view reports, trace actions, inspect business activity, and trust that every important change is auditable.
 
-### GET /reports/monthly — Response
-```json
-{
-  "success": true,
-  "report": {
-    "month": "YYYY-MM",
-    "total_sales": "number",
-    "total_profit": "number",
-    "transaction_count": "number",
-    "payment_breakdown": {
-      "cash": "number",
-      "transfer": "number",
-      "pos": "number"
-    },
-    "top_products": [],
-    "employee_performance": []
-  }
-}
-```
+⚠️ Critical dependency
 
-### GET /reports/yearly — Response
-```json
-{
-  "success": true,
-  "report": {
-    "year": "YYYY",
-    "total_sales": "number",
-    "total_profit": "number",
-    "transaction_count": "number",
-    "payment_breakdown": {
-      "cash": "number",
-      "transfer": "number",
-      "pos": "number"
-    },
-    "monthly_breakdown": [
-      {
-        "month": "YYYY-MM",
-        "total_sales": "number",
-        "total_profit": "number",
-        "transaction_count": "number"
-      }
-    ]
-  }
-}
-```
+Covenant cannot expose reports until ENJ defines report sources and audit structures. Obinna cannot build dashboards until Covenant finalizes response contracts and aggregation shapes.
 
-### GET /reports/employee/{id} — Response
-```json
-{
-  "success": true,
-  "report": {
-    "user_id": "uuid",
-    "name": "string",
-    "period": "YYYY-MM-DD to YYYY-MM-DD",
-    "transaction_count": "number",
-    "total_sales": "number",
-    "total_profit": "number",
-    "sales": []
-  }
-}
-```
+Agree on report fields before coding.
 
 ---
 
-## 📋 Business Rules (non-negotiable)
+👤 ENJ — Database + Audit Foundation
 
-- Reports are **always live-computed** — no caching, no precomputed tables
-- Reports only include sales with `status = completed | edited` — never `cancelled`
-- Only **admin and manager** can access any report endpoint — employees get `403`
-- `total_profit` uses `profit_at_sale` snapshotted at sale time — never recalculated from current prices
-- `top_products` returns top 5 by quantity sold for the period
-- `employee_performance` covers all active employees for the period — zero counts included
-- Daily report defaults to today if no `?date=` query param provided
-- Monthly report defaults to current month if no `?month=` param provided
-- Yearly report defaults to current year if no `?year=` param provided
-- Employee report accepts optional `?from=` and `?to=` date range params
+Execution Checklist
 
----
+- [ ] Create "backend/models/audit_log.py"
 
-## 👤 ENJ — Buffer + Query Review
+Fields:
 
-### Execution Checklist
-- [ ] Review Covenant's aggregation queries for correctness — specifically profit calculation and date filtering
-- [ ] Verify `InventoryLog` and `AuditLog` data from Phases 3 and 4 is sufficient to support report queries
-- [ ] Extend `seed` to insert enough demo sales across multiple days, months, and employees to make reports meaningful during testing
-- [ ] Help unblock either teammate if needed
+- "id"
 
-### Socratic Task Spec
-**Objective:** Ensure the seeded data is rich enough to make every report endpoint return non-trivial results — multiple employees, multiple days, multiple payment methods.
+- "entity_type"
 
-**Constraints:**
-- Seed data must span at least 3 different dates
-- At least 2 employees must have sales in the seed data
-- All three payment methods must appear in seed data
+- "entity_id"
 
-**Expected Output:** Every report endpoint returns meaningful data when hit against the seeded DB — no zero-result responses during development.
+- "action"
 
-**Guiding questions for ENJ:**
-1. The yearly report needs a `monthly_breakdown` — what does your seed data need to look like to test this properly, and what's the minimum number of sales across different months you need?
-2. `profit_at_sale` is snapshotted — if you change a product's cost price after seeding sales, does that affect the report? Why or why not?
+- "performed_by"
 
----
+- "old_value"
 
-## 👤 Covenant — Report Endpoints + Aggregation
+- "new_value"
 
-### Execution Checklist
-- [ ] `backend/routes/reports.py`: Blueprint with routes — `GET /reports/daily`, `GET /reports/monthly`, `GET /reports/yearly`, `GET /reports/employee/{id}`
-- [ ] `backend/controllers/reports_controller.py`: request/response for all four routes — parse query params, pass to service
-- [ ] `backend/services/reports_service.py`:
-  - `get_daily_report(date, session)` — aggregates sales for a single day
-  - `get_monthly_report(month, year, session)` — aggregates sales for a month
-  - `get_yearly_report(year, session)` — aggregates sales for a year with monthly breakdown
-  - `get_employee_report(user_id, from_date, to_date, session)` — aggregates by employee and date range
-- [ ] All routes protected with `@require_role('admin', 'manager')`
-- [ ] `backend/app.py`: register reports blueprint
-- [ ] Query params validated and defaulted in controller — never trusted raw
+- "created_at"
 
-### Socratic Task Spec
-**Objective:** Build four report endpoints that aggregate live data from the DB — using SQLAlchemy queries, not Python loops over full table fetches.
+- [ ] Create "backend/models/report_snapshot.py"
 
-**Constraints:**
-- Aggregation happens in SQL — use SQLAlchemy `func.sum()`, `func.count()`, `group_by()` — never fetch all rows and sum in Python
-- Services accept session as parameter — never open their own
-- Only `completed` and `edited` sales count — filter by status in every query
-- `profit_at_sale` from `Sale` table — never recalculate from current product prices
-- Date filtering uses `Sale.created_at` — server timezone only
-- `top_products` requires joining `SaleItem` and `Product` tables — plan the join before writing
+Fields:
 
-**Required Documentation:**
-- SQLAlchemy 2.0 — `func`, `group_by`, `order_by`
-- SQLAlchemy 2.0 — joins
-- Python `datetime` — date range construction
+- "id"
 
-**Expected Output:** `GET /reports/daily` returns correct totals matching the seeded sales for today. `GET /reports/employee/{id}` returns only that employee's sales in the date range. Changing the `?date=` param changes the result correctly.
+- "report_type"
 
-**Guiding questions for Covenant:**
-1. `top_products` requires summing `quantity` across all `SaleItem` rows for a product in the period, then ordering by that sum descending and taking the top 5 — write the SQLAlchemy query in pseudocode before you write real code. What tables do you need and what do you group by?
-2. `employee_performance` should include employees with zero sales in the period — a standard join would exclude them. What type of join do you need, and how do you express that in SQLAlchemy?
+- "generated_at"
 
----
+- "payload"
 
-## 👤 Goodness — Reports UI
+- [ ] Add indexes:
+  
+  - "created_at"
+  - "entity_type"
+  - "performed_by"
 
-### Execution Checklist
+- [ ] Update "database/schema.sql"
 
-- [ ] `frontend/pages/reports.html`: reports page — hidden from employees via role check
-- [ ] Daily report view — total sales, total profit, transaction count, payment breakdown
-- [ ] Monthly report view — same summary fields, tabbed or toggled from daily
-- [ ] Yearly report view — summary + monthly breakdown table
-- [ ] Employee performance table — name, transaction count, total sales per employee
-- [ ] Date/month/year picker — defaults to current period, allows navigation to previous periods
-- [ ] Simple bar chart for daily sales trend (last 7 days) — vanilla JS canvas or inline SVG, no charting library
-- [ ] Reports page redirects to login if not authenticated
-- [ ] Reports page shows `403` message if role is employee
+- [ ] Extend CLI:
+  
+  - report inspection
+  - audit inspection
 
-### Socratic Task Spec
-**Objective:** Build the reports page with period navigation and a simple bar chart — fetching live data from Covenant's endpoints on every period change.
+- [ ] Add reusable query helpers
 
-**Constraints:**
-- Vanilla JS only — no charting library
-- Role check on page load — redirect or show `403` message if employee
-- Every period change triggers a fresh fetch — no local caching of report data
-- Bar chart uses canvas or inline SVG — built from scratch
+Socratic Task Spec
 
-**Required Documentation:**
-- `FRONTEND_SPEC.md` §8
-- MDN: Canvas API or SVG basics
-- MDN: fetch API
+Objective: Create persistent reporting and auditing infrastructure that supports operational visibility.
 
-**Expected Output:** Reports page loads daily report for today on arrival. Changing the date picker fetches and renders the correct period. Employee performance table shows all employees. Bar chart renders correctly from the last 7 days of daily report data.
+Constraints:
 
-**Guiding questions for Goodness:**
-1. The bar chart needs 7 data points — one `GET /reports/daily` call per day. How do you fire 7 fetch calls efficiently and wait for all of them to complete before rendering the chart?
-2. The reports page must be completely hidden from employees — you check the role on page load. What happens if an employee manually navigates to `reports.html` directly in the browser? Where exactly must the role check happen to prevent this?
+- Audit data must be append-only
+- Historical records remain unchanged
+- Reporting queries must not mutate state
+
+Required Documentation:
+
+- SQLAlchemy aggregate queries
+- SQL indexing basics
+- Audit logging patterns
+
+Expected Output:
+
+Running:
+
+python cli/cli.py setup
+
+creates reporting and audit tables successfully.
+
+Guiding questions for ENJ (don't answer yet — sit with these):
+
+1. Should reports calculate live every request or use snapshots?
+2. What information is required to reconstruct a business event?
 
 ---
 
-## ✅ Definition of Done — Phase 5 (whole team)
+👤 Covenant — Backend API + Reporting Logic
 
-A Phase 5 feature is **only** done if:
-- [ ] `GET /reports/daily` returns correct totals for today
-- [ ] `GET /reports/daily?date=YYYY-MM-DD` returns correct totals for that date
-- [ ] `GET /reports/monthly` returns correct totals for current month
-- [ ] `GET /reports/yearly` returns correct totals and monthly breakdown
-- [ ] `GET /reports/employee/{id}` returns correct totals for that employee
-- [ ] Cancelled sales are excluded from all reports
-- [ ] Employee role gets `403` on all report endpoints
-- [ ] Reports page hidden from employees on the frontend
-- [ ] Date picker changes fetch and re-render correctly
-- [ ] Employee performance table shows all employees including zero-sale employees
-- [ ] Bar chart renders from live data
-- [ ] Profit figures use snapshotted `profit_at_sale` — not recalculated
+Execution Checklist
 
-**Out of scope this phase:** sync engine, conflict resolution, deployment.
+- [ ] "backend/routes/reports.py"
+- [ ] "backend/controllers/report_controller.py"
+- [ ] "backend/services/report_service.py"
+- [ ] "backend/services/audit_service.py"
+
+Implement:
+
+- [ ] "GET /reports/sales"
+- [ ] "GET /reports/inventory"
+- [ ] "GET /reports/summary"
+- [ ] "GET /audit/logs"
+
+Reports:
+
+- [ ] Daily sales
+- [ ] Product performance
+- [ ] Revenue totals
+- [ ] Inventory movement
+- [ ] User activity
+
+Audit:
+
+- [ ] Track mutations
+- [ ] Store actor
+- [ ] Preserve timestamps
+
+Validation split:
+
+Controller →
+
+- request shape
+- filters
+- response formatting
+
+Service →
+
+- calculations
+- audit generation
+- aggregation
+
+Socratic Task Spec
+
+Objective: Build reliable reporting and audit APIs while preserving clean separation.
+
+Constraints:
+
+- No SQL in routes
+- Reports are read-only
+- Audit generation stays in services
+- Aggregation logic is centralized
+
+Required Documentation:
+
+- SQLAlchemy aggregation
+- Flask request handling
+- Reporting design patterns
+
+Expected Output:
+
+Calling:
+
+GET /reports/sales
+
+returns business summaries derived from real data.
+
+Guiding questions for Covenant (don't answer yet — sit with these):
+
+1. If two endpoints compute revenue differently, which one becomes trusted?
+2. Which events deserve audit records and which do not?
 
 ---
 
-## 🗓️ Day-by-Day
+👤 Obinna — Frontend + Dashboard Experience
 
-| Day | ENJ | Covenant | Goodness |
-|---|---|---|---|
-| 1 | Extend seed data — multiple dates, employees, payment methods | `reports.py` Blueprint, route stubs | `reports.html` shell, period toggle UI |
-| 2 | Verify seed data covers all report scenarios | `get_daily_report()` + `get_monthly_report()` | Daily report view wired to endpoint |
-| 3 | Review Covenant's profit queries | **Ship all report endpoints** (unblocks Goodness) | Monthly + yearly views, date picker |
-| 4 | Buffer / help unblock | `get_employee_report()`, register blueprint | Employee performance table |
-| 5 | Buffer | Buffer | Bar chart (last 7 days), role check + `403` state |
+Execution Checklist
+
+- [ ] "frontend/pages/dashboard.html"
+- [ ] "frontend/pages/reports.html"
+- [ ] "frontend/services/reports.js"
+
+Build:
+
+- [ ] Dashboard layout
+- [ ] Report cards
+- [ ] Filters
+- [ ] Report table
+- [ ] Empty states
+- [ ] Error states
+- [ ] Loading indicators
+- [ ] Audit viewer
+
+Dashboard Metrics:
+
+sales
+inventory
+transactions
+sync status
+
+Socratic Task Spec
+
+Objective: Build operational visibility for users without duplicating backend calculations.
+
+Constraints:
+
+- Frontend displays data only
+- No business calculations in UI
+- Reports remain responsive
+
+Required Documentation:
+
+- Fetch API
+- Table rendering
+- Browser performance basics
+
+Expected Output:
+
+Users can:
+
+- open dashboard
+- inspect reports
+- filter results
+- view audit history
+
+using live backend data.
+
+Guiding questions for Obinna (don't answer yet — sit with these):
+
+1. Should the UI cache reports?
+2. What should happen when reports are empty?
 
 ---
 
-## 🚨 Non-negotiable team rules
-1. All contracts above are locked
-2. Aggregation in SQL — never fetch all rows and sum in Python
-3. Only `completed` and `edited` sales in reports — always filter by status
-4. `profit_at_sale` is never recalculated — always read from the `Sale` table
-5. Services accept session as parameter — never open their own
-6. Log what shipped each day in `CHANGELOG.md`
-7. Blockers stated explicitly
-8. No sync, conflict resolution, or deployment work this phase
+✅ Definition of Done — Phase 5 (whole team)
+
+A Phase 5 feature is only done if:
+
+- [ ] Reports load successfully
+- [ ] Audit records exist
+- [ ] Aggregations are consistent
+- [ ] Dashboard reflects live data
+- [ ] Audit remains immutable
+- [ ] Layer chain remains:
+  route → controller → service → model
+
+Out of scope this week (do not touch):
+deployment, load testing, production rollout
+
+---
+
+🗓️ Suggested Day-by-Day
+
+Day| ENJ| Covenant| Obinna
+1| Audit models| Reports blueprint| Dashboard shell
+2| Report queries| Sales reports| Report UI
+3| Snapshot support| Audit service| Filters
+4| Schema polish| Aggregation refinement| Audit viewer
+5| Buffer| Buffer| Polish
+
+---
+
+🚨 Non-negotiable team rules (carried over)
+
+1. Reports never mutate data.
+2. Audit history cannot be edited.
+3. Backend calculations are source of truth.
+4. No deployment or production optimization this week — scope creep kills Phase 5.
