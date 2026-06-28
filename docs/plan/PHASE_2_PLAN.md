@@ -103,8 +103,8 @@ By end of phase: a real user can log in with username + password, receive a JWT,
 - [x] `backend/models/models.py`: add `Device` model — fields: `id, user_id, device_name, is_active, last_seen_at` (per `DATABASE_SCHEMA.md §8`)
 - [x] `backend/utils/security.py`: `hash_password(plain: str) -> str` and `verify_password(plain: str, hashed: str) -> bool` using bcrypt
 - [x] `database/schema.sql`: add `users` and `devices` tables matching the ORM models
-- [ ] `cli/cli.py`: extend `seed` to insert one user per role (admin, manager, employee) with hashed passwords — use `security.py`, never store plain text
-- [ ] `cli/cli.py`: extend `reset` to clear `users` and `devices` tables safely
+- [x] `cli/cli.py`: extend `seed` to insert one user per role (admin, manager, employee) with hashed passwords — use `security.py`, never store plain text
+- [x] `cli/cli.py`: extend `reset` to clear `users` and `devices` tables safely
 
 ### Socratic Task Spec
 **Objective:** Define `User` and `Device` models in SQLAlchemy 2.0 declarative syntax, implement bcrypt password hashing in a shared utility, and seed one user per role so Covenant can test auth endpoints immediately.
