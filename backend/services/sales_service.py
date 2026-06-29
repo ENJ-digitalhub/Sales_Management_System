@@ -17,7 +17,7 @@ class SalesService:
         products = db.execute(stmt).scalars().all()
         
         return {
-            "products": [
+            "items": [
                 {
                     "id": p.id,
                     "name": p.name,

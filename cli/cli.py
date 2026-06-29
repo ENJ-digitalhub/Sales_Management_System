@@ -1,8 +1,9 @@
 # cli/cli.py
 from pathlib import Path
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
-from backend.models.models import Base, Product
+from backend.models.models import Base, Product, User
+from backend.utils.security import Security
 
 base = Path(__file__).parent.parent.resolve()
 DB_PATH = base / "database" / "shop.db"  # build an absolute path to database/shop.db using Path(__file__)
@@ -30,27 +31,40 @@ class CLI:
         """Seeds the database with initial data for testing and development purposes."""
         try:
             with SessionLocal() as session:
-                # Create & Add User
-                product1 = Product(id="P01", name="Rice", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
-                product2 = Product(id="P02", name="Vegetable Oil", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
-                product3 = Product(id="P03", name="Sugar", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
-                product4 = Product(id="P04", name="Flour", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
-                product5 = Product(id="P05", name="Tomato Paste", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
-
-                existing = session.query(Product).first()
-                if existing:
+                # Idempotency check: no duplicate
+                product_existing = session.execute(select(Product)).first()
+                user_existing = session.execute(select(User)).first()
+                
+                if product_existing or user_existing:
                     print("Already seeded. Skipping.")
                     return
+                
+                # Create & Add products
+                product1 = Product(name="Rice", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
+                product2 = Product(name="Vegetable Oil", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
+                product3 = Product(name="Sugar", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
+                product4 = Product(name="Flour", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
+                product5 = Product(name="Tomato Paste", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
+
+                # Create & Add Users
+                user1 = User(name="John", username= "john", password_hash=Security.hash_password("1234567890"), role= "admin", phone_or_email = "john@gmail.com")
+                user2 = User(name="Doe", username= "doe", password_hash=Security.hash_password("1234567890"), role= "manager", phone_or_email = "doe@gmail.com")
+                user3 = User(name="Jane", username= "jane", password_hash=Security.hash_password("1234567890"), role= "employee", phone_or_email = "jane@gmail.com")
 
                 session.add_all([product1, product2, product3, product4, product5])
+                session.add_all([user1, user2, user3])
 
                 # Commit Changes
                 session.commit()
 
                 # Querying data
                 # Get all product
-                all_product = session.query(Product).all()
+                all_product = session.execute(select(Product)).scalars().all()
                 print(F"All Products: {all_product}")
+                
+                # Get all user
+                all_user = session.execute(select(User)).scalars().all()
+                print(F"All Users: {all_user}")
 
 
         except Exception as e:

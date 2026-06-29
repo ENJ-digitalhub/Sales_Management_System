@@ -209,7 +209,7 @@ CREATE TABLE IF NOT EXISTS devices (
     user_id      TEXT NOT NULL,
     device_name  TEXT,
     is_active    INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
-    last_seen_at TEXT,
+    last_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

@@ -126,7 +126,7 @@ audit_logs
 - id (PK)
 - user_id (FK → users.id)
 - action_type
-- entity_type (sale | product | user | system)
+- entity_type (sale | product | user )
 - entity_id
 - metadata (JSON)
 - created_at
@@ -146,8 +146,9 @@ sync_queue
 - id (PK)
 - device_id
 - entity_type
+- operation (CREATE | UPDATE | DELETE)
 - payload (JSON)
-- status (pending | synced | failed)
+- status (pending | synced | failed | conflict)
 - retry_count
 - last_attempt_at
 - created_at
