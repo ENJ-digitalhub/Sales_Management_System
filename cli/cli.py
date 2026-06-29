@@ -48,7 +48,7 @@ class CLI:
 
                 # Create & Add Users
                 user1 = User(name="John", username= "john", password_hash=Security.hash_password("1234567890"), role= "admin", phone_or_email = "john@gmail.com")
-                user2 = User(name="Doe", username= "doe", password_hash=Security.hash_password("1234567890"), role= "manager", phone_or_email = "doe@gmail.com")
+                user2 = User(name="Doe", username= "doe", password_hash=Security.hash_password("1234567890"), role= "manager", phone_or_email = "doe@gmail.com",is_active=True)
                 user3 = User(name="Jane", username= "jane", password_hash=Security.hash_password("1234567890"), role= "employee", phone_or_email = "jane@gmail.com")
 
                 session.add_all([product1, product2, product3, product4, product5])

@@ -1,16 +1,21 @@
-# backend/services/auth_service.py
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import select, update
 from backend.models.models import User, Device
-from backend.utils.security import Security
+from backend.utils.security import verify_password
 from backend.utils.jwt_utils import generate_token, decode_token
 
 
 class AuthenticationError(ValueError):
+    """Raised when authentication fails (bad credentials, invalid token, etc.)."""
     pass
 
 
 class AuthService:
+
+    @staticmethod
+    def _now():
+        """Get current UTC time. Use timezone-aware datetime."""
+        return datetime.now(timezone.utc)
 
     @staticmethod
     def login(session, username: str, password: str, device_id: str) -> dict:
@@ -25,7 +30,7 @@ class AuthService:
             )
         ).scalar_one_or_none()
 
-        if not user or not Security.verify_password(password, user.password_hash):
+        if not user or not verify_password(password, user.password_hash):
             raise AuthenticationError("Invalid username or password")
 
         # Invalidate all other active devices for this user
@@ -45,12 +50,13 @@ class AuthService:
 
         if device:
             device.is_active = True
-            device.last_seen_at = datetime.utcnow()
+            device.last_seen_at = AuthService._now()
         else:
             device = Device(
                 user_id=user.id,
                 device_name=device_id,
-                is_active=True
+                is_active=True,
+                last_seen_at=AuthService._now()
             )
             session.add(device)
 
@@ -113,7 +119,7 @@ class AuthService:
         if not device:
             raise AuthenticationError("Token missing or invalid")
 
-        device.last_seen_at = datetime.utcnow()
+        device.last_seen_at = AuthService._now()
         session.flush()
 
         return {

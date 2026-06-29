@@ -1,4 +1,3 @@
-# backend/app.py
 from flask import Flask, g, send_from_directory
 from flask_cors import CORS
 from backend.config import Config
@@ -14,7 +13,19 @@ def create_app(config_class=Config):
 
     # Allow the frontend (served separately, e.g. via Live Server on a
     # different port) to call this API across origins during development.
-    CORS(app, supports_credentials=True)
+    CORS(app, resources={
+        r"/*": {
+            "origins": [
+                "http://127.0.0.1:5500",
+                "http://localhost:5500",
+                "http://127.0.0.1:5000",
+                "http://localhost:5000"
+            ],
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "supports_credentials": True
+        }
+    })
 
     @app.route('/')
     def index():
@@ -32,6 +43,7 @@ def create_app(config_class=Config):
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
+        """Close the request-scoped DB session if one was created."""
         session = g.pop('db', None)
         if session is not None:
             session.close()

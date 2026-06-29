@@ -1,8 +1,7 @@
-# backend/utils/auth_middleware.py
 from functools import wraps
 from flask import request, jsonify, g
 from backend.database import get_db
-from backend.services.auth_service import AuthService
+from backend.services.auth_service import AuthService, AuthenticationError
 
 
 def require_auth(f):
@@ -18,9 +17,10 @@ def require_auth(f):
 
         token = auth_header.split(" ")[1]
         try:
-            with get_db() as session:
-                user_data = AuthService.verify_token(session, token)
-        except ValueError:
+            # Use get_db() directly — do NOT use 'with' since it returns g-scoped session
+            session = get_db()
+            user_data = AuthService.verify_token(session, token)
+        except (ValueError, AuthenticationError):
             return jsonify({"success": False, "message": "Token missing or invalid"}), 401
 
         g.current_user = user_data
