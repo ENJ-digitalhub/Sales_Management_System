@@ -1,10 +1,10 @@
 # backend/app.py
-from flask import Flask, g
+from flask import Flask, g, send_from_directory
 from flask_cors import CORS
 from backend.config import Config
 from backend.routes.sales import sales_bp
 from backend.routes.auth import auth_bp
-from backend.routes.products import products_bp
+import os
 
 
 def create_app(config_class=Config):
@@ -15,6 +15,20 @@ def create_app(config_class=Config):
     # Allow the frontend (served separately, e.g. via Live Server on a
     # different port) to call this API across origins during development.
     CORS(app, supports_credentials=True)
+
+    @app.route('/')
+    def index():
+        return send_from_directory(
+            os.path.join(os.path.dirname(__file__), '..', 'frontend'),
+            'index.html'
+        )
+        
+    @app.route('/<path:filename>')
+    def serve_frontend(filename):
+        return send_from_directory(
+            os.path.join(os.path.dirname(__file__), '..', 'frontend'),
+            filename
+        )
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
@@ -27,8 +41,7 @@ def create_app(config_class=Config):
         return {"status": "healthy"}, 200
 
     # Register all functional domain routes
-    app.register_blueprint(sales_bp)
+    app.register_blueprint(sales_bp, url_prefix='/api')
     app.register_blueprint(auth_bp)
-    app.register_blueprint(products_bp)
 
     return app

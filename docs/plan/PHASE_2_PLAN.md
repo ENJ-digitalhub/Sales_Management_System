@@ -130,15 +130,15 @@ By end of phase: a real user can log in with username + password, receive a JWT,
 ## 👤 Covenant — Auth Endpoints + JWT + Middleware
 
 ### Execution Checklist
-- [ ] `requirements.txt`: add `PyJWT`, `bcrypt`
-- [ ] `backend/utils/jwt_utils.py`: `generate_token(user_id, role, device_id) -> str` and `decode_token(token: str) -> dict` — 24hr expiry, uses `SECRET_KEY` from config
-- [ ] `backend/utils/auth_middleware.py`: `require_auth` decorator — extracts Bearer token from `Authorization` header, decodes it, attaches user to `flask.g`
-- [ ] `backend/utils/auth_middleware.py`: `require_role(*roles)` decorator — checks `flask.g.user.role` against allowed roles, returns `403` if insufficient
-- [ ] `backend/routes/auth.py`: Blueprint with three routes — `POST /auth/login`, `POST /auth/logout`, `GET /auth/verify`
-- [ ] `backend/controllers/auth_controller.py`: handles request/response shape for all three routes
-- [ ] `backend/services/auth_service.py`: `login(username, password, device_id)`, `logout(device_id)`, `verify_token(token)` — all DB logic lives here
-- [ ] `backend/app.py`: register auth blueprint
-- [ ] Protect `GET /products` from Phase 1 with `@require_auth` — any logged-in role can access it
+- [x] `requirements.txt`: add `PyJWT`, `bcrypt`
+- [x] `backend/utils/jwt_utils.py`: `generate_token(user_id, role, device_id) -> str` and `decode_token(token: str) -> dict` — 24hr expiry, uses `SECRET_KEY` from config
+- [x] `backend/utils/auth_middleware.py`: `require_auth` decorator — extracts Bearer token from `Authorization` header, decodes it, attaches user to `flask.g`
+- [x] `backend/utils/auth_middleware.py`: `require_role(*roles)` decorator — checks `flask.g.user.role` against allowed roles, returns `403` if insufficient
+- [x] `backend/routes/auth.py`: Blueprint with three routes — `POST /auth/login`, `POST /auth/logout`, `GET /auth/verify`
+- [x] `backend/controllers/auth_controller.py`: handles request/response shape for all three routes
+- [x] `backend/services/auth_service.py`: `login(username, password, device_id)`, `logout(device_id)`, `verify_token(token)` — all DB logic lives here
+- [x] `backend/app.py`: register auth blueprint
+- [x] Protect `GET /products` from Phase 1 with `@require_auth` — any logged-in role can access it
 
 ### Socratic Task Spec
 **Objective:** Build the full auth flow — login validates credentials, issues a JWT, records the active device. Logout invalidates it. Every protected route runs through the `require_auth` decorator before the controller is reached.
