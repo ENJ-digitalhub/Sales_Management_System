@@ -102,7 +102,23 @@ class SalesItem(Base):
     id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
     sale_id: Mapped[str] = mapped_column(ForeignKey(Sale.id))
     product_id: Mapped[str] = mapped_column(ForeignKey(Product.id))
-    quantity: Mapped[Decimal] = mapped_column(Numeric(2, 0))
+    quantity: Mapped[Decimal] = mapped_column(Numeric(4, 0))
     unit_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     cost_price_at_sale: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+    
+class InventoryLogs(Base):
+    """Defines the inventory_log model"""
+    __tablename__ = "inventory_logs"
+    
+    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
+    product_id: Mapped[str] = mapped_column(ForeignKey(Product.id))
+    change_type: Mapped[str] = mapped_column(String(20))
+    quantity_change: Mapped[Decimal] = mapped_column(Numeric(4, 0))
+    reference_id: Mapped[str] = mapped_column(String, nullable=True)
+    created_at: Mapped[DateTime] = mapped_column(default=datetime.utcnow)
+    
+    __table_args__ = (
+        CheckConstraint("change_type IN ('sale', 'restock', adjustment)", name="valid_change_type")
+    )
+    
