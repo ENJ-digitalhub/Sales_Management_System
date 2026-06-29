@@ -17,7 +17,10 @@ class AuthController:
         try:
             session = get_db()
             result = AuthService.login(session, username, password, device_id)
+            session.commit()
         except ValueError as e:
+            print(F"AUTH ERROR: {str(e)}")
+            session.rollback()
             return jsonify({"success": False, "message": str(e)}), 401
 
         return jsonify({"success": True, **result}), 200
@@ -31,7 +34,9 @@ class AuthController:
         try:
             session = get_db()
             AuthService.logout(session, device_id, g.current_user["id"])
+            session.commit()
         except ValueError as e:
+            session.rollback()
             return jsonify({"success": False, "message": str(e)}), 403
 
         return jsonify({"success": True}), 200

@@ -7,7 +7,7 @@ const TOKEN_KEY = 'sms_token';
 const DEVICE_ID_KEY = 'sms_device_id';
 const USER_KEY = 'sms_user';
 
-const BASE_URL = 'http://127.0.0.1:5000';
+const BASE_URL = '';
 
 /**
  * Returns this browser's persistent device identity, generating one

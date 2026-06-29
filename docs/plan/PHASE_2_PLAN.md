@@ -168,13 +168,13 @@ By end of phase: a real user can log in with username + password, receive a JWT,
 ### Execution Checklist
 - [ ] `frontend/pages/login.html`: complete login form — username + password fields, submit button, error state display
 - [ ] `frontend/modules/auth.js`: `login(username, password)` — calls `POST /auth/login`, stores JWT in `localStorage` on success, redirects based on role
-- [ ] `frontend/modules/auth.js`: `logout()` — calls `POST /auth/logout`, clears `localStorage`, redirects to login
-- [ ] `frontend/modules/auth.js`: `getToken()` — retrieves token from `localStorage` for use in API calls
-- [ ] `frontend/modules/auth.js`: `isAuthenticated()` — checks token exists and is not expired (decode without verifying signature client-side)
-- [ ] `frontend/services/api.js`: update fetch wrapper to attach `Authorization: Bearer <token>` header on every request
-- [ ] `frontend/pages/dashboard.html`: redirect to login if `isAuthenticated()` returns false
-- [ ] Role-based redirect after login: Admin → admin dashboard, Manager → manager dashboard, Employee → sales dashboard
-- [ ] Show logged-in user's name and role in the UI header
+- [x] `frontend/modules/auth.js`: `logout()` — calls `POST /auth/logout`, clears `localStorage`, redirects to login
+- [x] `frontend/modules/auth.js`: `getToken()` — retrieves token from `localStorage` for use in API calls
+- [x] `frontend/modules/auth.js`: `isAuthenticated()` — checks token exists and is not expired (decode without verifying signature client-side)
+- [x] `frontend/services/api.js`: update fetch wrapper to attach `Authorization: Bearer <token>` header on every request
+- [x] `frontend/pages/dashboard.html`: redirect to login if `isAuthenticated()` returns false
+- [x] Role-based redirect after login: Admin → admin dashboard, Manager → manager dashboard, Employee → sales dashboard
+- [x] Show logged-in user's name and role in the UI header
 
 ### Socratic Task Spec
 **Objective:** Build the login page, wire it to Covenant's endpoint, store the JWT in localStorage, and use it on every subsequent API call — with automatic redirect to login if the token is missing or expired.
@@ -201,17 +201,17 @@ By end of phase: a real user can log in with username + password, receive a JWT,
 ## ✅ Definition of Done — Phase 2 (whole team)
 
 A Phase 2 feature is **only** done if:
-- [ ] `POST /auth/login` returns a valid JWT for correct credentials
-- [ ] `POST /auth/login` returns `401` for wrong credentials
-- [ ] `GET /auth/verify` confirms a valid token and returns user role
-- [ ] `POST /auth/logout` invalidates the device session
-- [ ] `GET /products` returns `401` without a token
-- [ ] `GET /products` returns data with a valid token
-- [ ] Login page submits, stores token, and redirects by role
-- [ ] Page refresh keeps the user logged in
-- [ ] Clearing localStorage logs the user out on next page load
-- [ ] Seeded users (one per role) can all log in successfully
-- [ ] Passwords are hashed in DB — no plain text anywhere
+- [x] `POST /auth/login` returns a valid JWT for correct credentials
+- [x] `POST /auth/login` returns `401` for wrong credentials
+- [x] `GET /auth/verify` confirms a valid token and returns user role
+- [x] `POST /auth/logout` invalidates the device session
+- [x] `GET /products` returns `401` without a token
+- [x] `GET /products` returns data with a valid token
+- [x] Login page submits, stores token, and redirects by role
+- [x] Page refresh keeps the user logged in
+- [x] Clearing localStorage logs the user out on next page load
+- [x] Seeded users (one per role) can all log in successfully
+- [x] Passwords are hashed in DB — no plain text anywhere
 
 **Out of scope this phase:** sales creation, inventory editing, sync logic, reports, PIN login. Do not touch these.
 

@@ -47,9 +47,9 @@ class CLI:
                 product5 = Product(name="Tomato Paste", category=None, selling_price=999.99, cost_price=999.99, stock_quantity=999)
 
                 # Create & Add Users
-                user1 = User(name="John", username= "john", password_hash=Security.hash_password("1234567890"), role= "admin", phone_or_email = "john@gmail.com")
-                user2 = User(name="Doe", username= "doe", password_hash=Security.hash_password("1234567890"), role= "manager", phone_or_email = "doe@gmail.com")
-                user3 = User(name="Jane", username= "jane", password_hash=Security.hash_password("1234567890"), role= "employee", phone_or_email = "jane@gmail.com")
+                user1 = User(name="John", username= "john", password_hash=Security.hash_password("1234567890"), role= "admin", phone_or_email = "john@gmail.com", is_active = True)
+                user2 = User(name="Doe", username= "doe", password_hash=Security.hash_password("1234567890"), role= "manager", phone_or_email = "doe@gmail.com", is_active = True)
+                user3 = User(name="Jane", username= "jane", password_hash=Security.hash_password("1234567890"), role= "employee", phone_or_email = "jane@gmail.com", is_active = True)
 
                 session.add_all([product1, product2, product3, product4, product5])
                 session.add_all([user1, user2, user3])
