@@ -2,7 +2,7 @@
 from pathlib import Path
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
-from backend.models.models import Base, Product, User
+from backend.models.models import Base, Product, User, Sale
 from backend.utils.security import Security
 
 base = Path(__file__).parent.parent.resolve()
@@ -53,6 +53,16 @@ class CLI:
 
                 session.add_all([product1, product2, product3, product4, product5])
                 session.add_all([user1, user2, user3])
+                session.flush()
+                
+                # Create & Add Sakes
+                sale1 = Sale(receipt_number="r0001", user_id=user1.id, total_amount=999.99, profit_at_sale=99.99, payment_method="cash", status="completed")
+                sale2 = Sale(receipt_number="r0002", user_id=user2.id, total_amount=999.99, profit_at_sale=99.99, payment_method="transfer", status="edited")
+                sale3 = Sale(receipt_number="r0003", user_id=user3.id, total_amount=999.99, profit_at_sale=99.99, payment_method="transfer", status="cancelled")
+                sale4 = Sale(receipt_number="r0004", user_id=user1.id, total_amount=999.99, profit_at_sale=99.99, payment_method="pos", status="cancelled")
+                sale5 = Sale(receipt_number="r0005", user_id=user2.id, total_amount=999.99, profit_at_sale=99.99, payment_method="cash", status="edited")
+                
+                session.add_all([sale1, sale2, sale3, sale4, sale5])
 
                 # Commit Changes
                 session.commit()
