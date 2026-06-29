@@ -1,14 +1,20 @@
 # backend/app.py
 from flask import Flask, g, send_from_directory
-import os
+from flask_cors import CORS
 from backend.config import Config
 from backend.routes.sales import sales_bp
-from backend.database import get_db
-        
-def create_app():
+from backend.routes.auth import auth_bp
+import os
+
+
+def create_app(config_class=Config):
     """Initializes and configures the core Flask application framework."""
     app = Flask(__name__)
-    app.config.from_object(Config)
+    app.config.from_object(config_class)
+
+    # Allow the frontend (served separately, e.g. via Live Server on a
+    # different port) to call this API across origins during development.
+    CORS(app, supports_credentials=True)
 
     @app.route('/')
     def index():
@@ -33,7 +39,9 @@ def create_app():
     @app.route('/health', methods=['GET'])
     def health_check():
         return {"status": "healthy"}, 200
-        
-    # Register blueprints
+
+    # Register all functional domain routes
     app.register_blueprint(sales_bp, url_prefix='/api')
+    app.register_blueprint(auth_bp)
+
     return app

@@ -58,6 +58,49 @@
       </div>
     </div>
   </main>
+<script type="module">
+    import { login, getCurrentUser, getDashboardForRole, isAuthenticated } from '../modules/auth.js';
 
+    // If already logged in, skip the login form entirely
+    if (isAuthenticated()) {
+      const user = getCurrentUser();
+      window.location.href = getDashboardForRole(user?.role);
+    }
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+
+    async function handleLogin() {
+      loginError.hidden = true;
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username || !password) {
+        loginError.textContent = 'Please enter both username and password.';
+        loginError.hidden = false;
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Signing in...';
+
+      try {
+        const user = await login(username, password);
+        window.location.href = getDashboardForRole(user.role);
+      } catch (err) {
+        loginError.textContent = err.message || 'Invalid username or password.';
+        loginError.hidden = false;
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign in';
+      }
+    }
+
+    loginBtn.addEventListener('click', handleLogin);
+    passwordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
 </body>
 </html>
