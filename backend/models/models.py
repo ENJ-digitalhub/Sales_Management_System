@@ -94,3 +94,15 @@ class Sale(Base):
         CheckConstraint("payment_method IN ('cash', 'transfer', 'pos')", name="valid_payment_method"),
         CheckConstraint("status IN ('completed', 'edited', 'cancelled')", name="valid_status")
     )
+    
+class SalesItem(Base):
+    """Defines the sales_items model"""
+    __tablename__ = "sales_items"
+    
+    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
+    sale_id: Mapped[str] = mapped_column(ForeignKey(Sale.id))
+    product_id: Mapped[str] = mapped_column(ForeignKey(Product.id))
+    quantity: Mapped[Decimal] = mapped_column(Numeric(2, 0))
+    unit_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+    cost_price_at_sale: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+    total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
