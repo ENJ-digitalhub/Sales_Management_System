@@ -131,7 +131,7 @@ class AuditLogs(Base):
     action_type: Mapped[str] = mapped_column(String)
     entity_type: Mapped[str] = mapped_column(String(20))
     entity_id: Mapped[str] = mapped_column(String)
-    metadata: Mapped[dict] = mapped_column(JSON, nullable=True)
+    log_metadata: Mapped[dict] = mapped_column(JSON, nullable=True)
     created_at: Mapped[DateTime] = mapped_column(default=datetime.utcnow)
     
     __table_args__ = (

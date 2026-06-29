@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS sales (
     payment_method  TEXT NOT NULL CHECK (payment_method IN ('cash', 'transfer', 'pos')),
     status          TEXT NOT NULL DEFAULT 'completed' CHECK (status IN ('completed', 'edited', 'cancelled')),
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-
+    editable_until  TEXT NOT NULL DEFAULT (datetime('now', '+20 minutes'))
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
@@ -160,10 +160,10 @@ CREATE TABLE IF NOT EXISTS inventory_logs (
 CREATE TABLE IF NOT EXISTS audit_logs (
     id          TEXT PRIMARY KEY,                   -- UUID v4
     user_id     TEXT,                               -- Nullable — system actions may have no user
-    action_type TEXT NOT NULL,                      -- e.g. 'create_sale', 'edit_product', 'approve_purchase'
+    action_type TEXT NOT NULL CHECK (action_type IN ('create_sale', 'edit_sale', 'cancel_sale', 'delete_sale','create_product', 'edit_product', 'delete_product','create_user', 'edit_user', 'deactivate_user','login', 'logout','approve_purchase', 'create_purchase','sync_push', 'sync_conflict')),
     entity_type TEXT NOT NULL CHECK (entity_type IN ('sale', 'product', 'user', 'purchase', 'system')),
     entity_id   TEXT,                               -- ID of the affected record
-    metadata    TEXT,                               -- JSON string with extra context
+    log_metadata    TEXT,                               -- JSON string with extra context
     created_at  TEXT NOT NULL DEFAULT (datetime('now')),
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL

@@ -128,7 +128,7 @@ audit_logs
 - action_type
 - entity_type (sale | product | user )
 - entity_id
-- metadata (JSON)
+- log_metadata (JSON)
 - created_at
 ```
 
