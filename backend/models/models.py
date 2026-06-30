@@ -138,3 +138,20 @@ class AuditLogs(Base):
     CheckConstraint("action_type IN ('create_sale', 'edit_sale', 'cancel_sale', 'delete_sale', 'create_product', 'edit_product', 'delete_product', 'create_user', 'edit_user', 'deactivate_user', 'login', 'logout', 'approve_purchase', 'create_purchase', 'sync_push', 'sync_conflict')",name="valid_action_type"),
     CheckConstraint("entity_type IN ('sale', 'product', 'user')",name="valid_entity_type"),
 )
+    
+class Purchase(Base):
+    """Defines the Purchase model"""
+    __tablename__ = "purchases"
+
+    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
+    created_by: Mapped[str] = mapped_column(ForeignKey(User.id))
+    supplier: Mapped[str | None] = mapped_column(String)
+    status: Mapped[str] = mapped_column(String(20), default="pending")
+    total_cost: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=0)
+    created_at: Mapped[DateTime] = mapped_column(default=datetime.utcnow)
+    approved_by: Mapped[str | None] = mapped_column(ForeignKey(User.id))
+    approved_at: Mapped[DateTime | None] = mapped_column()
+
+    __table_args__ = (
+        CheckConstraint("status IN ('pending', 'approved', 'rejected')", name="valid_status"),
+    ) 
