@@ -207,7 +207,7 @@ CREATE TABLE IF NOT EXISTS sync_queue (
     id              TEXT PRIMARY KEY,               -- Local UUID (device-generated)
     transaction_id  TEXT NOT NULL UNIQUE,           -- UUID v4 — idempotency key, globally unique
     device_id       TEXT NOT NULL,
-    entity_type     TEXT NOT NULL,                  -- 'sale', 'product', 'user', etc.
+    entity_type     TEXT NOT NULL,                  -- 'sale', 'product', 'user', 'purchase, etc.
     operation       TEXT NOT NULL CHECK (operation IN ('CREATE', 'UPDATE', 'DELETE')),
     payload         TEXT NOT NULL,                  -- Full JSON request body
     status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'synced', 'failed', 'conflict')),
