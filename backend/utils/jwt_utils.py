@@ -18,7 +18,7 @@ def generate_token(user_id, role, device_id):
 def decode_token(token):
     """Decode and validate a JWT token. Returns the payload dict."""
     try:
-        payload = jwt.decode(token, Config.SECRET_KEY, algorithms=["HS256"])
+        payload = jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=["HS256"])
         return payload
     except jwt.ExpiredSignatureError:
         raise ValueError("Token has expired")

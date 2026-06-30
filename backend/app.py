@@ -21,7 +21,7 @@ def create_app(config_class=Config):
                 "http://127.0.0.1:5000",
                 "http://localhost:5000"
             ],
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
             "supports_credentials": True
         }
@@ -53,7 +53,7 @@ def create_app(config_class=Config):
         return {"status": "healthy"}, 200
 
     # Register all functional domain routes
-    app.register_blueprint(sales_bp, url_prefix='/api')
+    app.register_blueprint(sales_bp)
     app.register_blueprint(auth_bp)
 
     return app

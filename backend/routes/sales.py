@@ -1,9 +1,10 @@
-# backend/routes/sales.py
 from flask import Blueprint
-from backend.controllers.sales_controller import get_products_controller
-from backend.utils.auth_middleware import require_auth
+from backend.controllers.sales_controller import get_products_controller, update_product_controller
+from backend.utils.auth_middleware import require_auth, require_role
 
 sales_bp = Blueprint('sales', __name__)
 
-# Route registration points directly to the controller function
 sales_bp.route('/products', methods=['GET'])(require_auth(get_products_controller))
+sales_bp.route('/products/<product_id>', methods=['PATCH'])(
+    require_auth(require_role('admin', 'manager')(update_product_controller))
+)
