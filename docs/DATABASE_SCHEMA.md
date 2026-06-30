@@ -114,14 +114,14 @@ CREATE TABLE IF NOT EXISTS sale_items (
 ```sql
 CREATE TABLE IF NOT EXISTS purchases (
     id              TEXT PRIMARY KEY,               -- UUID v4
-    user_id         TEXT NOT NULL,                  -- Who created the purchase entry
+    created_by      TEXT NOT NULL,                  -- Who created the purchase entry
+    supplier        TEXT,                           -- Optional supplier name
     status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
     total_cost      NUMERIC(10, 2) NOT NULL DEFAULT 0 CHECK (total_cost >= 0),
-    notes           TEXT,
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
     approved_by     TEXT,                           -- Admin user_id who approved (nullable)
     approved_at     TEXT,                           -- Timestamp of approval (nullable)
-    FOREIGN KEY (user_id)     REFERENCES users(id) ON DELETE RESTRICT,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT,
     FOREIGN KEY (approved_by) REFERENCES users(id) ON DELETE SET NULL
 );
 ```
@@ -130,6 +130,8 @@ CREATE TABLE IF NOT EXISTS purchases (
 
 * Purchases only affect inventory AFTER admin approval
 * All roles can create a purchase entry
+* `created_by` is required and references `users.id`
+* `approved_by` and `approved_at` remain nullable until approval
 
 ---
 
@@ -142,11 +144,15 @@ CREATE TABLE IF NOT EXISTS purchase_items (
     product_id  TEXT NOT NULL,
     quantity    INTEGER NOT NULL CHECK (quantity > 0),
     cost_price  NUMERIC(10, 2) NOT NULL CHECK (cost_price >= 0),
-    total_cost  NUMERIC(10, 2) NOT NULL CHECK (total_cost >= 0),
     FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id)  REFERENCES products(id)  ON DELETE RESTRICT
 );
 ```
+
+### Notes:
+
+* `cost_price` is snapshotted at the time of purchase
+* It is not linked live to `products.cost_price`
 
 ---
 
@@ -255,7 +261,7 @@ CREATE INDEX IF NOT EXISTS idx_audit_logs_entity    ON audit_logs(entity_type, e
 CREATE INDEX IF NOT EXISTS idx_sync_queue_status    ON sync_queue(status);
 CREATE INDEX IF NOT EXISTS idx_sync_queue_device    ON sync_queue(device_id);
 CREATE INDEX IF NOT EXISTS idx_devices_user_id      ON devices(user_id);
-CREATE INDEX IF NOT EXISTS idx_purchases_user_id    ON purchases(user_id);
+CREATE INDEX IF NOT EXISTS idx_purchases_created_by ON purchases(created_by);
 ```
 
 ---
