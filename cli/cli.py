@@ -66,8 +66,8 @@ class CLI:
                 session.add_all([sale1, sale2, sale3, sale4, sale5])
                 
                 # Create & Add Purchase
-                purchase1 = Purchase(created_by=user1.id, supplier="john", status="pending", total_cost=999.99, approved_by=user2.id, approved_at=datetime.utcnow())
-                purchase2 = Purchase(created_by=user2.id, supplier="jane", status="rejected", total_cost=999.99, approved_by=user1.id, approved_at=datetime.utcnow())
+                purchase1 = Purchase(created_by=user1.id, supplier="john", status="pending", total_cost=999.99)
+                purchase2 = Purchase(created_by=user2.id, supplier="jane", status="rejected", total_cost=999.99)
                 purchase3 = Purchase(created_by=user3.id, supplier="doe", status="approved", total_cost=999.99, approved_by=user1.id, approved_at=datetime.utcnow())
                 
                 session.add_all([purchase1, purchase2, purchase3])
