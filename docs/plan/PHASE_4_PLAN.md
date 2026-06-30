@@ -154,8 +154,8 @@ By end of phase: admins and managers can add, edit, and soft-delete products, cr
 - [x] `backend/models/models.py`: add `Purchase` model — fields: `id, created_by, supplier, status, total_cost, created_at, approved_by, approved_at`
 - [x] `backend/models/models.py`: add `PurchaseItem` model — fields: `id, purchase_id, product_id, quantity, cost_price`
 - [x] `database/schema.sql`: add `purchases` and `purchase_items` tables matching ORM models
-- [ ] `cli/cli.py`: extend `seed` to insert 2–3 demo purchases (one approved, one pending)
-- [ ] `cli/cli.py`: extend `reset` to clear `purchases` and `purchase_items` in FK-safe order
+- [x] `cli/cli.py`: extend `seed` to insert 2–3 demo purchases (one approved, one pending)
+- [x] `cli/cli.py`: extend `reset` to clear `purchases` and `purchase_items` in FK-safe order
 
 ### Socratic Task Spec
 **Objective:** Define `Purchase` and `PurchaseItem` models with correct foreign keys, status constraints, and nullable approval fields — matching the approval flow in the business rules.
