@@ -2,8 +2,9 @@
 from pathlib import Path
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
-from backend.models.models import Base, Product, User
+from backend.models.models import Base, Product, User, Sale, Purchase, PurchaseItem
 from backend.utils.security import Security
+from datetime import datetime
 
 base = Path(__file__).parent.parent.resolve()
 DB_PATH = base / "database" / "shop.db"  # build an absolute path to database/shop.db using Path(__file__)
@@ -53,6 +54,30 @@ class CLI:
 
                 session.add_all([product1, product2, product3, product4, product5])
                 session.add_all([user1, user2, user3])
+                session.flush()
+                
+                # Create & Add Sakes
+                sale1 = Sale(receipt_number="r0001", user_id=user1.id, total_amount=999.99, profit_at_sale=99.99, payment_method="cash", status="completed")
+                sale2 = Sale(receipt_number="r0002", user_id=user2.id, total_amount=999.99, profit_at_sale=99.99, payment_method="transfer", status="edited")
+                sale3 = Sale(receipt_number="r0003", user_id=user3.id, total_amount=999.99, profit_at_sale=99.99, payment_method="transfer", status="cancelled")
+                sale4 = Sale(receipt_number="r0004", user_id=user1.id, total_amount=999.99, profit_at_sale=99.99, payment_method="pos", status="cancelled")
+                sale5 = Sale(receipt_number="r0005", user_id=user2.id, total_amount=999.99, profit_at_sale=99.99, payment_method="cash", status="edited")
+                
+                session.add_all([sale1, sale2, sale3, sale4, sale5])
+                
+                # Create & Add Purchase
+                purchase1 = Purchase(created_by=user1.id, supplier="john", status="pending", total_cost=999.99)
+                purchase2 = Purchase(created_by=user2.id, supplier="jane", status="rejected", total_cost=999.99)
+                purchase3 = Purchase(created_by=user3.id, supplier="doe", status="approved", total_cost=999.99, approved_by=user1.id, approved_at=datetime.utcnow())
+                
+                session.add_all([purchase1, purchase2, purchase3])
+                session.flush()
+                
+                item1 = PurchaseItem(purchase_id=purchase1.id, product_id=product1.id, quantity=10, cost_price=999.99)
+                item2 = PurchaseItem(purchase_id=purchase2.id, product_id=product2.id, quantity=5, cost_price=999.99)
+                item3 = PurchaseItem(purchase_id=purchase3.id, product_id=product3.id, quantity=20, cost_price=999.99)
+
+                session.add_all([item1, item2, item3])
 
                 # Commit Changes
                 session.commit()
