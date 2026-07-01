@@ -133,13 +133,13 @@ By end of phase: a logged-in employee can add items to a cart, complete a sale, 
 ## 👤 ENJ — Models + Schema + CLI
 
 ### Execution Checklist
-- [ ] `backend/models/models.py`: add `Sale` model — fields: `id, receipt_number, user_id, total_amount, profit_at_sale, payment_method, status, created_at, editable_until`
-- [ ] `backend/models/models.py`: add `SaleItem` model — fields: `id, sale_id, product_id, quantity, unit_price, cost_price_at_sale, total_price`
-- [ ] `backend/models/models.py`: add `InventoryLog` model — fields: `id, product_id, change_type, quantity_change, reference_id, created_at`
-- [ ] `backend/models/models.py`: add `AuditLog` model — fields: `id, user_id, action_type, entity_type, entity_id, metadata, created_at`
-- [ ] `database/schema.sql`: add all four tables matching ORM models
-- [ ] `cli/cli.py`: extend `seed` to insert 3–5 demo sales with items against seeded products and users
-- [ ] `cli/cli.py`: extend `reset` to clear all four new tables safely and in correct FK order
+- [x] `backend/models/models.py`: add `Sale` model — fields: `id, receipt_number, user_id, total_amount, profit_at_sale, payment_method, status, created_at, editable_until`
+- [x] `backend/models/models.py`: add `SaleItem` model — fields: `id, sale_id, product_id, quantity, unit_price, cost_price_at_sale, total_price`
+- [x] `backend/models/models.py`: add `InventoryLog` model — fields: `id, product_id, change_type, quantity_change, reference_id, created_at`
+- [x] `backend/models/models.py`: add `AuditLog` model — fields: `id, user_id, action_type, entity_type, entity_id, metadata, created_at`
+- [x] `database/schema.sql`: add all four tables matching ORM models
+- [x] `cli/cli.py`: extend `seed` to insert 3–5 demo sales with items against seeded products and users
+- [x] `cli/cli.py`: extend `reset` to clear all four new tables safely and in correct FK order
 
 ### Socratic Task Spec
 **Objective:** Define all four models using SQLAlchemy 2.0 declarative syntax, with correct foreign keys, relationships, and field types — paying special attention to money fields and snapshot fields.
