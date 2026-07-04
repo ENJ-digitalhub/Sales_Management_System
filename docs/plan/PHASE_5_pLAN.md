@@ -165,16 +165,16 @@ By end of phase: admins and managers can view real-time daily, monthly, and year
 ## 👤 Covenant — Report Endpoints + Aggregation
 
 ### Execution Checklist
-- [ ] `backend/routes/reports.py`: Blueprint with routes — `GET /reports/daily`, `GET /reports/monthly`, `GET /reports/yearly`, `GET /reports/employee/{id}`
-- [ ] `backend/controllers/reports_controller.py`: request/response for all four routes — parse query params, pass to service
-- [ ] `backend/services/reports_service.py`:
+- [X] `backend/routes/reports.py`: Blueprint with routes — `GET /reports/daily`, `GET /reports/monthly`, `GET /reports/yearly`, `GET /reports/employee/{id}`
+- [X] `backend/controllers/reports_controller.py`: request/response for all four routes — parse query params, pass to service
+- [X] `backend/services/reports_service.py`:
   - `get_daily_report(date, session)` — aggregates sales for a single day
   - `get_monthly_report(month, year, session)` — aggregates sales for a month
   - `get_yearly_report(year, session)` — aggregates sales for a year with monthly breakdown
   - `get_employee_report(user_id, from_date, to_date, session)` — aggregates by employee and date range
-- [ ] All routes protected with `@require_role('admin', 'manager')`
-- [ ] `backend/app.py`: register reports blueprint
-- [ ] Query params validated and defaulted in controller — never trusted raw
+- [X] All routes protected with `@require_role('admin', 'manager')`
+- [X] `backend/app.py`: register reports blueprint
+- [X] Query params validated and defaulted in controller — never trusted raw
 
 ### Socratic Task Spec
 **Objective:** Build four report endpoints that aggregate live data from the DB — using SQLAlchemy queries, not Python loops over full table fetches.
@@ -204,15 +204,15 @@ By end of phase: admins and managers can view real-time daily, monthly, and year
 
 ### Execution Checklist
 
-- [ ] `frontend/pages/reports.html`: reports page — hidden from employees via role check
-- [ ] Daily report view — total sales, total profit, transaction count, payment breakdown
-- [ ] Monthly report view — same summary fields, tabbed or toggled from daily
-- [ ] Yearly report view — summary + monthly breakdown table
-- [ ] Employee performance table — name, transaction count, total sales per employee
-- [ ] Date/month/year picker — defaults to current period, allows navigation to previous periods
-- [ ] Simple bar chart for daily sales trend (last 7 days) — vanilla JS canvas or inline SVG, no charting library
-- [ ] Reports page redirects to login if not authenticated
-- [ ] Reports page shows `403` message if role is employee
+- [X] `frontend/pages/reports.html`: reports page — hidden from employees via role check
+- [X] Daily report view — total sales, total profit, transaction count, payment breakdown
+- [X] Monthly report view — same summary fields, tabbed or toggled from daily
+- [X] Yearly report view — summary + monthly breakdown table
+- [X] Employee performance table — name, transaction count, total sales per employee
+- [X] Date/month/year picker — defaults to current period, allows navigation to previous periods
+- [X] Simple bar chart for daily sales trend (last 7 days) — vanilla JS canvas or inline SVG, no charting library
+- [X] Reports page redirects to login if not authenticated
+- [X] Reports page shows `403` message if role is employee
 
 ### Socratic Task Spec
 **Objective:** Build the reports page with period navigation and a simple bar chart — fetching live data from Covenant's endpoints on every period change.
@@ -239,18 +239,18 @@ By end of phase: admins and managers can view real-time daily, monthly, and year
 ## ✅ Definition of Done — Phase 5 (whole team)
 
 A Phase 5 feature is **only** done if:
-- [ ] `GET /reports/daily` returns correct totals for today
-- [ ] `GET /reports/daily?date=YYYY-MM-DD` returns correct totals for that date
-- [ ] `GET /reports/monthly` returns correct totals for current month
-- [ ] `GET /reports/yearly` returns correct totals and monthly breakdown
-- [ ] `GET /reports/employee/{id}` returns correct totals for that employee
-- [ ] Cancelled sales are excluded from all reports
-- [ ] Employee role gets `403` on all report endpoints
-- [ ] Reports page hidden from employees on the frontend
-- [ ] Date picker changes fetch and re-render correctly
-- [ ] Employee performance table shows all employees including zero-sale employees
-- [ ] Bar chart renders from live data
-- [ ] Profit figures use snapshotted `profit_at_sale` — not recalculated
+- [X] `GET /reports/daily` returns correct totals for today
+- [X] `GET /reports/daily?date=YYYY-MM-DD` returns correct totals for that date
+- [X] `GET /reports/monthly` returns correct totals for current month
+- [X] `GET /reports/yearly` returns correct totals and monthly breakdown
+- [X] `GET /reports/employee/{id}` returns correct totals for that employee
+- [X] Cancelled sales are excluded from all reports
+- [X] Employee role gets `403` on all report endpoints
+- [X] Reports page hidden from employees on the frontend
+- [X] Date picker changes fetch and re-render correctly
+- [X] Employee performance table shows all employees including zero-sale employees
+- [X] Bar chart renders from live data
+- [X] Profit figures use snapshotted `profit_at_sale` — not recalculated
 
 **Out of scope this phase:** sync engine, conflict resolution, deployment.
 
