@@ -1,4 +1,5 @@
 from decimal import Decimal
+from datetime import date, datetime as dt, timedelta
 
 ALLOWED_PAYMENT_METHODS = {
     "cash",
@@ -273,3 +274,66 @@ def validate_purchase_payload(payload: dict):
         normalized.append({"product_id": pid, "quantity": q, "cost_price": c})
 
     return {"valid": True, "items": normalized, "supplier": supplier}
+
+
+def validate_daily_report_params(date_param):
+    """Defaults to today if not provided. Expects YYYY-MM-DD."""
+    if not date_param:
+        return {"valid": True, "date": date.today()}
+    try:
+        parsed = dt.strptime(date_param, "%Y-%m-%d").date()
+        return {"valid": True, "date": parsed}
+    except ValueError:
+        return {"valid": False, "error": "date must be in YYYY-MM-DD format"}
+
+
+def validate_monthly_report_params(month_param):
+    """Defaults to current month if not provided. Expects YYYY-MM."""
+    if not month_param:
+        today = date.today()
+        return {"valid": True, "year": today.year, "month": today.month}
+    try:
+        parsed = dt.strptime(month_param, "%Y-%m")
+        return {"valid": True, "year": parsed.year, "month": parsed.month}
+    except ValueError:
+        return {"valid": False, "error": "month must be in YYYY-MM format"}
+
+
+def validate_yearly_report_params(year_param):
+    """Defaults to current year if not provided. Expects YYYY."""
+    if not year_param:
+        return {"valid": True, "year": date.today().year}
+    try:
+        year = int(year_param)
+        if year < 2000 or year > 2100:
+            return {"valid": False, "error": "year out of reasonable range"}
+        return {"valid": True, "year": year}
+    except ValueError:
+        return {"valid": False, "error": "year must be a valid integer"}
+
+
+def validate_employee_report_params(from_param, to_param):
+    """
+    Both optional. If neither given, defaults to the last 30 days.
+    If given, both must be valid YYYY-MM-DD and from <= to.
+    """
+    if not from_param and not to_param:
+        today = date.today()
+        from_date = today - timedelta(days=30)
+        return {"valid": True, "from_date": from_date, "to_date": today}
+
+    try:
+        from_date = dt.strptime(from_param, "%Y-%m-%d").date() if from_param else None
+        to_date = dt.strptime(to_param, "%Y-%m-%d").date() if to_param else None
+    except ValueError:
+        return {"valid": False, "error": "from/to must be in YYYY-MM-DD format"}
+
+    if from_date is None:
+        from_date = to_date
+    if to_date is None:
+        to_date = date.today()
+
+    if from_date > to_date:
+        return {"valid": False, "error": "from date must be before or equal to to date"}
+
+    return {"valid": True, "from_date": from_date, "to_date": to_date}
