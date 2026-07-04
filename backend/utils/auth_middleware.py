@@ -6,10 +6,6 @@ from backend.services.auth_service import AuthService
 
 
 def require_auth(f):
-    """Extracts the Bearer token, verifies it against the DB (never trusts the
-    token's embedded role claim), and attaches the verified user/role to flask.g.
-    Returns 401 if the token is missing, malformed, invalid, expired, or the
-    device session is no longer active."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get('Authorization')
@@ -17,9 +13,9 @@ def require_auth(f):
             return jsonify({"success": False, "message": "Token missing or invalid"}), 401
 
         token = auth_header.split(" ")[1]
+        session = get_db()  # no 'with' — teardown_appcontext in app.py owns closing this
         try:
-            with get_db() as session:
-                user_data = AuthService.verify_token(session, token)
+            user_data = AuthService.verify_token(session, token)
         except ValueError:
             return jsonify({"success": False, "message": "Token missing or invalid"}), 401
 

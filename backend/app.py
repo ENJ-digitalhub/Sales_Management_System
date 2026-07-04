@@ -41,7 +41,7 @@ def create_app(config_class=Config):
         return {"status": "healthy"}, 200
 
     # Register all functional domain routes
-    app.register_blueprint(sales_bp, url_prefix='/api')
+    app.register_blueprint(sales_bp)
     app.register_blueprint(auth_bp)
 
     return app
