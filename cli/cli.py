@@ -2,9 +2,8 @@
 from pathlib import Path
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
-from backend.models.models import Base, Product, User, Sale, Purchase, PurchaseItem
-from backend.utils.security import Security
-from datetime import datetime
+from backend.models.models import Base, Product, User, Sale, SaleItem, InventoryLog, AuditLog, Purchase, PurchaseItemfrom backend.utils.security import Security
+from datetime import datetime, timedelta
 
 base = Path(__file__).parent.parent.resolve()
 DB_PATH = base / "database" / "shop.db"  # build an absolute path to database/shop.db using Path(__file__)
@@ -56,14 +55,68 @@ class CLI:
                 session.add_all([user1, user2, user3])
                 session.flush()
                 
-                # Create & Add Sakes
-                sale1 = Sale(receipt_number="r0001", user_id=user1.id, total_amount=999.99, profit_at_sale=99.99, payment_method="cash", status="completed")
-                sale2 = Sale(receipt_number="r0002", user_id=user2.id, total_amount=999.99, profit_at_sale=99.99, payment_method="transfer", status="edited")
-                sale3 = Sale(receipt_number="r0003", user_id=user3.id, total_amount=999.99, profit_at_sale=99.99, payment_method="transfer", status="cancelled")
-                sale4 = Sale(receipt_number="r0004", user_id=user1.id, total_amount=999.99, profit_at_sale=99.99, payment_method="pos", status="cancelled")
-                sale5 = Sale(receipt_number="r0005", user_id=user2.id, total_amount=999.99, profit_at_sale=99.99, payment_method="cash", status="edited")
-                
-                session.add_all([sale1, sale2, sale3, sale4, sale5])
+                # --- Sales: spread across 3 months so daily/monthly/yearly reports have real data ---
+                products = [product1, product2, product3, product4, product5]
+                employees = [user3, user2, user1]  # jane (employee), doe (manager), john (admin)
+                payment_methods = ["cash", "transfer", "pos"]
+
+                now = datetime.utcnow()
+                sales_created = []
+
+                for month_offset in range(3):              # this month, last month, month before
+                    for day_offset in [1, 5, 12, 20, 27]:   # 5 distinct days per month
+                        sale_date = now - timedelta(days=(month_offset * 30) + day_offset)
+
+                        for i, employee in enumerate(employees):
+                            product = products[(month_offset + day_offset + i) % len(products)]
+                            quantity = (i % 3) + 1
+                            unit_price = product.selling_price
+                            cost_price = product.cost_price
+                            total_price = unit_price * quantity
+                            profit = (unit_price - cost_price) * quantity
+
+                            sale = Sale(
+                                receipt_number=f"r{len(sales_created)+1:05d}",
+                                user_id=employee.id,
+                                total_amount=total_price,
+                                profit_at_sale=profit,
+                                payment_method=payment_methods[i % len(payment_methods)],
+                                status="completed",
+                                created_at=sale_date,
+                                editable_until=sale_date + timedelta(minutes=20),
+                            )
+                            session.add(sale)
+                            session.flush()  # need sale.id before the FK rows below
+
+                            session.add(SaleItem(
+                                sale_id=sale.id,
+                                product_id=product.id,
+                                quantity=quantity,
+                                unit_price=unit_price,
+                                cost_price_at_sale=cost_price,
+                                total_price=total_price,
+                            ))
+
+                            session.add(InventoryLog(
+                                product_id=product.id,
+                                change_type="sale",
+                                quantity_change=-quantity,
+                                reference_id=sale.id,
+                                created_at=sale_date,
+                            ))
+
+                            session.add(AuditLog(
+                                user_id=employee.id,
+                                action_type="create_sale",
+                                entity_type="sale",
+                                entity_id=sale.id,
+                                log_metadata=None,
+                                created_at=sale_date,
+                            ))
+
+                            sales_created.append(sale)
+
+                print(f"Created {len(sales_created)} sales across 3 months.")
                 
                 # Create & Add Purchase
                 purchase1 = Purchase(created_by=user1.id, supplier="john", status="pending", total_cost=999.99)

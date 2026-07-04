@@ -143,7 +143,7 @@ By end of phase: admins and managers can view real-time daily, monthly, and year
 ### Execution Checklist
 - [ ] Review Covenant's aggregation queries for correctness — specifically profit calculation and date filtering
 - [ ] Verify `InventoryLog` and `AuditLog` data from Phases 3 and 4 is sufficient to support report queries
-- [ ] Extend `seed` to insert enough demo sales across multiple days, months, and employees to make reports meaningful during testing
+- [x] Extend `seed` to insert enough demo sales across multiple days, months, and employees to make reports meaningful during testing
 - [ ] Help unblock either teammate if needed
 
 ### Socratic Task Spec
