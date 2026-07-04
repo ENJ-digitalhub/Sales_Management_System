@@ -353,3 +353,53 @@ label {
   font-weight: bold;
   margin-left: 12px;
 }
+/* ==========================================================================
+   Reports — Phase 5
+   ========================================================================== */
+
+#period-tabs {
+  margin: 12px 0;
+}
+
+.tab-btn {
+  padding: 6px 14px;
+  margin-right: 6px;
+  border: 1px solid #ccc;
+  background: #f4f4f4;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background: #2c3e50;
+  color: white;
+}
+
+#summary-section {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.summary-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px 20px;
+  text-align: center;
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.85em;
+  color: #666;
+}
+
+.summary-value {
+  display: block;
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+#trend-chart {
+  border: 1px solid #ddd;
+  margin-top: 8px;
+}
