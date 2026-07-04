@@ -47,7 +47,8 @@ const api = {
 };
 
 const ProductsAPI = {
-  getAll: () => api.get('/products'),
+  // Balanced path matches backend: http://127.0.0.1:5000/sales/products
+  getAll: () => api.get('/sales/products'),
 };
 
 export { api, ProductsAPI };
