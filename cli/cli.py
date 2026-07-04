@@ -2,7 +2,8 @@
 from pathlib import Path
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
-from backend.models.models import Base, Product, User, Sale, SaleItem, InventoryLog, AuditLog, Purchase, PurchaseItemfrom backend.utils.security import Security
+from backend.models.models import Base, Product, User, Sale, SalesItem, InventoryLogs, AuditLogs, Purchase, PurchaseItem
+from backend.utils.security import Security
 from datetime import datetime, timedelta
 
 base = Path(__file__).parent.parent.resolve()
@@ -88,7 +89,7 @@ class CLI:
                             session.add(sale)
                             session.flush()  # need sale.id before the FK rows below
 
-                            session.add(SaleItem(
+                            session.add(SalesItem(
                                 sale_id=sale.id,
                                 product_id=product.id,
                                 quantity=quantity,
@@ -97,7 +98,7 @@ class CLI:
                                 total_price=total_price,
                             ))
 
-                            session.add(InventoryLog(
+                            session.add(InventoryLogs(
                                 product_id=product.id,
                                 change_type="sale",
                                 quantity_change=-quantity,
@@ -105,7 +106,7 @@ class CLI:
                                 created_at=sale_date,
                             ))
 
-                            session.add(AuditLog(
+                            session.add(AuditLogs(
                                 user_id=employee.id,
                                 action_type="create_sale",
                                 entity_type="sale",
