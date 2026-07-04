@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>New Sale</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>New Sale</h1>
+    <span id="pending-badge" style="display:none;"></span>
+  </header>
+
+  <div id="product-list"></div>
+
+  <div id="cart">
+    <h2>Cart</h2>
+    <ul id="cart-items"></ul>
+    <p>Total: <span id="cart-total">0.00</span></p>
+    <select id="payment-method">
+      <option value="cash">Cash</option>
+      <option value="bank_transfer">Bank Transfer</option>
+      <option value="pos_terminal">POS Terminal</option>
+    </select>
+    <button id="submit-sale">Complete Sale</button>
+  </div>
+
+  <button id="sync-now">Sync pending sales</button>
+
+  <script type="module" src="../modules/sale_page.js"></script>
+</body>
+</html>

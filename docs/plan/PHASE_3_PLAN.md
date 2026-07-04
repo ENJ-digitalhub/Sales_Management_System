@@ -167,18 +167,18 @@ By end of phase: a logged-in employee can add items to a cart, complete a sale, 
 ## 👤 Covenant — Sales Endpoints + Business Logic
 
 ### Execution Checklist
-- [ ] `backend/routes/sales.py`: add routes — `POST /sales`, `GET /sales/{id}`, `PATCH /sales/{id}`, `POST /sales/{id}/cancel`
-- [ ] `backend/controllers/sales_controller.py`: handle request/response shape for all four routes
-- [ ] `backend/services/sales_service.py`: implement:
+- [X] `backend/routes/sales.py`: add routes — `POST /sales`, `GET /sales/{id}`, `PATCH /sales/{id}`, `POST /sales/{id}/cancel`
+- [X] `backend/controllers/sales_controller.py`: handle request/response shape for all four routes
+- [X] `backend/services/sales_service.py`: implement:
   - `create_sale(user_id, items, payment_method, session)` — full validation + commit
   - `get_sale(sale_id, session)` — fetch with items
   - `edit_sale(sale_id, user_id, role, items, payment_method, session)` — edit window check + role check
   - `cancel_sale(sale_id, user_id, role, session)` — manager/admin only, restores stock
-- [ ] `backend/utils/validators.py`: validate sale payload — items not empty, payment method is valid enum, quantities are positive integers, no duplicate product IDs
-- [ ] All routes protected with `@require_auth` from Phase 2
-- [ ] `POST /sales/{id}/cancel` protected with `@require_role('manager', 'admin')`
-- [ ] Stock check happens inside a DB transaction — no partial commits
-- [ ] `AuditLog` entry created on every sale creation, edit, and cancellation
+- [X] `backend/utils/validators.py`: validate sale payload — items not empty, payment method is valid enum, quantities are positive integers, no duplicate product IDs
+- [X] All routes protected with `@require_auth` from Phase 2
+- [X] `POST /sales/{id}/cancel` protected with `@require_role('manager', 'admin')`
+- [X] Stock check happens inside a DB transaction — no partial commits
+- [X] `AuditLog` entry created on every sale creation, edit, and cancellation
 
 ### Socratic Task Spec
 **Objective:** Build the full sales flow — creation validates stock, deducts it atomically, snapshots prices, and locks the sale after 20 minutes. Edits check the window and role before allowing changes.
@@ -207,17 +207,17 @@ By end of phase: a logged-in employee can add items to a cart, complete a sale, 
 ## 👤 Goodness — Sales UI + Cart + Payment
 
 ### Execution Checklist
-- [ ] `frontend/pages/sales.html`: sales dashboard page
-- [ ] Product search bar and category filter (fetches from `GET /products`)
-- [ ] Cart component — add product, edit quantity, remove item, running total
-- [ ] Payment method selector — Cash, Transfer, POS buttons
-- [ ] "Complete Sale" button with confirmation modal before submission
-- [ ] On success: cart resets, show success toast "Sale completed"
-- [ ] On stock error: show clear error message per product, do not reset cart
-- [ ] Edit sale UI — show edit button only within 20 minutes, hide after
-- [ ] After 20 minutes: show "Requires manager approval" state instead of edit button
-- [ ] Add sale to offline queue (IndexedDB) if server is unreachable — mark as `PENDING_SYNC`
-- [ ] Show `PENDING_SYNC` label on unsynced sales in transaction history
+- [X] `frontend/pages/sales.html`: sales dashboard page
+- [X] Product search bar and category filter (fetches from `GET /products`)
+- [X] Cart component — add product, edit quantity, remove item, running total
+- [X] Payment method selector — Cash, Transfer, POS buttons
+- [X] "Complete Sale" button with confirmation modal before submission
+- [X] On success: cart resets, show success toast "Sale completed"
+- [X] On stock error: show clear error message per product, do not reset cart
+- [X] Edit sale UI — show edit button only within 20 minutes, hide after
+- [X] After 20 minutes: show "Requires manager approval" state instead of edit button
+- [X] Add sale to offline queue (IndexedDB) if server is unreachable — mark as `PENDING_SYNC`
+- [X] Show `PENDING_SYNC` label on unsynced sales in transaction history
 
 ### Socratic Task Spec
 **Objective:** Build the sales flow from product selection to completed sale — with cart management, payment method selection, and offline queue fallback when the server is unreachable.
@@ -246,21 +246,21 @@ By end of phase: a logged-in employee can add items to a cart, complete a sale, 
 ## ✅ Definition of Done — Phase 3 (whole team)
 
 A Phase 3 feature is **only** done if:
-- [ ] `POST /sales` with valid stock returns a completed sale
-- [ ] `POST /sales` with insufficient stock rejects the entire sale with no DB changes
-- [ ] Stock levels are correctly deducted after a successful sale
-- [ ] `profit_at_sale` is correctly calculated and stored
-- [ ] `editable_until` is 20 minutes after `created_at` on every sale
-- [ ] `PATCH /sales/{id}` within 20 minutes succeeds for employees
-- [ ] `PATCH /sales/{id}` after 20 minutes returns `requires_approval: true` for employees
-- [ ] `PATCH /sales/{id}` after 20 minutes succeeds for managers
-- [ ] `POST /sales/{id}/cancel` restores stock correctly
-- [ ] Every sale action creates an `AuditLog` entry
-- [ ] Cart builds correctly — no duplicate products, quantities editable
-- [ ] Successful sale resets cart and shows toast
-- [ ] Stock error shows per-product message without resetting cart
-- [ ] Edit button disappears after 20 minutes on the frontend
-- [ ] Offline sale goes into IndexedDB queue marked `PENDING_SYNC`
+- [X] `POST /sales` with valid stock returns a completed sale
+- [X] `POST /sales` with insufficient stock rejects the entire sale with no DB changes
+- [X] Stock levels are correctly deducted after a successful sale
+- [X] `profit_at_sale` is correctly calculated and stored
+- [X] `editable_until` is 20 minutes after `created_at` on every sale
+- [X] `PATCH /sales/{id}` within 20 minutes succeeds for employees
+- [X] `PATCH /sales/{id}` after 20 minutes returns `requires_approval: true` for employees
+- [X] `PATCH /sales/{id}` after 20 minutes succeeds for managers
+- [X] `POST /sales/{id}/cancel` restores stock correctly
+- [X] Every sale action creates an `AuditLog` entry
+- [X] Cart builds correctly — no duplicate products, quantities editable
+- [X] Successful sale resets cart and shows toast
+- [X] Stock error shows per-product message without resetting cart
+- [X] Edit button disappears after 20 minutes on the frontend
+- [X] Offline sale goes into IndexedDB queue marked `PENDING_SYNC`
 
 **Out of scope this phase:** inventory editing, purchase/restock flow, sync engine, reports, conflict resolution.
 

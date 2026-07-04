@@ -1,8 +1,7 @@
 /* ==========================================================================
-   queue.js — Offline queue storage scaffold (IndexedDB)
+   queue.js — Offline queue storage (IndexedDB)
    Stores offline transactions locally.
    Record shape matches SYNC_ENGINE.md §3 exactly.
-   No sync/dispatch logic yet — storage shape only.
    ========================================================================== */
 
 const DB_NAME    = 'sales_management_db';
@@ -50,19 +49,22 @@ function generateUUID() {
  * @param {string} entity_type - e.g. 'sale'
  * @param {string} operation   - 'CREATE' | 'UPDATE' | 'DELETE'
  * @param {object} payload     - the full request body
+ * @param {string|null} transaction_id - pass the same id used as the
+ *   server's client_transaction_id, so the queue record and the eventual
+ *   server-side sale are tied together. If omitted, one is generated here.
  */
-async function enqueue(entity_type, operation, payload) {
+async function enqueue(entity_type, operation, payload, transaction_id = null) {
   const db = await openDB();
 
   const record = {
-    transaction_id: generateUUID(),
+    transaction_id: transaction_id || generateUUID(),
     entity_type,
     operation,
     payload,
-    status:         'PENDING',
-    retry_count:    0,
+    status:          'PENDING',
+    retry_count:     0,
     last_attempt_at: null,
-    created_at:     new Date().toISOString(),
+    created_at:      new Date().toISOString(),
   };
 
   return new Promise((resolve, reject) => {
@@ -98,10 +100,10 @@ async function getPending() {
   const db = await openDB();
 
   return new Promise((resolve, reject) => {
-    const tx      = db.transaction(STORE_NAME, 'readonly');
-    const store   = tx.objectStore(STORE_NAME);
-    const index   = store.index('status');
-    const req     = index.getAll('PENDING');
+    const tx    = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const index = store.index('status');
+    const req   = index.getAll('PENDING');
 
     req.onsuccess = (e) => resolve(e.target.result);
     req.onerror   = (e) => reject(e.target.error);
@@ -113,8 +115,9 @@ async function getPending() {
  *
  * @param {string} transaction_id
  * @param {string} status - 'PENDING' | 'SYNCED' | 'FAILED' | 'CONFLICT'
+ * @param {boolean} incrementRetry - true when this update follows a failed attempt
  */
-async function updateStatus(transaction_id, status) {
+async function updateStatus(transaction_id, status, incrementRetry = false) {
   const db = await openDB();
 
   return new Promise((resolve, reject) => {
@@ -128,14 +131,25 @@ async function updateStatus(transaction_id, status) {
 
       record.status          = status;
       record.last_attempt_at = new Date().toISOString();
+      if (incrementRetry) {
+        record.retry_count = (record.retry_count || 0) + 1;
+      }
 
-      const updateReq       = store.put(record);
-      updateReq.onsuccess   = () => resolve(record);
-      updateReq.onerror     = (e) => reject(e.target.error);
+      const updateReq     = store.put(record);
+      updateReq.onsuccess  = () => resolve(record);
+      updateReq.onerror    = (e) => reject(e.target.error);
     };
 
     req.onerror = (e) => reject(e.target.error);
   });
 }
 
-export { enqueue, getAllQueued, getPending, updateStatus };
+/**
+ * Count of PENDING records — used for the UI badge.
+ */
+async function getPendingCount() {
+  const pending = await getPending();
+  return pending.length;
+}
+
+export { enqueue, getAllQueued, getPending, updateStatus, getPendingCount, generateUUID };

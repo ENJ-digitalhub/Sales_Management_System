@@ -155,4 +155,5 @@ export {
   getDeviceId,
   getDashboardForRole,
   requireAuth,
+  BASE_URL,
 };
