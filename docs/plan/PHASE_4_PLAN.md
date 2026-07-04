@@ -183,24 +183,24 @@ By end of phase: admins and managers can add, edit, and soft-delete products, cr
 ## 👤 Covenant — Product + Purchase Endpoints
 
 ### Execution Checklist
-- [ ] `backend/routes/products.py`: Blueprint with routes — `GET /products`, `POST /products`, `PATCH /products/{id}`, `DELETE /products/{id}`
-- [ ] `backend/routes/purchases.py`: Blueprint with routes — `POST /purchases`, `GET /purchases/{id}`, `GET /purchases/history`, `POST /purchases/{id}/approve`
-- [ ] `backend/controllers/products_controller.py`: request/response for all product routes
-- [ ] `backend/controllers/purchases_controller.py`: request/response for all purchase routes
-- [ ] `backend/services/products_service.py`:
+- [X] `backend/routes/products.py`: Blueprint with routes — `GET /products`, `POST /products`, `PATCH /products/{id}`, `DELETE /products/{id}`
+- [X] `backend/routes/purchases.py`: Blueprint with routes — `POST /purchases`, `GET /purchases/{id}`, `GET /purchases/history`, `POST /purchases/{id}/approve`
+- [X] `backend/controllers/products_controller.py`: request/response for all product routes
+- [X] `backend/controllers/purchases_controller.py`: request/response for all purchase routes
+- [X] `backend/services/products_service.py`:
   - `get_all_products(session)` — active only
   - `create_product(data, session)` — validates, creates, logs audit
   - `edit_product(product_id, data, session)` — validates, updates, logs audit
   - `deactivate_product(product_id, session)` — soft delete, logs audit
-- [ ] `backend/services/purchases_service.py`:
+- [X] `backend/services/purchases_service.py`:
   - `create_purchase(user_id, items, supplier, session)` — creates pending purchase
   - `approve_purchase(purchase_id, admin_id, session)` — increments stock, logs inventory, logs audit
   - `get_purchase(purchase_id, session)`
   - `get_purchase_history(session)`
-- [ ] `backend/utils/validators.py`: validate product payload, validate purchase payload
-- [ ] All product write routes protected with `@require_role('admin', 'manager')`
-- [ ] `POST /purchases/{id}/approve` protected with `@require_role('admin')`
-- [ ] `backend/app.py`: register both new blueprints
+- [X] `backend/utils/validators.py`: validate product payload, validate purchase payload
+- [X] All product write routes protected with `@require_role('admin', 'manager')`
+- [X] `POST /purchases/{id}/approve` protected with `@require_role('admin')`
+- [X] `backend/app.py`: register both new blueprints
 
 ### Socratic Task Spec
 **Objective:** Build full product CRUD with soft delete and full purchase flow with admin approval — every stock change goes through `InventoryLog`, every sensitive action goes through `AuditLog`.
@@ -227,17 +227,17 @@ By end of phase: admins and managers can add, edit, and soft-delete products, cr
 ## 👤 Goodness — Inventory UI + Purchase UI
 
 ### Execution Checklist
-- [ ] `frontend/pages/inventory.html`: inventory page
-- [ ] Product list — name, selling price, stock quantity, low-stock highlight (amber) for stock ≤ 5
-- [ ] Add product form — name, category, selling price, cost price, stock quantity
-- [ ] Edit product inline or modal — all fields editable
-- [ ] Soft delete — confirmation prompt before deactivating
-- [ ] `frontend/pages/purchases.html`: purchase/restock page
-- [ ] Purchase entry form — select product, quantity, cost price per item
-- [ ] Purchase history list — show status (pending / approved)
-- [ ] Admin-only: approve button visible only to admin role
-- [ ] Hide add/edit/delete controls from employees — show read-only view only
-- [ ] Low-stock alert banner — shown when any product stock ≤ 5
+- [X] `frontend/pages/inventory.html`: inventory page
+- [X] Product list — name, selling price, stock quantity, low-stock highlight (amber) for stoXk ≤ 5
+- [X] Add product form — name, category, selling price, cost price, stock quantity
+- [X] Edit product inline or modal — all fields editable
+- [X] Soft delete — confirmation prompt before deactivating
+- [X] `frontend/pages/purchases.html`: purchase/restock page
+- [X] Purchase entry form — select product, quantity, cost price per item
+- [X] Purchase history list — show status (pending / approved)
+- [X] Admin-only: approve button visible only to admin role
+- [X] Hide add/edit/delete controls from employees — show read-only view only
+- [X] Low-stock alert banner — shown when any product stock ≤ 5
 
 ### Socratic Task Spec
 **Objective:** Build the inventory and purchase pages with role-aware controls — employees see read-only, managers can CRUD products, admins can approve purchases.
@@ -263,20 +263,20 @@ By end of phase: admins and managers can add, edit, and soft-delete products, cr
 ## ✅ Definition of Done — Phase 4 (whole team)
 
 A Phase 4 feature is **only** done if:
-- [ ] `POST /products` creates a product visible in `GET /products`
-- [ ] `PATCH /products/{id}` updates the product and logs the change
-- [ ] `DELETE /products/{id}` soft deletes — product hidden from list but exists in DB
-- [ ] Employees cannot access product write endpoints — `403` returned
-- [ ] `POST /purchases` creates a pending purchase with no stock change
-- [ ] `POST /purchases/{id}/approve` increments stock and creates `InventoryLog` entry
-- [ ] Non-admin cannot approve a purchase — `403` returned
-- [ ] Stock never goes below zero
-- [ ] Every stock movement has a corresponding `InventoryLog` entry
-- [ ] Every sensitive action has a corresponding `AuditLog` entry
-- [ ] Inventory page shows live products with low-stock highlighting
-- [ ] Add/edit/delete controls hidden from employees
-- [ ] Purchase history shows correct status per entry
-- [ ] Approve button visible to admin only
+- [X] `POST /products` creates a product visible in `GET /products`
+- [X] `PATCH /products/{id}` updates the product and logs the change
+- [X] `DELETE /products/{id}` soft deletes — product hidden from list but exists in DB
+- [X] Employees cannot access product write endpoints — `403` returned
+- [X] `POST /purchases` creates a pending purchase with no stock change
+- [X] `POST /purchases/{id}/approve` increments stock and creates `InventoryLog` entry
+- [X] Non-admin cannot approve a purchase — `403` returned
+- [X] Stock never goes below zero
+- [X] Every stock movement has a corresponding `InventoryLog` entry
+- [X] Every sensitive action has a corresponding `AuditLog` entry
+- [X] Inventory page shows live products with low-stock highlighting
+- [X] Add/edit/delete controls hidden from employees
+- [X] Purchase history shows correct status per entry
+- [X] Approve button visible to admin only
 
 **Out of scope this phase:** reports, sync engine, conflict resolution.
 

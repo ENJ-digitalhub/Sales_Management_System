@@ -331,3 +331,25 @@ label {
   main { padding: 20px 16px; }
   .container { padding: 0 16px; }
 }
+/* ==========================================================================
+   Low-stock indicators — Phase 4
+   ========================================================================== */
+
+.low-stock-row {
+  background-color: #fff3cd; /* amber */
+}
+
+.low-stock-row:hover {
+  background-color: #ffe8a1;
+}
+
+.low-stock-banner {
+  display: inline-block;
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-left: 12px;
+}
