@@ -177,3 +177,99 @@ def validate_pagination_params(page_param, per_page_param):
         return {"error": None, "page": page, "per_page": per_page}
     except Exception:
         return {"error": "Invalid pagination parameters", "page": None, "per_page": None}
+    # --- Phase 4 additions ---
+
+ALLOWED_PRODUCT_FIELDS = {"name", "category", "selling_price", "cost_price", "stock_quantity"}
+
+
+def validate_product_payload(payload: dict, partial: bool = False):
+    """
+    partial=False (create): name, selling_price, cost_price, stock_quantity are required.
+    partial=True (edit/PATCH): all fields optional, but at least one must be present,
+    and any field present must still pass the same value checks.
+    """
+    if not isinstance(payload, dict):
+        return {"valid": False, "error": "Invalid payload"}
+
+    if partial:
+        provided = {k: v for k, v in payload.items() if k in ALLOWED_PRODUCT_FIELDS}
+        if not provided:
+            return {"valid": False, "error": "No valid fields provided to update"}
+    else:
+        required = {"name", "selling_price", "cost_price", "stock_quantity"}
+        missing = required - payload.keys()
+        if missing:
+            return {"valid": False, "error": f"Missing required fields: {', '.join(sorted(missing))}"}
+        provided = {k: v for k, v in payload.items() if k in ALLOWED_PRODUCT_FIELDS}
+
+    if "name" in provided:
+        if not isinstance(provided["name"], str) or not provided["name"].strip():
+            return {"valid": False, "error": "name must be a non-empty string"}
+
+    if "category" in provided and provided["category"] is not None:
+        if not isinstance(provided["category"], str):
+            return {"valid": False, "error": "category must be a string"}
+
+    for field in ("selling_price", "cost_price"):
+        if field in provided:
+            try:
+                value = float(provided[field])
+            except (TypeError, ValueError):
+                return {"valid": False, "error": f"{field} must be a number"}
+            if value < 0:
+                return {"valid": False, "error": f"{field} cannot be negative"}
+
+    if "stock_quantity" in provided:
+        try:
+            qty = int(provided["stock_quantity"])
+        except (TypeError, ValueError):
+            return {"valid": False, "error": "stock_quantity must be an integer"}
+        if qty < 0:
+            return {"valid": False, "error": "stock_quantity cannot be negative"}
+        provided["stock_quantity"] = qty
+
+    return {"valid": True, "fields": provided}
+
+
+def validate_purchase_payload(payload: dict):
+    if not isinstance(payload, dict):
+        return {"valid": False, "error": "Invalid payload"}
+
+    items = payload.get("items")
+    supplier = payload.get("supplier")
+
+    if not items or not isinstance(items, list):
+        return {"valid": False, "error": "items must be a non-empty list"}
+
+    if supplier is not None and not isinstance(supplier, str):
+        return {"valid": False, "error": "supplier must be a string"}
+
+    normalized = []
+    for it in items:
+        if not isinstance(it, dict):
+            return {"valid": False, "error": "Each item must be an object"}
+
+        pid = it.get("product_id")
+        qty = it.get("quantity")
+        cost = it.get("cost_price")
+
+        if not pid or not isinstance(pid, str):
+            return {"valid": False, "error": "product_id missing or invalid"}
+
+        try:
+            q = int(qty)
+        except (TypeError, ValueError):
+            return {"valid": False, "error": "quantity must be an integer"}
+        if q <= 0:
+            return {"valid": False, "error": "quantity must be positive"}
+
+        try:
+            c = float(cost)
+        except (TypeError, ValueError):
+            return {"valid": False, "error": "cost_price must be a number"}
+        if c < 0:
+            return {"valid": False, "error": "cost_price cannot be negative"}
+
+        normalized.append({"product_id": pid, "quantity": q, "cost_price": c})
+
+    return {"valid": True, "items": normalized, "supplier": supplier}

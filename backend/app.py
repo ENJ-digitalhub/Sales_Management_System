@@ -5,6 +5,8 @@ from flask_cors import CORS
 from backend.config import Config
 from backend.routes.sales import sales_bp
 from backend.routes.auth import auth_bp
+from backend.routes.products import products_bp
+from backend.routes.purchase import purchases_bp
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
@@ -64,5 +66,6 @@ def create_app(config_class=Config):
     # Blueprint Alignment Fix
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(sales_bp)  # Relies cleanly on the '/sales' prefix inside sales.py
-
+    app.register_blueprint(products_bp)  # Relies cleanly on the '/products' prefix inside products.py
+    app.register_blueprint(purchases_bp)  # Relies cleanly on the '/purchases' prefix inside purchase.py
     return app
