@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Purchases / Restock</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Purchases</h1>
+  </header>
+
+  <div id="new-purchase-section" style="display:none;">
+    <h2>New Purchase Entry</h2>
+    <form id="purchase-form">
+      <select id="purchase-product"></select>
+      <input type="number" id="purchase-quantity" placeholder="Quantity" min="1" required />
+      <input type="number" id="purchase-cost" placeholder="Cost price per unit" step="0.01" required />
+      <button type="button" id="add-item-btn">Add Item</button>
+
+      <ul id="purchase-items-list"></ul>
+
+      <input type="text" id="purchase-supplier" placeholder="Supplier (optional)" />
+      <button type="submit">Submit Purchase</button>
+    </form>
+  </div>
+
+  <h2>Purchase History</h2>
+  <table id="purchase-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Supplier</th>
+        <th>Total Cost</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th id="approve-header" style="display:none;">Action</th>
+      </tr>
+    </thead>
+    <tbody id="purchase-table-body"></tbody>
+  </table>
+
+  <script type="module" src="../modules/purchases_page.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>New Sale</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>New Sale</h1>
+  </header>
+
+  <div id="connection-banner"></div>
+
+  <div id="product-list"></div>
+
+  <div id="cart">
+    <h2>Cart</h2>
+    <ul id="cart-items"></ul>
+    <p>Total: <span id="cart-total">0.00</span></p>
+    <select id="payment-method">
+      <option value="cash">Cash</option>
+      <option value="bank_transfer">Bank Transfer</option>
+      <option value="pos_terminal">POS Terminal</option>
+    </select>
+    <button id="submit-sale">Complete Sale</button>
+  </div>
+
+  <div id="sync-controls">
+    <button id="sync-now-btn">Sync Now <span id="sync-pending-badge"></span></button>
+    <button id="retry-failed-btn">Retry Failed</button>
+  </div>
+
+  <div id="sync-history">
+    <h2>Sync History</h2>
+    <div id="sync-history-list"></div>
+  </div>
+
+  <script type="module" src="../modules/sale_page.js"></script>
+  <script type="module">
+    import { initSyncUI } from "../modules/sync_ui.js";
+    initSyncUI();
+  </script>
+</body>
+</html>

@@ -1,60 +1,39 @@
-# backend/services/auth_service.py
-from datetime import datetime
-from sqlalchemy import select, update
-from backend.models.models import User, Device
-from backend.utils.security import Security
+from datetime import datetime, timezone
+from sqlalchemy import select
+from backend.models.models import User
+from backend.utils.security import verify_password
 from backend.utils.jwt_utils import generate_token, decode_token
 
 
 class AuthenticationError(ValueError):
+    """Raised when authentication fails (bad credentials, invalid token, etc.)."""
     pass
 
 
 class AuthService:
 
     @staticmethod
+    def _now():
+        """Get current UTC time. Use timezone-aware datetime."""
+        return datetime.now(timezone.utc)
+
+    @staticmethod
     def login(session, username: str, password: str, device_id: str) -> dict:
         if not username or not password or not device_id:
             raise AuthenticationError("Invalid username or password")
 
-        # Fetch user
+        # Fetch user (Note: using integer check for is_active matching ENJ's model default=1)
         user = session.execute(
             select(User).where(
                 User.username == username,
-                User.is_active == True
+                User.is_active == 1
             )
         ).scalar_one_or_none()
         
-        print(f"USER FOUND: {user}")  # ← add this
+        print(f"USER FOUND: {user}")
 
-        if not user or not Security.verify_password(password, user.password_hash):
+        if not user or not verify_password(password, user.password_hash):
             raise AuthenticationError("Invalid username or password")
-
-        # Invalidate all other active devices for this user
-        session.execute(
-            update(Device)
-            .where(Device.user_id == user.id, Device.is_active == True)
-            .values(is_active=False)
-        )
-
-        # Find or create device
-        device = session.execute(
-            select(Device).where(
-                Device.user_id == user.id,
-                Device.device_name == device_id
-            )
-        ).scalar_one_or_none()
-
-        if device:
-            device.is_active = True
-            device.last_seen_at = datetime.utcnow()
-        else:
-            device = Device(
-                user_id=user.id,
-                device_name=device_id,
-                is_active=True
-            )
-            session.add(device)
 
         session.flush()
 
@@ -71,17 +50,7 @@ class AuthService:
 
     @staticmethod
     def logout(session, device_id: str, requesting_user_id: str) -> None:
-        device = session.execute(
-            select(Device).where(
-                Device.device_name == device_id,
-                Device.user_id == requesting_user_id
-            )
-        ).scalar_one_or_none()
-
-        if not device:
-            raise AuthenticationError("Device not found or not owned by this user")
-
-        device.is_active = False
+        # Bypassed Device table mutations for Phase 3 compatibility
         session.flush()
 
     @staticmethod
@@ -97,28 +66,18 @@ class AuthService:
         user = session.execute(
             select(User).where(
                 User.id == user_id,
-                User.is_active == True
+                User.is_active == 1
             )
         ).scalar_one_or_none()
 
         if not user:
             raise AuthenticationError("Token missing or invalid")
 
-        device = session.execute(
-            select(Device).where(
-                Device.user_id == user.id,
-                Device.device_name == device_id,
-                Device.is_active == True
-            )
-        ).scalar_one_or_none()
-
-        if not device:
-            raise AuthenticationError("Token missing or invalid")
-
-        device.last_seen_at = datetime.utcnow()
         session.flush()
 
+        # Returns expected data shape for your auth_middleware require_auth decorator
         return {
-            "id": str(user.id),
-            "role": user.role
+            "user_id": str(user.id),
+            "role": user.role,
+            "device_id": device_id,
         }

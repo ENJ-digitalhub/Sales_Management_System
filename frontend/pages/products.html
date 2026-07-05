@@ -81,7 +81,7 @@
       try {
         const data = await ProductsAPI.getAll();
         console.log(data)
-        renderProducts(data.products);
+        renderProducts(data.items);
       } catch (err) {
         loadingState.hidden = true;
         errorState.hidden = false;

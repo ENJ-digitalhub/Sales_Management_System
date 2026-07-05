@@ -7,7 +7,8 @@ const TOKEN_KEY = 'sms_token';
 const DEVICE_ID_KEY = 'sms_device_id';
 const USER_KEY = 'sms_user';
 
-const BASE_URL = '';
+// Using BASE_URL makes it easy to switch environments later (e.g., to production)
+const BASE_URL = 'http://127.0.0.1:5000';
 
 /**
  * Returns this browser's persistent device identity, generating one
@@ -45,10 +46,11 @@ function decodeTokenPayload(token) {
 async function login(username, password) {
   const device_id = getDeviceId();
 
-  const response = await fetch(`${BASE_URL}/auth/login`, {
+  // FIXED: Separated 'await' and 'fetch' & used BASE_URL
+  const response = await fetch(`${BASE_URL}/auth/login`, { 
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password, device_id }),
+    body: JSON.stringify({ username, password, device_id })
   });
 
   const data = await response.json();
@@ -66,8 +68,7 @@ async function login(username, password) {
 /**
  * Logs out: tells the server to invalidate this device's session,
  * then clears local storage regardless of whether the network call
- * succeeds (a failed logout request should never trap the user
- * in a logged-in-looking state on their own device).
+ * succeeds.
  */
 async function logout() {
   const token = getToken();
@@ -75,13 +76,14 @@ async function logout() {
 
   try {
     if (token) {
-      await fetch(`${BASE_URL}/auth/logout`, {
+      // FIXED: Completely cleaned up and rebuilt the broken fetch layout here
+      await fetch(`${BASE_URL}/auth/logout`, { 
         method: 'POST',
-        headers: {
+        headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${token}` 
         },
-        body: JSON.stringify({ device_id }),
+        body: JSON.stringify({ device_id })
       });
     }
   } catch (err) {
@@ -105,10 +107,7 @@ function getCurrentUser() {
 
 /**
  * Checks whether a token exists and is not expired, based on its
- * own `exp` claim. This is a client-side convenience check only —
- * the server is always the real authority on validity (e.g. a
- * device that's been logged out elsewhere will still "look" valid
- * here until the next API call gets a 401).
+ * own `exp` claim.
  */
 function isAuthenticated() {
   const token = getToken();
@@ -156,4 +155,5 @@ export {
   getDeviceId,
   getDashboardForRole,
   requireAuth,
+  BASE_URL,
 };

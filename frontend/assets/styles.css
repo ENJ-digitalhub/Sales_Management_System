@@ -331,3 +331,117 @@ label {
   main { padding: 20px 16px; }
   .container { padding: 0 16px; }
 }
+/* ==========================================================================
+   Low-stock indicators — Phase 4
+   ========================================================================== */
+
+.low-stock-row {
+  background-color: #fff3cd; /* amber */
+}
+
+.low-stock-row:hover {
+  background-color: #ffe8a1;
+}
+
+.low-stock-banner {
+  display: inline-block;
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin-left: 12px;
+}
+/* ==========================================================================
+   Reports — Phase 5
+   ========================================================================== */
+
+#period-tabs {
+  margin: 12px 0;
+}
+
+.tab-btn {
+  padding: 6px 14px;
+  margin-right: 6px;
+  border: 1px solid #ccc;
+  background: #f4f4f4;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background: #2c3e50;
+  color: white;
+}
+
+#summary-section {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.summary-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px 20px;
+  text-align: center;
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.85em;
+  color: #666;
+}
+
+.summary-value {
+  display: block;
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+#trend-chart {
+  border: 1px solid #ddd;
+  margin-top: 8px;
+}
+/* ==========================================================================
+   Sync UI — Phase 6
+   ========================================================================== */
+
+#connection-banner {
+  display: none;
+  padding: 8px 14px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.banner-offline {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.banner-syncing {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+#sync-pending-badge {
+  display: none;
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 0.85em;
+  margin-left: 8px;
+}
+
+.status-synced { color: #155724; font-weight: bold; }   /* green — synced only */
+.status-pending { color: #856404; }                      /* amber */
+.status-failed { color: #721c24; font-weight: bold; }    /* red */
+.status-conflict { color: #856404; font-weight: bold; text-decoration: underline; }
+
+.sync-history-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-bottom: 1px solid #eee;
+}
