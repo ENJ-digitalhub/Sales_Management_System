@@ -1,11 +1,7 @@
 // frontend/modules/sales.js
-import { getToken, BASE_URL } from "./auth.js";
+import { getToken, getCurrentUser, BASE_URL } from "./auth.js";
 import { enqueue, generateUUID } from "./queue.js";
 
-/**
- * Attempts to create a sale online. On real network failure (not a 4xx/5xx
- * response — an actual failed fetch), falls back to the offline queue.
- */
 export async function createSale({ items, paymentMethod, paymentProvider, deviceId }) {
   if (!items || items.length === 0) {
     throw new Error("Cart is empty");
@@ -16,9 +12,11 @@ export async function createSale({ items, paymentMethod, paymentProvider, device
     }
   }
 
+  const currentUser = getCurrentUser();
   const clientTransactionId = generateUUID();
 
   const payload = {
+    user_id: currentUser ? currentUser.id : null,
     device_id: deviceId,
     client_transaction_id: clientTransactionId,
     payment_method: paymentMethod,

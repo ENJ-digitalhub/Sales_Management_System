@@ -138,25 +138,29 @@ class InventoryLog(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     product = relationship('Product', back_populates='inventory_logs')
-
+    
 
 class SyncQueue(Base):
     __tablename__ = 'sync_queue'
     __table_args__ = (
         CheckConstraint(
-            "status IN ('pending', 'synced', 'failed')",
+            "status IN ('pending', 'synced', 'failed', 'conflict')",
             name='valid_sync_status'
         ),
     )
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(String, primary_key=True)  # client-supplied transaction_id — NOT auto-generated
     device_id = Column(String(36), nullable=False, index=True)
     entity_type = Column(String(30), nullable=False)
+    operation = Column(String(20), nullable=False, default='CREATE')
     payload = Column(JSON, nullable=False)
     status = Column(String(20), nullable=False, default='pending')
     retry_count = Column(Integer, nullable=False, default=0)
     last_attempt_at = Column(DateTime, nullable=True)
+    result_message = Column(String(255), nullable=True)
+    server_sale_id = Column(String(36), nullable=True)  # set once synced, links to the real Sale row
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
 class AuditLog(Base):
     __tablename__ = 'audit_logs'
 

@@ -61,6 +61,7 @@ class AuthService:
             raise AuthenticationError("Token missing or invalid")
 
         user_id = payload.get("sub")
+        device_id = payload.get("device_id")
 
         user = session.execute(
             select(User).where(
@@ -77,5 +78,6 @@ class AuthService:
         # Returns expected data shape for your auth_middleware require_auth decorator
         return {
             "user_id": str(user.id),
-            "role": user.role
+            "role": user.role,
+            "device_id": device_id,
         }

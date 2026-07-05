@@ -19,7 +19,11 @@ def require_auth(f):
         except (ValueError, AuthenticationError):
             return jsonify({"success": False, "message": "Token missing or invalid"}), 401
 
-        g.current_user = {"id": user_data["user_id"], "role": user_data["role"]}
+        g.current_user = {
+            "id": user_data["user_id"],
+            "role": user_data["role"],
+            "device_id": user_data.get("device_id"),
+        }
         return f(*args, **kwargs)
 
     return decorated_function

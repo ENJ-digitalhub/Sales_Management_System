@@ -403,3 +403,45 @@ label {
   border: 1px solid #ddd;
   margin-top: 8px;
 }
+/* ==========================================================================
+   Sync UI — Phase 6
+   ========================================================================== */
+
+#connection-banner {
+  display: none;
+  padding: 8px 14px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.banner-offline {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.banner-syncing {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+#sync-pending-badge {
+  display: none;
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 0.85em;
+  margin-left: 8px;
+}
+
+.status-synced { color: #155724; font-weight: bold; }   /* green — synced only */
+.status-pending { color: #856404; }                      /* amber */
+.status-failed { color: #721c24; font-weight: bold; }    /* red */
+.status-conflict { color: #856404; font-weight: bold; text-decoration: underline; }
+
+.sync-history-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-bottom: 1px solid #eee;
+}

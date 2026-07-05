@@ -8,8 +8,9 @@
 <body>
   <header>
     <h1>New Sale</h1>
-    <span id="pending-badge" style="display:none;"></span>
   </header>
+
+  <div id="connection-banner"></div>
 
   <div id="product-list"></div>
 
@@ -25,8 +26,20 @@
     <button id="submit-sale">Complete Sale</button>
   </div>
 
-  <button id="sync-now">Sync pending sales</button>
+  <div id="sync-controls">
+    <button id="sync-now-btn">Sync Now <span id="sync-pending-badge"></span></button>
+    <button id="retry-failed-btn">Retry Failed</button>
+  </div>
+
+  <div id="sync-history">
+    <h2>Sync History</h2>
+    <div id="sync-history-list"></div>
+  </div>
 
   <script type="module" src="../modules/sale_page.js"></script>
+  <script type="module">
+    import { initSyncUI } from "../modules/sync_ui.js";
+    initSyncUI();
+  </script>
 </body>
 </html>

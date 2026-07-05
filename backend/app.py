@@ -8,6 +8,7 @@ from backend.routes.auth import auth_bp
 from backend.routes.products import products_bp
 from backend.routes.purchase import purchases_bp
 from backend.routes.reports import reports_bp
+from backend.routes.sync import sync_bp
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
 
@@ -69,4 +70,5 @@ def create_app(config_class=Config):
     app.register_blueprint(products_bp)  # Relies cleanly on the '/products' prefix inside products.py
     app.register_blueprint(purchases_bp)  # Relies cleanly on the '/purchases' prefix inside purchase.py
     app.register_blueprint(reports_bp)  # Relies cleanly on the '/reports' prefix inside reports.py
+    app.register_blueprint(sync_bp)  # Relies cleanly on the '/sync' prefix inside sync.py
     return app

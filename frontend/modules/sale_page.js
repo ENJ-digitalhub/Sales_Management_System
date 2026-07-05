@@ -1,7 +1,7 @@
 // frontend/modules/sale_page.js
 import { getToken, getDeviceId, BASE_URL } from "./auth.js";
 import { createSale } from "./sales.js";
-import { processQueue, getPendingBadgeCount } from "./sync.js";
+import { refreshSyncUI } from "./sync_ui.js";
 
 let cart = [];
 let products = [];
@@ -11,6 +11,12 @@ async function fetchProducts() {
     headers: { Authorization: `Bearer ${getToken()}` },
   });
   const data = await response.json();
+
+  if (!response.ok) {
+    alert(data.message || "Failed to load products");
+    return;
+  }
+
   products = data.items || [];
   renderProductList();
 }
@@ -75,17 +81,6 @@ function renderCart() {
   document.getElementById("cart-total").textContent = total.toFixed(2);
 }
 
-async function updatePendingBadge() {
-  const count = await getPendingBadgeCount();
-  const badge = document.getElementById("pending-badge");
-  if (count > 0) {
-    badge.style.display = "inline";
-    badge.textContent = `${count} pending sync`;
-  } else {
-    badge.style.display = "none";
-  }
-}
-
 document.getElementById("submit-sale").addEventListener("click", async () => {
   if (cart.length === 0) {
     alert("Cart is empty");
@@ -108,16 +103,8 @@ document.getElementById("submit-sale").addEventListener("click", async () => {
     alert("No connection — sale saved and will sync automatically.");
     cart = [];
     renderCart();
+    await refreshSyncUI(); // <-- the fix: badge/history update immediately on queue
   }
-
-  await updatePendingBadge();
-});
-
-document.getElementById("sync-now").addEventListener("click", async () => {
-  const result = await processQueue();
-  await updatePendingBadge();
-  alert(`Synced: ${result.synced}, Failed: ${result.failed}`);
 });
 
 fetchProducts();
-updatePendingBadge();

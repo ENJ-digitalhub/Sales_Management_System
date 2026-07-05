@@ -145,11 +145,13 @@ async function updateStatus(transaction_id, status, incrementRetry = false) {
 }
 
 /**
- * Count of PENDING records — used for the UI badge.
+ * Count of records still needing attention — PENDING (not yet synced)
+ * plus FAILED (needs manual retry). CONFLICT items are excluded since
+ * they need explicit manager resolution, not a routine sync retry.
  */
 async function getPendingCount() {
-  const pending = await getPending();
-  return pending.length;
+  const all = await getAllQueued();
+  return all.filter((r) => r.status === 'PENDING' || r.status === 'FAILED').length;
 }
 
 export { enqueue, getAllQueued, getPending, updateStatus, getPendingCount, generateUUID };
