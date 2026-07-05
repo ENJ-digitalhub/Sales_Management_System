@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS sales (
     payment_method  TEXT NOT NULL CHECK (payment_method IN ('cash', 'transfer', 'pos')),
     status          TEXT NOT NULL DEFAULT 'completed' CHECK (status IN ('completed', 'edited', 'cancelled')),
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-    editable_until  TEXT NOT NULL DEFAULT (datetime('now', '+20 minutes'))
+    editable_until  TEXT NOT NULL DEFAULT (datetime('now', '+20 minutes')),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS sync_queue (
     status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'synced', 'failed', 'conflict')),
     retry_count     INTEGER NOT NULL DEFAULT 0,
     last_attempt_at TEXT,
-    created_at      TEXT NOT NULL DEFAULT (datetime('now'))
+    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
 
     FOREIGN KEY (transaction_id) REFERENCES transactions(id) ON DELETE SET NULL
     FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE SET NULL
