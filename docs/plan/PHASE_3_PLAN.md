@@ -167,18 +167,32 @@ By end of phase: a logged-in employee can add items to a cart, complete a sale, 
 ## 👤 Covenant — Sales Endpoints + Business Logic
 
 ### Execution Checklist
+<<<<<<< HEAD
 - [X] `backend/routes/sales.py`: add routes — `POST /sales`, `GET /sales/{id}`, `PATCH /sales/{id}`, `POST /sales/{id}/cancel`
 - [X] `backend/controllers/sales_controller.py`: handle request/response shape for all four routes
 - [X] `backend/services/sales_service.py`: implement:
+=======
+- [x] `backend/routes/sales.py`: add routes — `POST /sales`, `GET /sales/{id}`, `PATCH /sales/{id}`, `POST /sales/{id}/cancel`
+- [x] `backend/controllers/sales_controller.py`: handle request/response shape for all four routes
+- [x] `backend/services/sales_service.py`: implement:
+>>>>>>> 166f1ee040f599bc784a2737b4d4c28b35a3160b
   - `create_sale(user_id, items, payment_method, session)` — full validation + commit
   - `get_sale(sale_id, session)` — fetch with items
   - `edit_sale(sale_id, user_id, role, items, payment_method, session)` — edit window check + role check
   - `cancel_sale(sale_id, user_id, role, session)` — manager/admin only, restores stock
+<<<<<<< HEAD
 - [X] `backend/utils/validators.py`: validate sale payload — items not empty, payment method is valid enum, quantities are positive integers, no duplicate product IDs
 - [X] All routes protected with `@require_auth` from Phase 2
 - [X] `POST /sales/{id}/cancel` protected with `@require_role('manager', 'admin')`
 - [X] Stock check happens inside a DB transaction — no partial commits
 - [X] `AuditLog` entry created on every sale creation, edit, and cancellation
+=======
+- [x] `backend/utils/validators.py`: validate sale payload — items not empty, payment method is valid enum, quantities are positive integers, no duplicate product IDs
+- [x] All routes protected with `@require_auth` from Phase 2
+- [x] `POST /sales/{id}/cancel` protected with `@require_role('manager', 'admin')`
+- [x] Stock check happens inside a DB transaction — no partial commits
+- [x] `AuditLog` entry created on every sale creation, edit, and cancellation
+>>>>>>> 166f1ee040f599bc784a2737b4d4c28b35a3160b
 
 ### Socratic Task Spec
 **Objective:** Build the full sales flow — creation validates stock, deducts it atomically, snapshots prices, and locks the sale after 20 minutes. Edits check the window and role before allowing changes.

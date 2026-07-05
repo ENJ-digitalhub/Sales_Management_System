@@ -50,22 +50,14 @@ def push_to_queue(session, transactions: list, device_id: str) -> list:
 
 
 def validate_transaction(session, queue_row: SyncQueue) -> dict:
-    """
-    Validates + executes a single queued transaction. Reuses
-    SalesService.create_sale() rather than duplicating stock/product
-    validation logic, per the non-negotiable rule.
-
-    Returns {"status": "synced"|"conflict"|"failed", "message": str, "server_id": str|None}
-    """
     if queue_row.entity_type != "sale" or queue_row.operation != "CREATE":
-        return {"status": "failed", "message": f"Unsupported entity_type/operation: {queue_row.entity_type}/{queue_row.operation}", "server_id": None}
+        return {"status": "failed", "message": f"Unsupported entity_type/operation: {queue_row.entity_type}/{queue_row.operation}", "server_id": None, "conflict_type": None}
 
     payload = queue_row.payload
     validation = validate_sale_payload(payload, require_transaction_id=False)
     if not validation["valid"]:
-        return {"status": "failed", "message": validation["error"], "server_id": None}
+        return {"status": "failed", "message": validation["error"], "server_id": None, "conflict_type": None}
 
-    # Deleted-product check up front — distinct conflict reason from stock.
     for item in validation["items"]:
         product = session.get(Product, item["product_id"])
         if product is None or product.is_active == 0:
@@ -73,13 +65,10 @@ def validate_transaction(session, queue_row: SyncQueue) -> dict:
                 "status": "conflict",
                 "message": f"Product no longer available: {item['product_id']}",
                 "server_id": None,
+                "conflict_type": "deleted_product",
             }
 
     try:
-        # user_id comes from the queue row's payload if present, else
-        # falls back to whoever the device belongs to — in this system
-        # the sync payload should already include user context from the
-        # original offline sale attempt.
         user_id = payload.get("user_id")
         sale = SalesService.create_sale(
             session=session,
@@ -91,17 +80,17 @@ def validate_transaction(session, queue_row: SyncQueue) -> dict:
             device_id=queue_row.device_id,
             client_transaction_id=queue_row.id,
         )
-        return {"status": "synced", "message": "Synced successfully", "server_id": sale["id"]}
+        return {"status": "synced", "message": "Synced successfully", "server_id": sale["id"], "conflict_type": None}
 
     except InsufficientStockError as e:
         return {
             "status": "conflict",
             "message": str(e),
             "server_id": None,
+            "conflict_type": "stock",
         }
     except Exception as e:
-        return {"status": "failed", "message": str(e), "server_id": None}
-
+        return {"status": "failed", "message": str(e), "server_id": None, "conflict_type": None}
 
 def process_queue(session, transaction_ids: list = None) -> list:
     """

@@ -147,18 +147,26 @@ class SyncQueue(Base):
             "status IN ('pending', 'synced', 'failed', 'conflict')",
             name='valid_sync_status'
         ),
+        CheckConstraint(
+            "conflict_type IS NULL OR conflict_type IN ('stock', 'deleted_product', 'duplicate')",
+            name='valid_conflict_type'
+        ),
     )
 
-    id = Column(String, primary_key=True)  # client-supplied transaction_id — NOT auto-generated
+    id = Column(String, primary_key=True)  # client-supplied transaction_id
     device_id = Column(String(36), nullable=False, index=True)
     entity_type = Column(String(30), nullable=False)
     operation = Column(String(20), nullable=False, default='CREATE')
     payload = Column(JSON, nullable=False)
     status = Column(String(20), nullable=False, default='pending')
+    conflict_type = Column(String(30), nullable=True)  # set only when status == 'conflict'
     retry_count = Column(Integer, nullable=False, default=0)
     last_attempt_at = Column(DateTime, nullable=True)
     result_message = Column(String(255), nullable=True)
-    server_sale_id = Column(String(36), nullable=True)  # set once synced, links to the real Sale row
+    server_sale_id = Column(String(36), nullable=True)
+    resolved_by = Column(String, ForeignKey('users.id'), nullable=True)
+    resolved_at = Column(DateTime, nullable=True)
+    resolution_note = Column(String(500), nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
 class AuditLog(Base):
