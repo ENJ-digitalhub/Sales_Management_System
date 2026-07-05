@@ -2,3 +2,5 @@ base.txt
 .env
 __pycache__/
 .venv
+database/shop.db
+verify_seed.py

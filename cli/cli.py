@@ -5,7 +5,7 @@ import uuid
 from pathlib import Path
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
-from backend.models.models import Base, Product, User, Sale, SaleItem, Purchase, PurchaseItem
+from backend.models.models import Base, Product, User, Sale, SalesItem, InventoryLogs, AuditLogs, Purchase, PurchaseItem
 from backend.utils.security import Security
 from datetime import datetime, timedelta, timezone
 
@@ -109,7 +109,7 @@ class CLI:
                 report_sales = []
                 for days_ago, user, method, provider, amount, profit in report_seed_data:
                     sale_time = today - timedelta(days=days_ago)
-                    report_sales.append(Sale(
+                    sale = Sale(
                         client_transaction_id=str(uuid.uuid4()),
                         device_id=str(uuid.uuid4()),
                         receipt_number=f"RPT-{uuid.uuid4().hex[:8]}",
@@ -121,7 +121,28 @@ class CLI:
                         status="completed",
                         created_at=sale_time,
                         editable_until=sale_time + timedelta(days=1),
+                    )
+                    session.add(sale)
+                    session.flush()  # need sale.id for the FK rows below
+
+                    session.add(InventoryLogs(
+                        product_id=product1.id,  # pick relevant product per sale in practice
+                        change_type="sale",
+                        quantity_change=-1,
+                        reference_id=sale.id,
+                        created_at=sale_time,
                     ))
+
+                    session.add(AuditLogs(
+                        user_id=user.id,
+                        action_type="create_sale",
+                        entity_type="sale",
+                        entity_id=sale.id,
+                        log_metadata=None,
+                        created_at=sale_time,
+                    ))
+
+                    report_sales.append(sale)
 
                 session.add_all(report_sales)
                 session.flush()  # need real sale.id values before creating SaleItem rows
