@@ -167,18 +167,18 @@ By end of phase: a logged-in employee can add items to a cart, complete a sale, 
 ## 👤 Covenant — Sales Endpoints + Business Logic
 
 ### Execution Checklist
-- [ ] `backend/routes/sales.py`: add routes — `POST /sales`, `GET /sales/{id}`, `PATCH /sales/{id}`, `POST /sales/{id}/cancel`
-- [ ] `backend/controllers/sales_controller.py`: handle request/response shape for all four routes
-- [ ] `backend/services/sales_service.py`: implement:
+- [x] `backend/routes/sales.py`: add routes — `POST /sales`, `GET /sales/{id}`, `PATCH /sales/{id}`, `POST /sales/{id}/cancel`
+- [x] `backend/controllers/sales_controller.py`: handle request/response shape for all four routes
+- [x] `backend/services/sales_service.py`: implement:
   - `create_sale(user_id, items, payment_method, session)` — full validation + commit
   - `get_sale(sale_id, session)` — fetch with items
   - `edit_sale(sale_id, user_id, role, items, payment_method, session)` — edit window check + role check
   - `cancel_sale(sale_id, user_id, role, session)` — manager/admin only, restores stock
-- [ ] `backend/utils/validators.py`: validate sale payload — items not empty, payment method is valid enum, quantities are positive integers, no duplicate product IDs
-- [ ] All routes protected with `@require_auth` from Phase 2
-- [ ] `POST /sales/{id}/cancel` protected with `@require_role('manager', 'admin')`
-- [ ] Stock check happens inside a DB transaction — no partial commits
-- [ ] `AuditLog` entry created on every sale creation, edit, and cancellation
+- [x] `backend/utils/validators.py`: validate sale payload — items not empty, payment method is valid enum, quantities are positive integers, no duplicate product IDs
+- [x] All routes protected with `@require_auth` from Phase 2
+- [x] `POST /sales/{id}/cancel` protected with `@require_role('manager', 'admin')`
+- [x] Stock check happens inside a DB transaction — no partial commits
+- [x] `AuditLog` entry created on every sale creation, edit, and cancellation
 
 ### Socratic Task Spec
 **Objective:** Build the full sales flow — creation validates stock, deducts it atomically, snapshots prices, and locks the sale after 20 minutes. Edits check the window and role before allowing changes.
