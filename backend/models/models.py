@@ -157,8 +157,6 @@ class SyncQueue(Base):
     retry_count = Column(Integer, nullable=False, default=0)
     last_attempt_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-
-
 class AuditLog(Base):
     __tablename__ = 'audit_logs'
 
