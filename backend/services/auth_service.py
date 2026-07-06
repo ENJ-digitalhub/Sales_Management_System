@@ -25,8 +25,6 @@ class AuthService:
             )
         ).scalar_one_or_none()
         
-        print(f"USER FOUND: {user}")  # ← add this
-
         if not user or not Security.verify_password(password, user.password_hash):
             raise AuthenticationError("Invalid username or password")
 

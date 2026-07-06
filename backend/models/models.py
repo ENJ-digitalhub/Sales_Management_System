@@ -5,9 +5,6 @@ from sqlalchemy import String, Numeric, Boolean, JSON, CheckConstraint, ForeignK
 from datetime import datetime, timedelta, timezone
 import uuid
 
-# wherever you call it
-datetime.now(timezone.utc)
-
 class Base(DeclarativeBase):
     """Defines the base class for SQLAlchemy models"""
     pass

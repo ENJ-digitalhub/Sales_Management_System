@@ -178,18 +178,17 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 -- 9. SYNC QUEUE
 -- ============================================================
 CREATE TABLE IF NOT EXISTS sync_queue (
-    id              TEXT PRIMARY KEY,               -- Local UUID (device-generated)
-    transaction_id  TEXT NOT NULL UNIQUE,           -- UUID v4 — idempotency key, globally unique
+    id              TEXT PRIMARY KEY,
+    transaction_id  TEXT NOT NULL UNIQUE,
     device_id       TEXT NOT NULL,
-    entity_type     TEXT NOT NULL CHECK (entity_type IN ('sale', 'product', 'user', 'purchase')),                  -- 'sale', 'product', 'user', 'purchase', etc.
+    entity_type     TEXT NOT NULL CHECK (entity_type IN ('sale', 'product', 'user', 'purchase')),
     operation       TEXT NOT NULL CHECK (operation IN ('CREATE', 'UPDATE', 'DELETE')),
-    payload         TEXT NOT NULL,                  -- Full JSON request body
+    payload         TEXT NOT NULL,
     status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'synced', 'failed', 'conflict')),
     retry_count     INTEGER NOT NULL DEFAULT 0,
     last_attempt_at TEXT,
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
 
-    FOREIGN KEY (transaction_id) REFERENCES transactions(id) ON DELETE SET NULL
     FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE SET NULL
 );
 

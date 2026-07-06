@@ -57,23 +57,17 @@
 │   └── plan/
 │
 ├── frontend/
-│   ├── __init__.py
 │   ├── index.html
 │   ├── assets/
-│   │   ├── __init__.py
 │   │   └── styles.css
 │   ├── components/
-│   │   ├── __init__.py
 │   │   └── button.js
 │   ├── modules/
-│   │   ├── __init__.py
 │   │   └── auth.js
 │   ├── pages/
-│   │   ├── __init__.py
 │   │   ├── dashboard.html
 │   │   └── login.html
 │   └── services/
-│       ├── __init__.py
 │       └── api.js
 │
 ├── landing-page/
