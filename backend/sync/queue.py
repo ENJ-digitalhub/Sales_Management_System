@@ -11,11 +11,17 @@ class ProductDeletedConflict(Exception):
         self.product_id = product_id
 
 
-def push_to_queue(session, transactions: list, device_id: str) -> list:
+def push_to_queue(session, transactions: list, device_id: str, user_id: str) -> list:
     """
     Ingests a batch of transactions into SyncQueue. Idempotency is enforced
     here via SyncQueue.id being the client's transaction_id — a primary
     key uniqueness check, not an app-level "look before you leap" race.
+
+    user_id is the authenticated user who is submitting this batch. It's
+    stored on the row (submitted_by) at ingestion time so that later, when
+    a manager resolves a conflict via resolve_conflict(), the sale can
+    still be correctly attributed to the ORIGINAL submitter — not the
+    resolver.
 
     Returns the list of transaction_ids that are actually new/pending
     (already-synced ones are skipped here, handled directly in process_queue
@@ -35,6 +41,7 @@ def push_to_queue(session, transactions: list, device_id: str) -> list:
         queue_row = SyncQueue(
             id=transaction_id,
             device_id=device_id,
+            submitted_by=user_id,
             entity_type=txn.get("entity_type", "sale"),
             operation=txn.get("operation", "CREATE"),
             payload=txn.get("payload", {}),
@@ -61,44 +68,70 @@ def validate_transaction(session, queue_row: SyncQueue) -> dict:
     for item in validation["items"]:
         product = session.get(Product, item["product_id"])
         if product is None or product.is_active == 0:
-            return {
-                "status": "conflict",
-                "message": f"Product no longer available: {item['product_id']}",
-                "server_id": None,
-                "conflict_type": "deleted_product",
-            }
+            return {"status": "conflict", "message": f"Product no longer available: {item['product_id']}", "server_id": None, "conflict_type": "deleted_product"}
 
     try:
-        user_id = payload.get("user_id")
+        # user_id comes from the row itself (set at ingestion in
+        # push_to_queue), NOT from the payload — the locked POST /sync
+        # contract's payload only contains items/payment_method, so
+        # payload.get("user_id") was always None. Reading it from
+        # queue_row.submitted_by also means resolve_conflict() later
+        # attributes the sale correctly to the original submitter,
+        # even if a different user (e.g. a manager) resolves it.
+        user_id = queue_row.submitted_by
         sale = SalesService.create_sale(
             session=session,
             user_id=user_id,
             items=validation["items"],
             payment_method=validation["payment_method"],
-            payment_provider=validation["payment_provider"],
-            payment_details=validation["payment_details"],
             device_id=queue_row.device_id,
             client_transaction_id=queue_row.id,
         )
         return {"status": "synced", "message": "Synced successfully", "server_id": sale["id"], "conflict_type": None}
 
     except InsufficientStockError as e:
-        return {
-            "status": "conflict",
-            "message": str(e),
-            "server_id": None,
-            "conflict_type": "stock",
-        }
+        return {"status": "conflict", "message": str(e), "server_id": None, "conflict_type": "stock"}
     except Exception as e:
         return {"status": "failed", "message": str(e), "server_id": None, "conflict_type": None}
+
+
+def _safe_rollback(nested):
+    """
+    Rolls back a SAVEPOINT defensively.
+
+    WHY THIS EXISTS (please read before removing):
+    When a flush inside validate_transaction() (e.g. inside
+    SalesService.create_sale()) hits a DB-level error such as
+    InsufficientStockError, SQLAlchemy can auto-deactivate the current
+    SAVEPOINT as part of surfacing that error — even though we catch
+    the error cleanly inside validate_transaction() and return a normal
+    "conflict"/"failed" dict instead of raising.
+
+    That means by the time process_queue() calls nested.rollback()
+    explicitly, the savepoint may already be closed. Calling .rollback()
+    on an already-closed savepoint raises sqlalchemy.exc.ResourceClosedError
+    ("This transaction is closed"), which then masks the real outcome and
+    crashes the whole /sync request with a 500 — even though the actual
+    conflict/failure was already handled correctly.
+
+    This helper checks nested.is_active first, and swallows
+    ResourceClosedError as a fallback, so a savepoint that already closed
+    itself is simply treated as "already rolled back" instead of raising.
+    """
+    try:
+        if nested.is_active:
+            nested.rollback()
+    except Exception:
+        # Already closed/invalidated — nothing more to do.
+        pass
+
 
 def process_queue(session, transaction_ids: list = None) -> list:
     """
     Processes queued transactions one at a time, each in its own SAVEPOINT
     (nested transaction) — so a single item's failure/rollback never
-    aborts the whole batch. This directly answers the guiding question:
-    session.begin_nested() creates a SAVEPOINT; rolling that back only
-    undoes this item's writes, not the whole session.
+    aborts the whole batch. session.begin_nested() creates a SAVEPOINT;
+    rolling that back only undoes this item's writes, not the whole session.
 
     Idempotency: if a row's status is already 'synced', we skip real
     work and return its cached result immediately — no second DB write,
@@ -131,27 +164,25 @@ def process_queue(session, transaction_ids: list = None) -> list:
         try:
             outcome = validate_transaction(session, row)
 
-            row.status = outcome["status"]
-            row.result_message = outcome["message"]
-            row.server_sale_id = outcome["server_id"]
-
             if outcome["status"] == "synced":
+                row.status = outcome["status"]
+                row.result_message = outcome["message"]
+                row.server_sale_id = outcome["server_id"]
                 nested.commit()
             else:
                 # conflict/failed: roll back any partial writes from this
-                # attempt, but keep the SyncQueue row's status update by
-                # re-applying it after rollback (rollback would also
-                # revert the row's own status/retry_count changes since
-                # they're in the same session).
-                nested.rollback()
+                # attempt (defensively — see _safe_rollback docstring),
+                # then re-apply the row's own status/message so the
+                # SyncQueue record still reflects the outcome even though
+                # the underlying sale attempt was undone.
+                _safe_rollback(nested)
                 row.status = outcome["status"]
                 row.result_message = outcome["message"]
-                row.retry_count = row.retry_count  # already incremented above, kept
-                row.last_attempt_at = datetime.utcnow()
+                row.server_sale_id = outcome["server_id"]
                 session.add(row)
 
         except Exception as e:
-            nested.rollback()
+            _safe_rollback(nested)
             row.status = "failed"
             row.result_message = str(e)
             session.add(row)

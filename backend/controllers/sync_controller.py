@@ -1,4 +1,6 @@
-from flask import request, jsonify, g
+import traceback
+from datetime import datetime
+from flask import request, jsonify
 from backend.database import get_db
 from backend.services.sync_service import SyncService, BatchTooLargeError, DeviceMismatchError
 
@@ -34,6 +36,7 @@ class SyncController:
 
         except Exception as e:
             session.rollback()
+            traceback.print_exc()  # <-- full stack trace now prints to your terminal
             return jsonify({"success": False, "message": "Sync failed", "detail": str(e)}), 500
 
     def pull_sync(self):
@@ -43,9 +46,10 @@ class SyncController:
             return jsonify({
                 "success": True,
                 "data": data,
-                "server_timestamp": __import__("datetime").datetime.utcnow().isoformat(),
+                "server_timestamp": datetime.utcnow().isoformat(),
             }), 200
         except Exception as e:
+            traceback.print_exc()
             return jsonify({"success": False, "message": "Pull failed", "detail": str(e)}), 500
 
     def resolve_conflict(self, current_user):
@@ -66,4 +70,5 @@ class SyncController:
             return jsonify({"success": False, "message": str(e)}), 400
         except Exception as e:
             session.rollback()
+            traceback.print_exc()
             return jsonify({"success": False, "message": "Resolve failed", "detail": str(e)}), 500

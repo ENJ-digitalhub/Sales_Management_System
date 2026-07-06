@@ -1,86 +1,8 @@
-<<<<<<< HEAD
-from decimal import Decimal
+# backend/utils/validators.py
 from datetime import date, datetime as dt, timedelta
 
-ALLOWED_PAYMENT_METHODS = {
-    "cash",
-    "card",
-    "contactless",
-    "bank_transfer",
-    "ussd",
-    "qr_payment",
-    "pos_terminal",
-    "digital_wallet",
-    "store_wallet",
-    "credit_sale",
-    "installment",
-    "gift_card",
-    "loyalty_points",
-    "split_payment",
-    "trexave_pay",
-    "other",
-}
-
-SUPPORTED_PAYMENT_PROVIDERS = {
-    "paystack",
-    "flutterwave",
-    "moniepoint",
-    "opay",
-    "palmpay",
-    "kuda",
-    "gtbank",
-    "access",
-    "uba",
-    "zenith",
-    "firstbank",
-    "fcmb",
-    "fidelity",
-    "sterling",
-    "wema",
-    "providus",
-    "custom",
-}
-
-PROVIDER_REQUIRED_METHODS = {
-    "card",
-    "contactless",
-    "bank_transfer",
-    "digital_wallet",
-    "store_wallet",
-    "ussd",
-    "qr_payment",
-    "pos_terminal",
-    "trexave_pay",
-    "other",
-}
-
-SPLIT_METHOD = "split_payment"
-
-
-def validate_sale_payload(payload: dict, require_transaction_id: bool = False):
-    """
-    require_transaction_id=True for sale creation (needs device_id +
-    client_transaction_id for offline idempotency). False for edits,
-    which operate on an existing sale_id and don't need these.
-    """
-    if not isinstance(payload, dict):
-        return {"valid": False, "error": "Invalid payload"}
-
-    items = payload.get("items")
-    payment_method = payload.get("payment_method")
-    payment_provider = payload.get("payment_provider")
-    payment_details = payload.get("payment_details")
-    device_id = payload.get("device_id")
-    client_transaction_id = payload.get("client_transaction_id")
-
-    if require_transaction_id:
-        if not device_id or not isinstance(device_id, str):
-            return {"valid": False, "error": "device_id is required"}
-        if not client_transaction_id or not isinstance(client_transaction_id, str):
-            return {"valid": False, "error": "client_transaction_id is required"}
-=======
-# backend/utils/validators.py
 VALID_PAYMENT_METHODS = {"cash", "transfer", "pos"}
+
 
 def validate_sale_payload(data, require_transaction_id=True):
     if not isinstance(data, dict):
@@ -88,25 +10,14 @@ def validate_sale_payload(data, require_transaction_id=True):
 
     items = data.get("items")
     payment_method = data.get("payment_method")
->>>>>>> 166f1ee040f599bc784a2737b4d4c28b35a3160b
+    device_id = data.get("device_id")
+    client_transaction_id = data.get("client_transaction_id")
 
     if not items or not isinstance(items, list):
         return {"valid": False, "error": "Items must be a non-empty list"}
 
-<<<<<<< HEAD
-    if payment_method not in ALLOWED_PAYMENT_METHODS:
+    if payment_method not in VALID_PAYMENT_METHODS:
         return {"valid": False, "error": "Invalid payment_method"}
-
-    if payment_method == SPLIT_METHOD:
-        if not isinstance(payment_details, list) or len(payment_details) == 0:
-            return {"valid": False, "error": "payment_details is required for split_payment"}
-        if payment_provider is not None:
-            return {"valid": False, "error": "payment_provider must not be set for split_payment"}
-    else:
-        if payment_method in PROVIDER_REQUIRED_METHODS and not payment_provider:
-            return {"valid": False, "error": f"payment_provider is required for {payment_method}"}
-        if payment_provider is not None and payment_provider not in SUPPORTED_PAYMENT_PROVIDERS:
-            return {"valid": False, "error": "Invalid payment_provider"}
 
     seen = set()
     normalized = []
@@ -135,47 +46,17 @@ def validate_sale_payload(data, require_transaction_id=True):
         seen.add(pid)
         normalized.append({"product_id": pid, "quantity": q})
 
-    if payment_method == SPLIT_METHOD:
-        for part in payment_details:
-            if not isinstance(part, dict):
-                return {"valid": False, "error": "Each payment detail must be an object"}
-
-            part_method = part.get("method")
-            part_provider = part.get("provider")
-            amount = part.get("amount")
-
-            if part_method not in ALLOWED_PAYMENT_METHODS - {SPLIT_METHOD}:
-                return {"valid": False, "error": "Invalid split payment method"}
-
-            if part_method in PROVIDER_REQUIRED_METHODS and not part_provider:
-                return {"valid": False, "error": f"provider is required for split payment method {part_method}"}
-
-            if part_provider is not None and part_provider not in SUPPORTED_PAYMENT_PROVIDERS:
-                return {"valid": False, "error": "Invalid split payment provider"}
-
-            try:
-                amt = Decimal(str(amount))
-            except Exception:
-                return {"valid": False, "error": "Invalid split payment amount"}
-
-            if amt <= 0:
-                return {"valid": False, "error": "Split payment amounts must be positive"}
-
-        return {
-            "valid": True,
-            "items": normalized,
-            "payment_method": payment_method,
-            "payment_provider": None,
-            "payment_details": payment_details,
-            "device_id": device_id,
-            "client_transaction_id": client_transaction_id,
-        }
+    if require_transaction_id:
+        if not client_transaction_id:
+            return {"valid": False, "error": "client_transaction_id is required"}
+        if not device_id:
+            return {"valid": False, "error": "device_id is required"}
 
     return {
         "valid": True,
         "items": normalized,
         "payment_method": payment_method,
-        "payment_provider": payment_provider,
+        "payment_provider": None,
         "payment_details": None,
         "device_id": device_id,
         "client_transaction_id": client_transaction_id,
@@ -191,17 +72,14 @@ def validate_pagination_params(page_param, per_page_param):
         return {"error": None, "page": page, "per_page": per_page}
     except Exception:
         return {"error": "Invalid pagination parameters", "page": None, "per_page": None}
-    # --- Phase 4 additions ---
+
+
+# --- Phase 4 additions ---
 
 ALLOWED_PRODUCT_FIELDS = {"name", "category", "selling_price", "cost_price", "stock_quantity"}
 
 
 def validate_product_payload(payload: dict, partial: bool = False):
-    """
-    partial=False (create): name, selling_price, cost_price, stock_quantity are required.
-    partial=True (edit/PATCH): all fields optional, but at least one must be present,
-    and any field present must still pass the same value checks.
-    """
     if not isinstance(payload, dict):
         return {"valid": False, "error": "Invalid payload"}
 
@@ -289,8 +167,9 @@ def validate_purchase_payload(payload: dict):
     return {"valid": True, "items": normalized, "supplier": supplier}
 
 
+# --- Phase 5 additions ---
+
 def validate_daily_report_params(date_param):
-    """Defaults to today if not provided. Expects YYYY-MM-DD."""
     if not date_param:
         return {"valid": True, "date": date.today()}
     try:
@@ -301,7 +180,6 @@ def validate_daily_report_params(date_param):
 
 
 def validate_monthly_report_params(month_param):
-    """Defaults to current month if not provided. Expects YYYY-MM."""
     if not month_param:
         today = date.today()
         return {"valid": True, "year": today.year, "month": today.month}
@@ -313,7 +191,6 @@ def validate_monthly_report_params(month_param):
 
 
 def validate_yearly_report_params(year_param):
-    """Defaults to current year if not provided. Expects YYYY."""
     if not year_param:
         return {"valid": True, "year": date.today().year}
     try:
@@ -326,10 +203,6 @@ def validate_yearly_report_params(year_param):
 
 
 def validate_employee_report_params(from_param, to_param):
-    """
-    Both optional. If neither given, defaults to the last 30 days.
-    If given, both must be valid YYYY-MM-DD and from <= to.
-    """
     if not from_param and not to_param:
         today = date.today()
         from_date = today - timedelta(days=30)
@@ -350,64 +223,3 @@ def validate_employee_report_params(from_param, to_param):
         return {"valid": False, "error": "from date must be before or equal to to date"}
 
     return {"valid": True, "from_date": from_date, "to_date": to_date}
-=======
-    seen_product_ids = set()
-    validated_items = []
-
-    for idx, item in enumerate(items):
-        if not isinstance(item, dict):
-            return {"valid": False, "error": f"Invalid item format at index {idx}"}
-
-        product_id = item.get("product_id")
-        quantity = item.get("quantity")
-
-        if not isinstance(product_id, int):
-            return {"valid": False, "error": f"Invalid product_id at index {idx}"}
-
-        if product_id in seen_product_ids:
-            return {"valid": False, "error": f"Duplicate product_id: {product_id}"}
-
-        seen_product_ids.add(product_id)
-
-        if not isinstance(quantity, int) or quantity <= 0:
-            return {"valid": False, "error": f"Quantity must be positive for product {product_id}"}
-
-        validated_items.append({
-            "product_id": product_id,
-            "quantity": quantity
-        })
-
-    if payment_method not in VALID_PAYMENT_METHODS:
-        return {"valid": False, "error": "Invalid payment method"}
-
-    payment_provider = data.get("payment_provider")
-    payment_details = data.get("payment_details")
-    device_id = data.get("device_id")
-    client_transaction_id = data.get("client_transaction_id")
-
-    if payment_provider and not isinstance(payment_provider, str):
-        return {"valid": False, "error": "payment_provider must be a string"}
-
-    if payment_details and not isinstance(payment_details, (dict, list)):
-        return {"valid": False, "error": "payment_details must be an object or list"}
-
-    if device_id and not isinstance(device_id, str):
-        return {"valid": False, "error": "device_id must be a string"}
-
-    if require_transaction_id:
-        if not client_transaction_id:
-            return {"valid": False, "error": "client_transaction_id is required"}
-        if not device_id:
-            return {"valid": False, "error": "device_id is required"}
-
-    return {
-        "valid": True,
-        "error": None,
-        "items": validated_items,
-        "payment_method": payment_method,
-        "payment_provider": payment_provider,
-        "payment_details": payment_details,
-        "device_id": device_id,
-        "client_transaction_id": client_transaction_id,
-    }
->>>>>>> 166f1ee040f599bc784a2737b4d4c28b35a3160b

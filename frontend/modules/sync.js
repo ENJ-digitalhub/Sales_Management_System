@@ -7,6 +7,7 @@ const MAX_RETRIES = 5;
 const BACKOFF_SCHEDULE = [1000, 2000, 4000, 8000]; // ms — 4 delays between 5 attempts
 
 let syncInProgress = false;
+let retryInProgress = false;
 let onStatusChange = null; // UI callback, set via setStatusListener()
 
 export function setStatusListener(callback) {
@@ -95,15 +96,28 @@ export async function pullAndRefresh() {
  * setTimeout calls — each attempt schedules the next one only after
  * the previous attempt's response comes back, up to MAX_RETRIES total
  * attempts per item.
+ *
+ * Guarded by retryInProgress so overlapping calls (e.g. the 'online'
+ * handler firing right after the 30s safety-net interval) can't start
+ * a second backoff chain for the same item while one is already running,
+ * which would double-increment retry_count without real elapsed delays
+ * between attempts.
  */
 export async function retryFailed() {
-  const all = await getAllQueued();
-  const failedItems = all.filter(
-    (r) => r.status === "FAILED" && r.retry_count < MAX_RETRIES
-  );
+  if (retryInProgress) return;
+  retryInProgress = true;
 
-  for (const item of failedItems) {
-    await retryWithBackoff(item, 0);
+  try {
+    const all = await getAllQueued();
+    const failedItems = all.filter(
+      (r) => r.status === "FAILED" && r.retry_count < MAX_RETRIES
+    );
+
+    for (const item of failedItems) {
+      await retryWithBackoff(item, 0);
+    }
+  } finally {
+    retryInProgress = false;
   }
 }
 
@@ -112,6 +126,10 @@ function retryWithBackoff(item, attemptIndex) {
     const delay = BACKOFF_SCHEDULE[attemptIndex] ?? BACKOFF_SCHEDULE[BACKOFF_SCHEDULE.length - 1];
 
     setTimeout(async () => {
+      const nextAttempt = attemptIndex + 1;
+      const attemptsUsed = item.retry_count + nextAttempt;
+      const canContinue = nextAttempt < BACKOFF_SCHEDULE.length && attemptsUsed < MAX_RETRIES;
+
       try {
         const results = await pushBatch([
           {
@@ -126,17 +144,28 @@ function retryWithBackoff(item, attemptIndex) {
 
         const outcome = results[0];
         const stillFailing = outcome.status === "failed";
-        const nextAttempt = attemptIndex + 1;
-        const attemptsUsed = item.retry_count + nextAttempt;
 
-        if (stillFailing && nextAttempt < BACKOFF_SCHEDULE.length && attemptsUsed < MAX_RETRIES) {
+        if (stillFailing && canContinue) {
           await retryWithBackoff(item, nextAttempt);
         }
-        // else: either succeeded, hit a terminal state (conflict), or
+        // else: succeeded, hit a terminal state (conflict), or
         // exhausted MAX_RETRIES — stop retrying either way.
       } catch (err) {
-        // Network still down (or auth failed) — leave it FAILED, next
-        // manual/auto sync cycle will pick it up again from scratch.
+        // Network/server unreachable on this attempt. A network-level
+        // failure and a server-returned "failed" status both need to
+        // continue the SAME backoff chain — previously this branch
+        // marked FAILED and stopped immediately, meaning one dead
+        // connection ended retries after only ONE attempt instead of
+        // running the full 1s/2s/4s/8s schedule.
+        try {
+          await updateStatus(item.transaction_id, "FAILED", true);
+        } catch (_) {
+          // best-effort — if this also fails, next sync cycle will retry anyway
+        }
+
+        if (canContinue) {
+          await retryWithBackoff(item, nextAttempt);
+        }
       }
       resolve();
     }, delay);
@@ -156,7 +185,18 @@ export async function syncNow() {
   notify("syncing");
 
   try {
-    await pullAndRefresh();
+    // Pull first, per the locked rule — but if the pull itself fails
+    // because the server is unreachable (not an auth error), don't
+    // abort the whole cycle. Continuing on to the push attempt below
+    // means a genuinely dead server still results in queued items
+    // being marked FAILED (and becoming retry-eligible), instead of
+    // the entire sync cycle bailing out before ever touching the queue.
+    try {
+      await pullAndRefresh();
+    } catch (err) {
+      if (err.message === "AUTH_ERROR") throw err;
+      // Server unreachable during pull — proceed to push attempt anyway.
+    }
 
     const transactions = await getQueuedTransactions();
     const batches = [];
@@ -169,7 +209,23 @@ export async function syncNow() {
     let totalFailed = 0;
 
     for (const batch of batches) {
-      const results = await pushBatch(batch);
+      let results;
+      try {
+        results = await pushBatch(batch);
+      } catch (err) {
+        if (err.message === "AUTH_ERROR") throw err;
+
+        // Network/server unreachable (fetch itself threw) — this never
+        // reaches processSyncResults() below, so without this branch
+        // every item in the batch would stay stuck at its previous
+        // status forever, with no retry and no visible failure state.
+        for (const txn of batch) {
+          await updateStatus(txn.transaction_id, "FAILED", true);
+          totalFailed++;
+        }
+        continue;
+      }
+
       await processSyncResults(results);
 
       for (const r of results) {
@@ -179,7 +235,7 @@ export async function syncNow() {
       }
     }
 
-    notify("online");
+    notify(totalFailed > 0 ? "offline" : "online");
     return { synced: totalSynced, conflict: totalConflict, failed: totalFailed };
   } catch (err) {
     if (err.message === "AUTH_ERROR") {
@@ -194,11 +250,25 @@ export async function syncNow() {
 }
 
 // Reconnect detection — pull first, then push, per the locked rule.
+// After a normal sync cycle completes, also run retryFailed() so any
+// FAILED items get picked up immediately rather than waiting for the
+// next 'online' event or the periodic check below.
 window.addEventListener("online", () => {
   notify("online");
-  syncNow();
+  syncNow().then(() => retryFailed());
 });
 
 window.addEventListener("offline", () => {
   notify("offline");
 });
+
+// Safety net: while the browser reports itself online, periodically
+// check for FAILED items and retry them. This covers the case where
+// the *server* (not the network) was down and came back — the browser
+// never fired a fresh 'online' event for that, since as far as the
+// browser is concerned it was online the whole time.
+setInterval(() => {
+  if (navigator.onLine && !syncInProgress && !retryInProgress) {
+    retryFailed();
+  }
+}, 30000);

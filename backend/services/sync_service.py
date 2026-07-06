@@ -36,7 +36,7 @@ class SyncService:
         if len(transactions) > MAX_BATCH_SIZE:
             raise BatchTooLargeError(f"Batch size {len(transactions)} exceeds max of {MAX_BATCH_SIZE}")
 
-        push_to_queue(session, transactions, device_id)
+        push_to_queue(session, transactions, device_id, user_id)
         transaction_ids = [t["transaction_id"] for t in transactions]
         results = process_queue(session, transaction_ids=transaction_ids)
 

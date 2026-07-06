@@ -1,9 +1,10 @@
 import uuid
 from datetime import datetime
 from sqlalchemy import (
+    
     Column, String, DateTime, Numeric, Integer, ForeignKey,
-    CheckConstraint, UniqueConstraint, JSON
-)
+    CheckConstraint, UniqueConstraint, JSON)
+
 from sqlalchemy.orm import relationship
 from backend.database import Base
 
@@ -72,16 +73,12 @@ class Product(Base):
 
 class Sale(Base):
     __tablename__ = 'sales'
+
+
     __table_args__ = (
-        # Keep this list in sync with ALLOWED_PAYMENT_METHODS in
-        # backend/utils/validators.py — this is intentionally duplicated
-        # as a DB-level backstop, not the primary validation layer.
+
         CheckConstraint(
-            "payment_method IN ("
-            "'cash','card','contactless','bank_transfer','ussd','qr_payment',"
-            "'pos_terminal','digital_wallet','store_wallet','credit_sale',"
-            "'installment','gift_card','loyalty_points','split_payment',"
-            "'trexave_pay','other')",
+            "payment_method IN ('cash', 'transfer', 'pos')",
             name='valid_payment_method'
         ),
         CheckConstraint("status IN ('completed', 'edited', 'cancelled')", name='valid_sale_status'),
@@ -95,9 +92,7 @@ class Sale(Base):
     user_id = Column(String, ForeignKey('users.id'), nullable=False, index=True)
     total_amount = Column(Numeric(10, 2), nullable=False)
     profit_at_sale = Column(Numeric(10, 2), nullable=False)
-    payment_method = Column(String(30), nullable=False)
-    payment_provider = Column(String(30), nullable=True)
-    payment_details = Column(JSON, nullable=True)
+    payment_method = Column(String(20), nullable=False)
     status = Column(String(20), nullable=False, default='completed')
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     editable_until = Column(DateTime, nullable=False)
@@ -155,6 +150,7 @@ class SyncQueue(Base):
 
     id = Column(String, primary_key=True)  # client-supplied transaction_id
     device_id = Column(String(36), nullable=False, index=True)
+    submitted_by = Column(String, ForeignKey('users.id'), nullable=True)  # who originally pushed this transaction
     entity_type = Column(String(30), nullable=False)
     operation = Column(String(20), nullable=False, default='CREATE')
     payload = Column(JSON, nullable=False)

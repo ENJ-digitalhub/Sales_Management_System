@@ -2,7 +2,11 @@
 import { getToken, getCurrentUser, BASE_URL } from "./auth.js";
 import { enqueue, generateUUID } from "./queue.js";
 
-export async function createSale({ items, paymentMethod, paymentProvider, deviceId }) {
+/**
+ * Attempts to create a sale online. On real network failure (not a 4xx/5xx
+ * response — an actual failed fetch), falls back to the offline queue.
+ */
+export async function createSale({ items, paymentMethod, deviceId }) {
   if (!items || items.length === 0) {
     throw new Error("Cart is empty");
   }
@@ -20,7 +24,6 @@ export async function createSale({ items, paymentMethod, paymentProvider, device
     device_id: deviceId,
     client_transaction_id: clientTransactionId,
     payment_method: paymentMethod,
-    payment_provider: paymentProvider || null,
     items: items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
   };
 
