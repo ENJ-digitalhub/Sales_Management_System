@@ -4,6 +4,7 @@ from flask import request, jsonify, g
 from backend.utils.jwt_utils import decode_token
 import backend.database as database
 from backend.models.models import User
+from backend.database import get_db
 
 
 def require_auth(f):
@@ -22,7 +23,7 @@ def require_auth(f):
                 return jsonify({"message": data["error"]}), 401
 
             # Use the current database session factory for request auth
-            session = database.SessionLocal()
+            session = get_db()
             user = session.query(User).filter_by(id=data["sub"]).first()
             session.close()
 

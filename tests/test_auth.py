@@ -2,6 +2,7 @@
 import pytest
 from backend.models.models import User, Device
 from backend.utils.security import hash_password
+import jwt
 
 @pytest.fixture(scope="function")
 def setup_users(session):
@@ -96,7 +97,8 @@ def test_logout_success(client, setup_users, session):
         }
     )
     token = login_response.get_json()["token"]
-    device_id = login_response.get_json()["device_id"]
+    payload = jwt.decode(token, options={"verify_signature": False})
+    device_id = payload["device_id"]
 
     response = client.post(
         "/auth/logout",

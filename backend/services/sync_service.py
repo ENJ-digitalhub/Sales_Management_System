@@ -2,9 +2,33 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from backend.models.models import SyncQueue, User, Product, Sale, SaleItem, Purchase, PurchaseItem, Device, AuditLog, InventoryLog
-from backend.sync.queue import Queue
 from datetime import datetime, timezone
+from typing import Any
 import json
+
+
+def _coerce_payload(payload: Any) -> dict[str, Any] | str:
+    if isinstance(payload, str):
+        try:
+            parsed = json.loads(payload)
+            if isinstance(parsed, dict):
+                return parsed
+            return payload
+        except json.JSONDecodeError:
+            return payload
+    if isinstance(payload, (bytes, bytearray)):
+        try:
+            decoded = payload.decode("utf-8")
+            parsed = json.loads(decoded)
+            if isinstance(parsed, dict):
+                return parsed
+            return decoded
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return payload.decode("utf-8") if isinstance(payload, (bytes, bytearray)) else payload
+    if isinstance(payload, dict):
+        return payload
+    return payload
+
 
 class SyncService:
     @staticmethod
@@ -33,7 +57,10 @@ class SyncService:
 
         for item in pending_items:
             try:
-                payload = json.loads(item.payload)
+                payload = _coerce_payload(item.payload)
+                if not isinstance(payload, dict):
+                    raise ValueError("Sync payload must be a dictionary")
+
                 # Apply changes based on entity_type and operation
                 # This is a simplified example; real-world would need more robust logic
                 if item.entity_type == "product":
@@ -41,9 +68,20 @@ class SyncService:
                         product = Product(**payload)
                         session.add(product)
                     elif item.operation == "UPDATE":
-                        session.query(Product).filter_by(id=payload["id"]).update(payload)
+                        product_id = payload.get("id")
+                        if not product_id:
+                            raise ValueError("Product update payload is missing an id")
+                        update_data = {
+                            getattr(Product, key): value
+                            for key, value in payload.items()
+                            if key != "id" and hasattr(Product, key)
+                        }
+                        session.query(Product).filter_by(id=str(product_id)).update(update_data)
                     elif item.operation == "DELETE":
-                        session.query(Product).filter_by(id=payload["id"]).update({"is_active": False})
+                        product_id = payload.get("id")
+                        if not product_id:
+                            raise ValueError("Product delete payload is missing an id")
+                        session.query(Product).filter_by(id=str(product_id)).update({"is_active": False})
                 # Add similar logic for other entity types (User, Sale, Purchase, etc.)
 
                 item.status = "synced"
@@ -86,4 +124,6 @@ class SyncService:
             return None, "Invalid resolution payload"
         if not user_id:
             return None, "Resolved by user id is required"
+
+        from backend.sync.queue import Queue
         return Queue().resolve_conflict(transaction_id, resolution, user_id, note, session)

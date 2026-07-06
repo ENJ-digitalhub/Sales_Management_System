@@ -8,7 +8,7 @@ const DEVICE_ID_KEY = 'device_id';
 const USER_KEY = 'user';
 
 // Point to the backend API during local development
-const BASE_URL = 'http://127.0.0.1:5000';
+const BASE_URL = '';
 
 /**
  * Returns this browser's persistent device identity, generating one

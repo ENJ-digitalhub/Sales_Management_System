@@ -163,20 +163,16 @@
       }
 
       try {
-const data = await createSale(payload);
-
-        if (!res.ok || !data.success) {
-          // stock errors: preserve cart per FRONTEND_SPEC §4.5
-          return showError(data.message || 'Sale failed');
-        }
-
+        const data = await createSale(payload);
         alert('Sale completed');
         cart.clear();
         paymentMethod = null;
         renderCart();
-        loadProducts(); // refresh stock levels
+        loadProducts();
       } catch (err) {
-        // network failed mid-request — fall back to offline queue
+        if (err.message && err.message.toLowerCase().includes('stock')) {
+          return showError(err.message); // preserve cart per FRONTEND_SPEC §4.5
+        }
         await enqueue('sale', 'CREATE', payload);
         alert('Network error — sale saved to queue.');
         cart.clear();

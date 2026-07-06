@@ -63,6 +63,19 @@ class Product(Base):
         CheckConstraint("is_active IN (0, 1)", name="valid_product_is_active"),
     )
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "category": self.category,
+            "selling_price": float(self.selling_price) if isinstance(self.selling_price, Decimal) else self.selling_price,
+            "cost_price": float(self.cost_price) if isinstance(self.cost_price, Decimal) else self.cost_price,
+            "stock_quantity": self.stock_quantity,
+            "is_active": self.is_active,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
+
 class Sale(Base):
     """Defines the Sale model"""
     __tablename__ = "sales"
@@ -86,6 +99,19 @@ class Sale(Base):
         CheckConstraint("payment_method IN (\'cash\', \'transfer\', \'pos\')", name="valid_payment_method"),
         CheckConstraint("status IN (\'completed\', \'edited\', \'cancelled\')", name="valid_sale_status"),
     )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "receipt_number": self.receipt_number,
+            "user_id": self.user_id,
+            "total_amount": float(self.total_amount) if isinstance(self.total_amount, Decimal) else self.total_amount,
+            "profit_at_sale": float(self.profit_at_sale) if isinstance(self.profit_at_sale, Decimal) else self.profit_at_sale,
+            "payment_method": self.payment_method,
+            "status": self.status,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "editable_until": self.editable_until.isoformat() if self.editable_until else None,
+        }
 
 class SaleItem(Base):
     """Defines the SaleItem model"""
