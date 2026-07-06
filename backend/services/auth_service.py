@@ -1,122 +1,54 @@
-# backend/services/auth_service.py
-from datetime import datetime
-from sqlalchemy import select, update
+
+from sqlalchemy.orm import Session
 from backend.models.models import User, Device
 from backend.utils.security import Security
-from backend.utils.jwt_utils import generate_token, decode_token
-
-
-class AuthenticationError(ValueError):
-    pass
-
+from backend.utils.jwt_utils import JWTUtils
+from datetime import datetime, timezone
+import uuid
 
 class AuthService:
-
     @staticmethod
-    def login(session, username: str, password: str, device_id: str) -> dict:
-        if not username or not password or not device_id:
-            raise AuthenticationError("Invalid username or password")
-
-        # Fetch user
-        user = session.execute(
-            select(User).where(
-                User.username == username,
-                User.is_active == True
-            )
-        ).scalar_one_or_none()
-        
+    def login(session: Session, username, password, device_name):
+        user = session.query(User).filter_by(username=username).first()
         if not user or not Security.verify_password(password, user.password_hash):
-            raise AuthenticationError("Invalid username or password")
+            return None, "Invalid username or password"
 
-        # Invalidate all other active devices for this user
-        session.execute(
-            update(Device)
-            .where(Device.user_id == user.id, Device.is_active == True)
-            .values(is_active=False)
-        )
+        # Invalidate previous active devices for this user
+        session.query(Device).filter_by(user_id=user.id, is_active=True).update({"is_active": False})
 
-        # Find or create device
-        device = session.execute(
-            select(Device).where(
-                Device.user_id == user.id,
-                Device.device_name == device_id
-            )
-        ).scalar_one_or_none()
+        # Create new device entry
+        device = Device(user_id=user.id, device_name=device_name, is_active=True, last_seen_at=datetime.now(timezone.utc))
+        session.add(device)
+        session.flush() # To get device.id
 
+        token = JWTUtils.generate_token(user.id, user.role, device.id)
+        return {"token": token, "user": {"id": user.id, "name": user.name, "role": user.role}}, None
+
+    @staticmethod
+    def logout(session: Session, device_id):
+        device = session.query(Device).filter_by(id=device_id).first()
         if device:
-            device.is_active = True
-            device.last_seen_at = datetime.utcnow()
-        else:
-            device = Device(
-                user_id=user.id,
-                device_name=device_id,
-                is_active=True
-            )
+            device.is_active = False
             session.add(device)
-
-        session.flush()
-
-        token = generate_token(user.id, user.role, device_id)
-
-        return {
-            "token": token,
-            "user": {
-                "id": str(user.id),
-                "name": user.name,
-                "role": user.role
-            }
-        }
+            session.commit()
+            return True, None
+        return False, "Device not found"
 
     @staticmethod
-    def logout(session, device_id: str, requesting_user_id: str) -> None:
-        device = session.execute(
-            select(Device).where(
-                Device.device_name == device_id,
-                Device.user_id == requesting_user_id
-            )
-        ).scalar_one_or_none()
+    def verify_token(session: Session, token: str):
+        data = JWTUtils.decode_token(token)
+        if "error" in data:
+            return None, data["error"]
 
-        if not device:
-            raise AuthenticationError("Device not found or not owned by this user")
+        user = session.query(User).filter_by(id=data["sub"]).first()
+        device = session.query(Device).filter_by(id=data["device_id"], user_id=user.id, is_active=True).first()
 
-        device.is_active = False
-        session.flush()
+        if not user or not device:
+            return None, "Invalid token or inactive device"
 
-    @staticmethod
-    def verify_token(session, token: str) -> dict:
-        try:
-            payload = decode_token(token)
-        except ValueError:
-            raise AuthenticationError("Token missing or invalid")
+        # Update last_seen_at for the device
+        device.last_seen_at = datetime.now(timezone.utc)
+        session.add(device)
+        session.commit()
 
-        user_id = payload.get("sub")
-        device_id = payload.get("device_id")
-
-        user = session.execute(
-            select(User).where(
-                User.id == user_id,
-                User.is_active == True
-            )
-        ).scalar_one_or_none()
-
-        if not user:
-            raise AuthenticationError("Token missing or invalid")
-
-        device = session.execute(
-            select(Device).where(
-                Device.user_id == user.id,
-                Device.device_name == device_id,
-                Device.is_active == True
-            )
-        ).scalar_one_or_none()
-
-        if not device:
-            raise AuthenticationError("Token missing or invalid")
-
-        device.last_seen_at = datetime.utcnow()
-        session.flush()
-
-        return {
-            "id": str(user.id),
-            "role": user.role
-        }
+        return {"id": user.id, "role": user.role, "device_id": device.id}, None

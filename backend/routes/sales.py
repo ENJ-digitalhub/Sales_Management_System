@@ -1,32 +1,12 @@
-# backend/routes/sales.py
-from flask import Blueprint, request, g
-from backend.utils.auth_middleware import require_auth, require_role
+
+from flask import Blueprint
 from backend.controllers.sales_controller import SalesController
+from backend.utils.auth_middleware import require_auth, require_role
 
 sales_bp = Blueprint("sales", __name__, url_prefix="/sales")
-sales_controller = SalesController()
 
-
-@sales_bp.route("", methods=["POST"])
-@require_auth
-def create_sale():
-    return sales_controller.create_sale()
-
-
-@sales_bp.route("/<sale_id>", methods=["GET"])
-@require_auth
-def get_sale(sale_id):
-    return sales_controller.get_sale(sale_id)
-
-
-@sales_bp.route("/<sale_id>", methods=["PATCH"])
-@require_auth
-def edit_sale(sale_id):
-    return sales_controller.edit_sale(sale_id)
-
-
-@sales_bp.route("/<sale_id>/cancel", methods=["POST"])
-@require_auth
-@require_role("manager", "admin")
-def cancel_sale(sale_id):
-    return sales_controller.cancel_sale(sale_id)
+sales_bp.route("/", methods=["POST"])(require_auth(SalesController.create_sale))
+sales_bp.route("/", methods=["GET"])(require_auth(SalesController.get_all_sales))
+sales_bp.route("/<string:sale_id>", methods=["GET"])(require_auth(SalesController.get_sale))
+sales_bp.route("/<string:sale_id>", methods=["PUT"])(require_auth(SalesController.edit_sale))
+sales_bp.route("/<string:sale_id>/cancel", methods=["POST"])(require_auth(require_role("admin", "manager")(SalesController.cancel_sale)))

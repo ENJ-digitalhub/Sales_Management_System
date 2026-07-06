@@ -1,7 +1,8 @@
+
 -- ============================================================
 -- Sales Management System — Database Schema
 -- Offline-First | SQLite
--- Author: Ekwere Noble / Swingle Noble
+-- Author: Manus AI
 -- ============================================================
 
 -- Enable foreign key enforcement (REQUIRED in SQLite)
@@ -16,14 +17,16 @@ CREATE TABLE IF NOT EXISTS users (
     name                TEXT NOT NULL,
     username            TEXT NOT NULL UNIQUE,
     password_hash       TEXT NOT NULL,
-    role                TEXT NOT NULL CHECK (role IN ('admin', 'manager', 'employee')),
+    role                TEXT NOT NULL CHECK (role IN (
+        'admin', 'manager', 'employee'
+    )),
     phone_or_email      TEXT,
     account_name        TEXT,                       -- Bank account name (nullable)
     bank_name           TEXT,                       -- Bank name (nullable)
     account_number      TEXT,                       -- Bank account number (nullable)
     pin_hash            TEXT,                       -- Optional PIN for fast login
     is_active           INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
-    created_at          TEXT NOT NULL DEFAULT (datetime('now'))
+    created_at          TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now'))
 );
 
 -- Notes:
@@ -43,8 +46,8 @@ CREATE TABLE IF NOT EXISTS products (
     cost_price      NUMERIC(10, 2) NOT NULL CHECK (cost_price >= 0),
     stock_quantity  INTEGER NOT NULL DEFAULT 0 CHECK (stock_quantity >= 0),
     is_active       INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
-    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at      TEXT NOT NULL DEFAULT (datetime('now'))  -- updated at application level
+    created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),
+    updated_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now'))  -- updated at application level
 );
 
 -- Notes:
@@ -63,10 +66,14 @@ CREATE TABLE IF NOT EXISTS sales (
     user_id         TEXT NOT NULL,
     total_amount    NUMERIC(10, 2) NOT NULL CHECK (total_amount >= 0),
     profit_at_sale  NUMERIC(10, 2) NOT NULL DEFAULT 0,        -- Snapshot of profit at time of sale
-    payment_method  TEXT NOT NULL CHECK (payment_method IN ('cash', 'transfer', 'pos')),
-    status          TEXT NOT NULL DEFAULT 'completed' CHECK (status IN ('completed', 'edited', 'cancelled')),
-    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-    editable_until  TEXT NOT NULL DEFAULT (datetime('now', '+20 minutes')),
+    payment_method  TEXT NOT NULL CHECK (payment_method IN (
+        'cash', 'transfer', 'pos'
+    )),
+    status          TEXT NOT NULL DEFAULT 'completed' CHECK (status IN (
+        'completed', 'edited', 'cancelled'
+    )),
+    created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),
+    editable_until  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+20 minutes')),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
@@ -106,7 +113,7 @@ CREATE TABLE IF NOT EXISTS purchases (
     supplier        TEXT,                           -- Optional supplier name
     status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
     total_cost      NUMERIC(10, 2) NOT NULL DEFAULT 0 CHECK (total_cost >= 0),
-    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),
     approved_by     TEXT,                           -- Admin user_id who approved (nullable)
     approved_at     TEXT,                           -- Timestamp of approval (nullable)
 
@@ -140,10 +147,12 @@ CREATE TABLE IF NOT EXISTS purchase_items (
 CREATE TABLE IF NOT EXISTS inventory_logs (
     id              TEXT PRIMARY KEY,               -- UUID v4
     product_id      TEXT NOT NULL,
-    change_type     TEXT NOT NULL CHECK (change_type IN ('sale', 'restock', 'adjustment', 'cancellation')),
-    quantity_change INTEGER NOT NULL,               -- Negative for sale/removal, positive for restock
+    change_type     TEXT NOT NULL CHECK (change_type IN (
+        'sale', 'restock', 'adjustment', 'cancellation'
+    )),
+    quantity_change INTEGER NOT NULL,
     reference_id    TEXT,                           -- sale_id or purchase_id (nullable)
-    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),
 
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
 );
@@ -159,11 +168,19 @@ CREATE TABLE IF NOT EXISTS inventory_logs (
 CREATE TABLE IF NOT EXISTS audit_logs (
     id          TEXT PRIMARY KEY,                   -- UUID v4
     user_id     TEXT,                               -- Nullable — system actions may have no user
-    action_type TEXT NOT NULL CHECK (action_type IN ('create_sale', 'edit_sale', 'cancel_sale', 'delete_sale','create_product', 'edit_product', 'delete_product','create_user', 'edit_user', 'deactivate_user','login', 'logout','approve_purchase', 'create_purchase','sync_push', 'sync_conflict')),
-    entity_type TEXT NOT NULL CHECK (entity_type IN ('sale', 'product', 'user', 'purchase', 'system')),
+    action_type TEXT NOT NULL CHECK (action_type IN (
+        'create_sale', 'edit_sale', 'cancel_sale', 'delete_sale',
+        'create_product', 'edit_product', 'delete_product',
+        'create_user', 'edit_user', 'deactivate_user',
+        'login', 'logout', 'approve_purchase', 'create_purchase',
+        'sync_push', 'sync_conflict'
+    )),
+    entity_type TEXT NOT NULL CHECK (entity_type IN (
+        'sale', 'product', 'user', 'purchase', 'system'
+    )),
     entity_id   TEXT,                               -- ID of the affected record
     log_metadata    TEXT,                               -- JSON string with extra context
-    created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+    created_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
@@ -181,15 +198,19 @@ CREATE TABLE IF NOT EXISTS sync_queue (
     id              TEXT PRIMARY KEY,
     transaction_id  TEXT NOT NULL UNIQUE,
     device_id       TEXT NOT NULL,
-    entity_type     TEXT NOT NULL CHECK (entity_type IN ('sale', 'product', 'user', 'purchase')),
-    operation       TEXT NOT NULL CHECK (operation IN ('CREATE', 'UPDATE', 'DELETE')),
+    entity_type     TEXT NOT NULL CHECK (entity_type IN (
+        'sale', 'product', 'user', 'purchase', 'device'
+    )),
+    operation       TEXT NOT NULL CHECK (operation IN (
+        'CREATE', 'UPDATE', 'DELETE'
+    )),
     payload         TEXT NOT NULL,
-    status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'synced', 'failed', 'conflict')),
+    status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN (
+        'pending', 'synced', 'failed', 'conflict'
+    )),
     retry_count     INTEGER NOT NULL DEFAULT 0,
     last_attempt_at TEXT,
-    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
-
-    FOREIGN KEY (device_id) REFERENCES devices(id) ON DELETE SET NULL
+    created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now'))
 );
 
 -- Notes:
@@ -207,7 +228,7 @@ CREATE TABLE IF NOT EXISTS devices (
     user_id      TEXT NOT NULL,
     device_name  TEXT,
     is_active    INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
-    last_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_seen_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

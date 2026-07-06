@@ -41,7 +41,10 @@
 
   <script type="module" src="../services/api.js"></script>
   <script type="module">
-    import { ProductsAPI } from '../services/api.js';
+    import { getProducts } from '../services/api.js';
+    import { requireAuth } from '../modules/auth.js';
+
+    requireAuth();
 
     const loadingState = document.getElementById('loadingState');
     const errorState   = document.getElementById('errorState');
@@ -79,7 +82,7 @@
 
     async function loadProducts() {
       try {
-        const data = await ProductsAPI.getAll();
+        const data = await getProducts();
         console.log(data)
         renderProducts(data.products);
       } catch (err) {

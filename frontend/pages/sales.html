@@ -51,6 +51,7 @@
   <script type="module">
     import { requireAuth, getCurrentUser, logout, getToken } from '../modules/auth.js';
     import { enqueue } from '../modules/queue.js';
+    import { getProducts, createSale } from '../services/api.js';
 
     requireAuth();
     const user = getCurrentUser();
@@ -73,10 +74,7 @@
     renderOfflineBanner();
 
     async function loadProducts() {
-      const res = await fetch('/products', {
-        headers: { Authorization: `Bearer ${getToken()}` }
-      });
-      const data = await res.json();
+      const data = await getProducts();
       products = data.products || [];
       renderProducts();
     }
@@ -165,15 +163,7 @@
       }
 
       try {
-        const res = await fetch('/sales', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${getToken()}`,
-          },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
+const data = await createSale(payload);
 
         if (!res.ok || !data.success) {
           // stock errors: preserve cart per FRONTEND_SPEC §4.5

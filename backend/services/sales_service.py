@@ -1,278 +1,245 @@
-# backend/services/sales_service.py
-from sqlalchemy import select, func
-from datetime import datetime, timedelta
 
-from backend.models.models import Product, Sale, SalesItem, AuditLogs
-
-
-class InsufficientStockError(Exception):
-    def __init__(self, product_id, message="Insufficient stock"):
-        self.product_id = product_id
-        super().__init__(message)
-
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import select
+from backend.models.models import Sale, SaleItem, Product, InventoryLog, AuditLog, User
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal
+import uuid
 
 class SalesService:
-
     @staticmethod
-    def get_paginated_products(session, page: int, per_page: int):
-        offset = (page - 1) * per_page
+    def create_sale(session: Session, user_id: str, items: list, payment_method: str):
+        # Validate stock and calculate totals
+        total_amount = Decimal("0.00")
+        profit_at_sale = Decimal("0.00")
+        sale_items_to_add = []
+        inventory_logs_to_add = []
 
-        total_count = session.execute(
-            select(func.count(Product.id)).where(Product.is_active == True)
-        ).scalar() or 0
+        for item_data in items:
+            product_id = item_data["product_id"]
+            quantity = item_data["quantity"]
 
-        products = session.execute(
-            select(Product)
-            .where(Product.is_active == True)
-            .offset(offset)
-            .limit(per_page)
-        ).scalars().all()
+            product = session.query(Product).filter_by(id=product_id, is_active=True).first()
+            if not product:
+                session.rollback()
+                return None, f"Product with ID {product_id} not found or inactive."
+            if product.stock_quantity < quantity:
+                session.rollback()
+                return None, f"Insufficient stock for product: {product.name}. Available: {product.stock_quantity}, Requested: {quantity}"
 
-        return {
-            "items": [
-                {
-                    "id": p.id,
-                    "name": p.name,
-                    "category": p.category,
-                    "selling_price": p.selling_price,
-                    "cost_price": p.cost_price,
-                    "stock_quantity": p.stock_quantity,
-                }
-                for p in products
-            ],
-            "total": total_count,
-            "page": page,
-            "per_page": per_page,
-        }
+            unit_price = product.selling_price
+            cost_price = product.cost_price
+            item_total_price = unit_price * quantity
+            item_profit = (unit_price - cost_price) * quantity
 
-    @staticmethod
-    def create_sale(session, user_id, items, payment_method):
-        if not items:
-            raise ValueError("Items cannot be empty")
+            total_amount += item_total_price
+            profit_at_sale += item_profit
 
-        with session.begin():
-            product_ids = [i["product_id"] for i in items]
-
-            products = session.execute(
-                select(Product)
-                .where(Product.id.in_(product_ids))
-                .with_for_update()
-            ).scalars().all()
-
-            product_map = {p.id: p for p in products}
-
-            if len(product_map) != len(set(product_ids)):
-                raise ValueError("Some products not found")
-
-            total_amount = 0
-            total_profit = 0
-            line_items = []
-
-            for item in items:
-                pid = item["product_id"]
-                qty = item["quantity"]
-
-                if qty <= 0:
-                    raise ValueError(f"Invalid quantity for product {pid}")
-
-                product = product_map[pid]
-
-                if product.stock_quantity < qty:
-                    raise InsufficientStockError(
-                        product_id=pid,
-                        message=f"Insufficient stock for {product.name}",
-                    )
-
-                product.stock_quantity -= qty
-
-                line_total = product.selling_price * qty
-                profit = (product.selling_price - product.cost_price) * qty
-
-                total_amount += line_total
-                total_profit += profit
-
-                line_items.append({
-                    "product_id": pid,
-                    "quantity": qty,
-                    "unit_price": product.selling_price,
-                    "cost_price_at_sale": product.cost_price,
-                    "total_price": line_total,
-                })
-
-            sale = Sale(
-                receipt_number=f"R-{datetime.utcnow().strftime('%Y%m%d%H%M%S%f')}",
-                user_id=user_id,
-                total_amount=total_amount,
-                profit_at_sale=total_profit,
-                payment_method=payment_method,
-                status="completed",
-                editable_until=datetime.utcnow() + timedelta(minutes=20),
-            )
-            session.add(sale)
-            session.flush()  # need sale.id for the FK rows below
-
-            for li in line_items:
-                session.add(SalesItem(sale_id=sale.id, **li))
-
-            session.add(AuditLogs(
-                user_id=user_id,
-                action_type="create_sale",
-                entity_type="sale",
-                entity_id=sale.id,
-                log_metadata=None,
+            sale_items_to_add.append(SaleItem(
+                product_id=product_id,
+                quantity=quantity,
+                unit_price=unit_price,
+                cost_price_at_sale=cost_price,
+                total_price=item_total_price
             ))
 
-        return SalesService.get_sale(session, sale.id)
+            # Prepare inventory log for stock deduction
+            inventory_logs_to_add.append(InventoryLog(
+                product_id=product_id,
+                change_type="sale",
+                quantity_change=-quantity,
+                reference_id=None # Will be updated after sale is created
+            ))
+            # Deduct stock immediately (within the transaction)
+            product.stock_quantity -= quantity
+            session.add(product)
+
+        # Create sale
+        sale = Sale(
+            receipt_number=f"REC-{uuid.uuid4().hex[:8].upper()}",
+            user_id=user_id,
+            total_amount=total_amount,
+            profit_at_sale=profit_at_sale,
+            payment_method=payment_method,
+            status="completed",
+            created_at=datetime.now(timezone.utc),
+            editable_until=datetime.now(timezone.utc) + timedelta(minutes=20)
+        )
+        session.add(sale)
+        session.flush() # Flush to get sale.id
+
+        # Link sale items and inventory logs to the new sale
+        for item in sale_items_to_add:
+            item.sale_id = sale.id
+            session.add(item)
+        for log in inventory_logs_to_add:
+            log.reference_id = sale.id
+            session.add(log)
+
+        # Add audit log
+        session.add(AuditLog(
+            user_id=user_id,
+            action_type="create_sale",
+            entity_type="sale",
+            entity_id=sale.id,
+            log_metadata={"items": [item.to_dict() for item in sale_items_to_add]},
+            created_at=datetime.now(timezone.utc)
+        ))
+
+        session.commit()
+        return sale, None
 
     @staticmethod
-    def get_sale(session, sale_id):
-        sale = session.get(Sale, sale_id)
+    def get_sale(session: Session, sale_id: str):
+        sale = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.product)).filter_by(id=sale_id).first()
         if not sale:
-            return None
-
-        items = session.execute(
-            select(SalesItem).where(SalesItem.sale_id == sale_id)
-        ).scalars().all()
-
-        return SalesService._serialize_sale(sale, items)
+            return None, "Sale not found"
+        return sale, None
 
     @staticmethod
-    def edit_sale(session, sale_id, user_id, role, items, payment_method):
-        sale = session.get(Sale, sale_id)
+    def get_all_sales(session: Session):
+        sales = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.product)).all()
+        return sales, None
+
+    @staticmethod
+    def edit_sale(session: Session, sale_id: str, user_id: str, role: str, items: list, payment_method: str):
+        sale = session.query(Sale).options(joinedload(Sale.items)).filter_by(id=sale_id).first()
         if not sale:
-            raise ValueError("Sale not found")
+            return None, "Sale not found"
 
-        now = datetime.utcnow()
-        if role not in ("manager", "admin") and now >= sale.editable_until:
-            raise PermissionError("edit_window_closed")
+        # Check edit window for employees
+        if role == "employee" and datetime.now(timezone.utc) > sale.editable_until:
+            return None, "Edit window has closed. Manager approval required."
 
-        existing_items = session.execute(
-            select(SalesItem).where(SalesItem.sale_id == sale_id)
-        ).scalars().all()
+        # Revert old stock
+        for old_item in sale.items:
+            product = session.query(Product).filter_by(id=old_item.product_id).first()
+            if product:
+                product.stock_quantity += old_item.quantity
+                session.add(product)
+                session.add(InventoryLog(
+                    product_id=product.id,
+                    change_type="cancellation",
+                    quantity_change=old_item.quantity,
+                    reference_id=sale.id,
+                    created_at=datetime.now(timezone.utc)
+                ))
+        
+        # Clear old sale items
+        session.query(SaleItem).filter_by(sale_id=sale.id).delete()
+        session.flush()
 
-        old_map = {i.product_id: i for i in existing_items}
-        new_map = {i["product_id"]: i["quantity"] for i in items}
-        all_product_ids = set(old_map) | set(new_map)
+        # Process new items (similar to create_sale)
+        total_amount = Decimal("0.00")
+        profit_at_sale = Decimal("0.00")
+        new_sale_items = []
+        new_inventory_logs = []
 
-        products = session.execute(
-            select(Product)
-            .where(Product.id.in_(all_product_ids))
-            .with_for_update()
-        ).scalars().all()
-        product_map = {p.id: p for p in products}
+        for item_data in items:
+            product_id = item_data["product_id"]
+            quantity = item_data["quantity"]
 
-        total_amount = 0
-        total_profit = 0
+            product = session.query(Product).filter_by(id=product_id, is_active=True).first()
+            if not product:
+                session.rollback()
+                return None, f"Product with ID {product_id} not found or inactive."
+            if product.stock_quantity < quantity:
+                session.rollback()
+                return None, f"Insufficient stock for product: {product.name}. Available: {product.stock_quantity}, Requested: {quantity}"
 
-        for pid in all_product_ids:
-            old_qty = old_map[pid].quantity if pid in old_map else 0
-            new_qty = new_map.get(pid, 0)
-            delta = new_qty - old_qty
-            product = product_map[pid]
+            unit_price = product.selling_price
+            cost_price = product.cost_price
+            item_total_price = unit_price * quantity
+            item_profit = (unit_price - cost_price) * quantity
 
-            if delta > 0:
-                if product.stock_quantity < delta:
-                    raise InsufficientStockError(pid)
-                product.stock_quantity -= delta
-            elif delta < 0:
-                product.stock_quantity += abs(delta)
+            total_amount += item_total_price
+            profit_at_sale += item_profit
 
-            if new_qty > 0:
-                line_total = product.selling_price * new_qty
-                profit = (product.selling_price - product.cost_price) * new_qty
-                total_amount += line_total
-                total_profit += profit
+            new_sale_items.append(SaleItem(
+                product_id=product_id,
+                quantity=quantity,
+                unit_price=unit_price,
+                cost_price_at_sale=cost_price,
+                total_price=item_total_price,
+                sale_id=sale.id
+            ))
 
-                if pid in old_map:
-                    item = old_map[pid]
-                    item.quantity = new_qty
-                    item.unit_price = product.selling_price
-                    item.cost_price_at_sale = product.cost_price
-                    item.total_price = line_total
-                else:
-                    session.add(SalesItem(
-                        sale_id=sale.id,
-                        product_id=pid,
-                        quantity=new_qty,
-                        unit_price=product.selling_price,
-                        cost_price_at_sale=product.cost_price,
-                        total_price=line_total,
-                    ))
-
-        for pid in list(old_map):
-            if pid not in new_map:
-                session.delete(old_map[pid])
+            new_inventory_logs.append(InventoryLog(
+                product_id=product_id,
+                change_type="sale",
+                quantity_change=-quantity,
+                reference_id=sale.id,
+                created_at=datetime.now(timezone.utc)
+            ))
+            product.stock_quantity -= quantity
+            session.add(product)
 
         sale.total_amount = total_amount
-        sale.profit_at_sale = total_profit
+        sale.profit_at_sale = profit_at_sale
         sale.payment_method = payment_method
         sale.status = "edited"
+        sale.editable_until = datetime.now(timezone.utc) + timedelta(minutes=20) # Reset edit window
 
-        session.add(AuditLogs(
+        session.add_all(new_sale_items)
+        session.add_all(new_inventory_logs)
+        session.add(sale)
+
+        session.add(AuditLog(
             user_id=user_id,
             action_type="edit_sale",
             entity_type="sale",
             entity_id=sale.id,
-            log_metadata=None,
+            log_metadata={"old_items": [item.to_dict() for item in sale.items], "new_items": [item.to_dict() for item in new_sale_items]},
+            created_at=datetime.now(timezone.utc)
         ))
 
-        return SalesService.get_sale(session, sale.id)
+        session.commit()
+        return sale, None
 
     @staticmethod
-    def cancel_sale(session, sale_id, user_id, role):
-        if role not in ("manager", "admin"):
-            raise ValueError("Only managers/admins can cancel sales")
-
-        sale = session.get(Sale, sale_id)
+    def cancel_sale(session: Session, sale_id: str, user_id: str, role: str):
+        sale = session.query(Sale).options(joinedload(Sale.items)).filter_by(id=sale_id).first()
         if not sale:
-            raise ValueError("Sale not found")
+            return None, "Sale not found"
 
-        items = session.execute(
-            select(SalesItem).where(SalesItem.sale_id == sale_id)
-        ).scalars().all()
+        if sale.status == "cancelled":
+            return None, "Sale is already cancelled"
 
-        product_ids = [i.product_id for i in items]
-        products = session.execute(
-            select(Product)
-            .where(Product.id.in_(product_ids))
-            .with_for_update()
-        ).scalars().all()
-        product_map = {p.id: p for p in products}
+        # Only managers and admins can cancel
+        if role not in ["admin", "manager"]:
+            return None, "Permission denied: Only managers or admins can cancel sales."
 
-        for item in items:
-            product_map[item.product_id].stock_quantity += item.quantity
+        # Restore stock
+        for item in sale.items:
+            product = session.query(Product).filter_by(id=item.product_id).first()
+            if product:
+                product.stock_quantity += item.quantity
+                session.add(product)
+                session.add(InventoryLog(
+                    product_id=product.id,
+                    change_type="cancellation",
+                    quantity_change=item.quantity,
+                    reference_id=sale.id,
+                    created_at=datetime.now(timezone.utc)
+                ))
 
         sale.status = "cancelled"
+        session.add(sale)
 
-        session.add(AuditLogs(
+        session.add(AuditLog(
             user_id=user_id,
             action_type="cancel_sale",
             entity_type="sale",
             entity_id=sale.id,
-            log_metadata=None,
+            log_metadata={"reason": "Cancelled by user"},
+            created_at=datetime.now(timezone.utc)
         ))
 
-        return {"id": sale.id, "status": "cancelled"}
+        session.commit()
+        return sale, None
 
-    @staticmethod
-    def _serialize_sale(sale, items):
-        return {
-            "id": sale.id,
-            "receipt_number": sale.receipt_number,
-            "user_id": sale.user_id,
-            "total_amount": float(sale.total_amount),
-            "profit_at_sale": float(sale.profit_at_sale),
-            "payment_method": sale.payment_method,
-            "status": sale.status,
-            "created_at": sale.created_at.isoformat(),
-            "editable_until": sale.editable_until.isoformat(),
-            "items": [
-                {
-                    "product_id": i.product_id,
-                    "quantity": i.quantity,
-                    "unit_price": float(i.unit_price),
-                    "total_price": float(i.total_price),
-                }
-                for i in items
-            ],
-        }
+
+# Helper for SaleItem to_dict (for audit log metadata)
+def to_dict(self):
+    return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+SaleItem.to_dict = to_dict

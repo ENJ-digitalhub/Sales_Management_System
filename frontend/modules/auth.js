@@ -3,11 +3,12 @@
    No other file should read or write localStorage directly.
    ========================================================================== */
 
-const TOKEN_KEY = 'sms_token';
-const DEVICE_ID_KEY = 'sms_device_id';
-const USER_KEY = 'sms_user';
+const TOKEN_KEY = 'token';
+const DEVICE_ID_KEY = 'device_id';
+const USER_KEY = 'user';
 
-const BASE_URL = '';
+// Point to the backend API during local development
+const BASE_URL = 'http://127.0.0.1:5000';
 
 /**
  * Returns this browser's persistent device identity, generating one
@@ -43,12 +44,12 @@ function decodeTokenPayload(token) {
  * Throws on failure so callers can show an error message.
  */
 async function login(username, password) {
-  const device_id = getDeviceId();
+  const deviceName = getDeviceId();
 
   const response = await fetch(`${BASE_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password, device_id }),
+    body: JSON.stringify({ username, password, device_name: deviceName }),
   });
 
   const data = await response.json();
@@ -128,12 +129,12 @@ function isAuthenticated() {
 function getDashboardForRole(role) {
   switch (role) {
     case 'admin':
-      return '../pages/admin-dashboard.html';
+      return '../pages/admin.html';
     case 'manager':
-      return '../pages/manager-dashboard.html';
+      return '../pages/manager.html';
     case 'employee':
     default:
-      return '../pages/sales-dashboard.html';
+      return '../pages/sales.html';
   }
 }
 

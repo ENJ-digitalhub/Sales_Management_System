@@ -1,47 +1,42 @@
-# backend/app.py
-from flask import Flask, g, send_from_directory
+
+from flask import Flask, jsonify, g
 from flask_cors import CORS
 from backend.config import Config
-from backend.routes.sales import sales_bp
+from backend.database import create_all_tables, SessionLocal
 from backend.routes.auth import auth_bp
-import os
-
+from backend.routes.sales import sales_bp
+from backend.routes.products import products_bp
+from backend.routes.sync import sync_bp
 
 def create_app(config_class=Config):
-    """Initializes and configures the core Flask application framework."""
     app = Flask(__name__)
     app.config.from_object(config_class)
+    app.url_map.strict_slashes = False
 
-    # Allow the frontend (served separately, e.g. via Live Server on a
-    # different port) to call this API across origins during development.
     CORS(app, supports_credentials=True)
 
-    @app.route('/')
-    def index():
-        return send_from_directory(
-            os.path.join(os.path.dirname(__file__), '..', 'frontend'),
-            'index.html'
-        )
-        
-    @app.route('/<path:filename>')
-    def serve_frontend(filename):
-        return send_from_directory(
-            os.path.join(os.path.dirname(__file__), '..', 'frontend'),
-            filename
-        )
+    # Initialize database
+    with app.app_context():
+        create_all_tables()
+
+    # Register blueprints
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(sales_bp)
+    app.register_blueprint(products_bp)
+    app.register_blueprint(sync_bp)
 
     @app.teardown_appcontext
-    def shutdown_session(exception=None):
-        session = g.pop('db', None)
-        if session is not None:
-            session.close()
+    def teardown_db(exception):
+        db = g.pop("db", None)
+        if db is not None:
+            db.close()
 
-    @app.route('/health', methods=['GET'])
+    @app.route("/health", methods=["GET"])
     def health_check():
-        return {"status": "healthy"}, 200
+        return jsonify({"status": "healthy"}), 200
 
-    # Register all functional domain routes
-    app.register_blueprint(sales_bp)
-    app.register_blueprint(auth_bp)
+    @app.route("/")
+    def index():
+        return jsonify({"message": "Welcome to Sales Management System API"})
 
     return app
