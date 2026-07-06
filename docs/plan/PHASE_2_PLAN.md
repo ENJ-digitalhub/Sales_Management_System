@@ -40,7 +40,7 @@ By end of phase: a real user can log in with username + password, receive a JWT,
 {
   "username": "string",
   "password": "string",
-  "device_id": "string"
+  "device_name": "string"
 }
 ```
 

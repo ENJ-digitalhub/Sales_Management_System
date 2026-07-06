@@ -238,6 +238,53 @@ class SalesService:
         session.commit()
         return sale, None
 
+    @staticmethod
+    def delete_sale(session: Session, sale_id: str, user_id: str):
+        sale = session.query(Sale).filter_by(id=sale_id).first()
+        if not sale:
+            return None, "Sale not found"
+
+        session.add(AuditLog(
+            user_id=user_id,
+            action_type="delete_sale",
+            entity_type="sale",
+            entity_id=sale.id,
+            log_metadata={"reason": "Deleted by admin"},
+            created_at=datetime.now(timezone.utc)
+        ))
+
+        session.delete(sale)
+        session.commit()
+        return None, None
+
+    @staticmethod
+    def request_edit(session: Session, sale_id: str, user_id: str, role: str, reason: str, proposed_changes: dict):
+        sale = session.query(Sale).filter_by(id=sale_id).first()
+        if not sale:
+            return None, "Sale not found"
+
+        if datetime.now(timezone.utc) <= sale.editable_until:
+            return None, "Sale is still within the editable window and does not require a late edit request"
+
+        if role not in ["admin", "manager"]:
+            return None, "Permission denied: only managers or admins can request late sale edits"
+
+        session.add(AuditLog(
+            user_id=user_id,
+            action_type="edit_sale",
+            entity_type="sale",
+            entity_id=sale.id,
+            log_metadata={
+                "reason": reason,
+                "proposed_changes": proposed_changes,
+                "late_edit_request": True
+            },
+            created_at=datetime.now(timezone.utc)
+        ))
+
+        session.commit()
+        return sale, None
+
 
 # Helper for SaleItem to_dict (for audit log metadata)
 def to_dict(self):

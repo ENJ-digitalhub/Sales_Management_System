@@ -1,7 +1,7 @@
 
 from flask import request, jsonify, g
 from backend.services.sales_service import SalesService
-from backend.database import SessionLocal
+from backend.database import get_db
 from backend.utils.auth_middleware import require_auth, require_role
 from backend.models.models import Sale
 
@@ -16,7 +16,7 @@ class SalesController:
         if not items or not payment_method:
             return jsonify({"success": False, "message": "Items and payment method are required"}), 400
 
-        session = SessionLocal()
+        session = get_db()
         try:
             sale, error = SalesService.create_sale(session, g.user.id, items, payment_method)
             if error:
@@ -27,13 +27,11 @@ class SalesController:
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     @require_auth
     def get_all_sales():
-        session = SessionLocal()
+        session = get_db()
         try:
             sales, error = SalesService.get_all_sales(session)
             if error:
@@ -41,13 +39,11 @@ class SalesController:
             return jsonify({"success": True, "sales": [s.to_dict() for s in sales]}), 200
         except Exception as e:
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     @require_auth
     def get_sale(sale_id):
-        session = SessionLocal()
+        session = get_db()
         try:
             sale, error = SalesService.get_sale(session, sale_id)
             if error:
@@ -55,8 +51,6 @@ class SalesController:
             return jsonify({"success": True, "sale": sale.to_dict()}), 200
         except Exception as e:
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     @require_auth
@@ -68,7 +62,7 @@ class SalesController:
         if not items or not payment_method:
             return jsonify({"success": False, "message": "Items and payment method are required"}), 400
 
-        session = SessionLocal()
+        session = get_db()
         try:
             sale, error = SalesService.edit_sale(session, sale_id, g.user.id, g.user.role, items, payment_method)
             if error:
@@ -81,14 +75,12 @@ class SalesController:
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     @require_auth
     @require_role("admin", "manager")
     def cancel_sale(sale_id):
-        session = SessionLocal()
+        session = get_db()
         try:
             sale, error = SalesService.cancel_sale(session, sale_id, g.user.id, g.user.role)
             if error:
@@ -99,8 +91,45 @@ class SalesController:
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
+
+    @staticmethod
+    @require_auth
+    @require_role("admin")
+    def delete_sale(sale_id):
+        session = get_db()
+        try:
+            _, error = SalesService.delete_sale(session, sale_id, g.user.id)
+            if error:
+                session.rollback()
+                return jsonify({"success": False, "message": error}), 400
+            session.commit()
+            return jsonify({"success": True, "message": "Sale deleted successfully"}), 200
+        except Exception as e:
+            session.rollback()
+            return jsonify({"success": False, "message": str(e)}), 500
+
+    @staticmethod
+    @require_auth
+    @require_role("admin", "manager")
+    def request_edit(sale_id):
+        data = request.get_json() or {}
+        reason = data.get("reason")
+        proposed_changes = data.get("proposed_changes")
+
+        if not reason or not isinstance(proposed_changes, dict):
+            return jsonify({"success": False, "message": "Reason and proposed_changes are required"}), 400
+
+        session = get_db()
+        try:
+            sale, error = SalesService.request_edit(session, sale_id, g.user.id, g.user.role, reason, proposed_changes)
+            if error:
+                session.rollback()
+                return jsonify({"success": False, "message": error}), 400
+            session.commit()
+            return jsonify({"success": True, "sale": sale.to_dict(), "message": "Edit request submitted"}), 200
+        except Exception as e:
+            session.rollback()
+            return jsonify({"success": False, "message": str(e)}), 500
 
 # Helper for Sale to_dict
 def to_dict(self):

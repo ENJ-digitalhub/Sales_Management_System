@@ -7,6 +7,7 @@ from backend.routes.auth import auth_bp
 from backend.routes.sales import sales_bp
 from backend.routes.products import products_bp
 from backend.routes.sync import sync_bp
+from backend.routes.purchases import purchases_bp
 
 def create_app(config_class=Config):
     app = Flask(__name__)
@@ -23,6 +24,7 @@ def create_app(config_class=Config):
     app.register_blueprint(auth_bp)
     app.register_blueprint(sales_bp)
     app.register_blueprint(products_bp)
+    app.register_blueprint(purchases_bp)
     app.register_blueprint(sync_bp)
 
     @app.teardown_appcontext

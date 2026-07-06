@@ -1,7 +1,7 @@
 
-from flask import Blueprint, request, jsonify, g
+from flask import request, jsonify, g
 from backend.services.auth_service import AuthService
-from backend.database import SessionLocal
+from backend.database import get_db
 
 class AuthController:
     @staticmethod
@@ -14,7 +14,7 @@ class AuthController:
         if not username or not password:
             return jsonify({"success": False, "message": "Username and password are required"}), 400
 
-        session = SessionLocal()
+        session = get_db()
         try:
             result, error = AuthService.login(session, username, password, device_name)
             if error:
@@ -24,8 +24,6 @@ class AuthController:
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     def logout():
@@ -41,7 +39,7 @@ class AuthController:
         if not device_id:
             return jsonify({"success": False, "message": "Device ID is required for logout"}), 400
 
-        session = SessionLocal()
+        session = get_db()
         try:
             success, error = AuthService.logout(session, device_id)
             if error:
@@ -51,8 +49,6 @@ class AuthController:
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     def verify():

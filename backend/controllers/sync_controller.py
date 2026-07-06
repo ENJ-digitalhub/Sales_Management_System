@@ -1,7 +1,7 @@
 
 from flask import request, jsonify, g
 from backend.services.sync_service import SyncService
-from backend.database import SessionLocal
+from backend.database import get_db
 from backend.utils.auth_middleware import require_auth
 from datetime import datetime
 import json
@@ -17,26 +17,30 @@ class SyncController:
         if not changes:
             return jsonify({"success": False, "message": "No changes provided"}), 400
 
-        session = SessionLocal()
+        session = get_db()
         try:
             results = []
             for change in changes:
                 entity_type = change.get("entity_type")
                 operation = change.get("operation")
                 payload = change.get("payload")
-                if not all([entity_type, operation, payload]):
+                transaction_id = change.get("transaction_id")
+                if not all([entity_type, operation, payload, transaction_id]):
                     results.append({"status": "failed", "message": "Invalid change format"})
                     continue
-                
-                sync_entry = SyncService.enqueue_change(session, g.device_id, entity_type, operation, payload)
-                results.append({"status": "enqueued", "transaction_id": sync_entry.transaction_id})
+
+                sync_entry, error = SyncService.enqueue_change(session, g.device_id, transaction_id, entity_type, operation, payload)
+                if error == "duplicate":
+                    results.append({"status": "synced", "transaction_id": sync_entry.transaction_id})
+                elif error:
+                    results.append({"status": "failed", "message": error, "transaction_id": transaction_id})
+                else:
+                    results.append({"status": "enqueued", "transaction_id": sync_entry.transaction_id})
             session.commit()
             return jsonify({"success": True, "results": results}), 200
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     @require_auth
@@ -50,14 +54,12 @@ class SyncController:
         except ValueError:
             return jsonify({"success": False, "message": "Invalid last_sync_time format"}), 400
 
-        session = SessionLocal()
+        session = get_db()
         try:
             changes = SyncService.get_unsynced_changes(session, last_sync_time)
             return jsonify({"success": True, "changes": changes}), 200
         except Exception as e:
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     @require_auth
@@ -69,7 +71,7 @@ class SyncController:
         if not all([transaction_id, resolution_payload]):
             return jsonify({"success": False, "message": "Transaction ID and resolution payload are required"}), 400
 
-        session = SessionLocal()
+        session = get_db()
         try:
             sync_item, error = SyncService.resolve_conflict(session, transaction_id, resolution_payload)
             if error:
@@ -80,8 +82,6 @@ class SyncController:
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
 # Helper for SyncQueue to_dict
 def to_dict(self):

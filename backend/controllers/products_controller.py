@@ -1,7 +1,7 @@
 
 from flask import request, jsonify, g
 from backend.services.products_service import ProductService
-from backend.database import SessionLocal
+from backend.database import get_db
 from backend.utils.auth_middleware import require_auth, require_role
 from decimal import Decimal
 
@@ -26,7 +26,7 @@ class ProductController:
         except Exception:
             return jsonify({"success": False, "message": "Selling price and cost price must be valid numbers"}), 400
 
-        session = SessionLocal()
+        session = get_db()
         try:
             product, error = ProductService.create_product(session, g.user.id, name, category, selling_price, cost_price, stock_quantity)
             if error:
@@ -37,13 +37,11 @@ class ProductController:
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     @require_auth
     def get_product(product_id):
-        session = SessionLocal()
+        session = get_db()
         try:
             product, error = ProductService.get_product(session, product_id)
             if error:
@@ -51,13 +49,11 @@ class ProductController:
             return jsonify({"success": True, "product": product.to_dict()}), 200
         except Exception as e:
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     @require_auth
     def get_all_products():
-        session = SessionLocal()
+        session = get_db()
         try:
             products, error = ProductService.get_all_products(session)
             if error:
@@ -65,8 +61,6 @@ class ProductController:
             return jsonify({"success": True, "products": [p.to_dict() for p in products]}), 200
         except Exception as e:
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     @require_auth
@@ -91,7 +85,7 @@ class ProductController:
         if not update_fields:
             return jsonify({"success": False, "message": "No fields provided for update"}), 400
 
-        session = SessionLocal()
+        session = get_db()
         try:
             product, error = ProductService.update_product(session, product_id, g.user.id, **update_fields)
             if error:
@@ -102,14 +96,12 @@ class ProductController:
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()
 
     @staticmethod
     @require_auth
     @require_role("admin", "manager")
     def delete_product(product_id):
-        session = SessionLocal()
+        session = get_db()
         try:
             success, error = ProductService.delete_product(session, product_id, g.user.id)
             if error:
@@ -120,5 +112,3 @@ class ProductController:
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-        finally:
-            session.close()

@@ -7,12 +7,10 @@ from backend.utils.security import Security
 from datetime import datetime, timedelta
 from decimal import Decimal
 import uuid
+from backend.database import engine, SessionLocal
 
 base = Path(__file__).parent.parent.resolve()
 DB_PATH = base / "database" / "shop.db"
-
-engine = create_engine(f"sqlite:///{DB_PATH}")
-SessionLocal = sessionmaker(bind=engine)
 
 class CLI:
     def __init__(self) -> None:

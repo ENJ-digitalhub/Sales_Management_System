@@ -7,8 +7,11 @@ import json
 
 class SyncService:
     @staticmethod
-    def enqueue_change(session: Session, device_id: str, entity_type: str, operation: str, payload: dict):
-        transaction_id = f"{device_id}-{entity_type}-{operation}-{datetime.now(timezone.utc).isoformat()}"
+    def enqueue_change(session: Session, device_id: str, transaction_id: str, entity_type: str, operation: str, payload: dict):
+        existing = session.query(SyncQueue).filter_by(transaction_id=transaction_id).first()
+        if existing:
+            return existing, "duplicate"
+
         sync_entry = SyncQueue(
             transaction_id=transaction_id,
             device_id=device_id,
@@ -19,7 +22,7 @@ class SyncService:
             created_at=datetime.now(timezone.utc)
         )
         session.add(sync_entry)
-        return sync_entry
+        return sync_entry, None
 
     @staticmethod
     def process_sync_queue(session: Session, device_id: str):
