@@ -1,34 +1,8 @@
 
 import pytest
-from flask import Flask
-from backend.config import Config
-from backend.database import Base, engine, SessionLocal
 from backend.models.models import User, Product
 from backend.utils.security import hash_password
-from backend.app import create_app
 from decimal import Decimal
-
-@pytest.fixture(scope="module")
-def app():
-    app = create_app(config_class=Config)
-    app.config["TESTING"] = True
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-    with app.app_context():
-        Base.metadata.create_all(bind=engine)
-        yield app
-        Base.metadata.drop_all(bind=engine)
-
-@pytest.fixture(scope="function")
-def client(app):
-    return app.test_client()
-
-@pytest.fixture(scope="function")
-def session(app):
-    with app.app_context():
-        db = SessionLocal()
-        yield db
-        db.rollback()
-        db.close()
 
 @pytest.fixture(scope="function")
 def auth_headers(client, session):

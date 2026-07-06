@@ -3,6 +3,7 @@ from decimal import Decimal
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Numeric, Boolean, JSON, CheckConstraint, ForeignKey, Integer, DateTime, Text
 from datetime import datetime, timedelta, timezone
+import json
 import uuid
 
 class Base(DeclarativeBase):
@@ -211,12 +212,44 @@ class SyncQueue(Base):
     operation: Mapped[str] = mapped_column(String(10))
     payload: Mapped[dict] = mapped_column(JSON)
     status: Mapped[str] = mapped_column(String(20), default="pending")
+    conflict_type: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    resolution: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    resolved_by: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    resolution_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     retry_count: Mapped[int] = mapped_column(Integer, default=0)
     last_attempt_at: Mapped[datetime | None] = mapped_column(DateTime)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        payload_parsed = self.payload
+        if isinstance(self.payload, str):
+            try:
+                payload_parsed = json.loads(self.payload)
+            except Exception:
+                payload_parsed = self.payload
+
+        return {
+            "id": self.id,
+            "transaction_id": self.transaction_id,
+            "device_id": self.device_id,
+            "entity_type": self.entity_type,
+            "operation": self.operation,
+            "payload": payload_parsed,
+            "status": self.status,
+            "conflict_type": self.conflict_type,
+            "resolution": self.resolution,
+            "resolved_by": self.resolved_by,
+            "resolution_note": self.resolution_note,
+            "resolved_at": self.resolved_at.isoformat() if self.resolved_at else None,
+            "retry_count": self.retry_count,
+            "last_attempt_at": self.last_attempt_at.isoformat() if self.last_attempt_at else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
 
     __table_args__ = (
         CheckConstraint("status IN ('pending', 'synced', 'failed', 'conflict')", name="valid_sync_status"),
         CheckConstraint("entity_type IN ('sale', 'product', 'user', 'purchase', 'device')", name="valid_sync_entity_type"),
         CheckConstraint("operation IN ('CREATE', 'UPDATE', 'DELETE')", name="valid_sync_operation"),
+        CheckConstraint("conflict_type IN ('stock', 'deleted_product', 'duplicate') OR conflict_type IS NULL", name="valid_sync_conflict_type"),
     )

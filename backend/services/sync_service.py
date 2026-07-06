@@ -2,6 +2,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from backend.models.models import SyncQueue, User, Product, Sale, SaleItem, Purchase, PurchaseItem, Device, AuditLog, InventoryLog
+from backend.sync.queue import Queue
 from datetime import datetime, timezone
 import json
 
@@ -75,16 +76,14 @@ class SyncService:
 
     @staticmethod
     def resolve_conflict(session: Session, transaction_id: str, resolution_payload: dict):
-        # This is where conflict resolution logic would go
-        # For now, we'll just mark the original item as resolved and apply the new payload
-        sync_item = session.query(SyncQueue).filter_by(transaction_id=transaction_id).first()
-        if not sync_item:
-            return None, "Sync item not found"
-
-        sync_item.status = "resolved"
-        sync_item.payload = json.dumps(resolution_payload)
-        # Re-enqueue or apply directly based on resolution strategy
-        # For simplicity, let's just update the status and assume the client will re-push
-        session.add(sync_item)
-        session.commit()
-        return sync_item, None
+        # Delegate conflict resolution to the shared sync queue engine.
+        # Currently `resolution_payload` is expected to be a dict with at least:
+        # {"transaction_id": ..., "resolution": "approve" | "reject", "note": "..."}
+        resolution = resolution_payload.get("resolution")
+        note = resolution_payload.get("note")
+        user_id = resolution_payload.get("resolved_by")
+        if not transaction_id or resolution not in ["approve", "reject"]:
+            return None, "Invalid resolution payload"
+        if not user_id:
+            return None, "Resolved by user id is required"
+        return Queue().resolve_conflict(transaction_id, resolution, user_id, note, session)

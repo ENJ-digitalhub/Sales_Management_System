@@ -2,8 +2,9 @@
 from functools import wraps
 from flask import request, jsonify, g
 from backend.utils.jwt_utils import decode_token
-from backend.database import SessionLocal # Import SessionLocal for direct session management
+import backend.database as database
 from backend.models.models import User
+
 
 def require_auth(f):
     @wraps(f)
@@ -20,8 +21,8 @@ def require_auth(f):
             if "error" in data:
                 return jsonify({"message": data["error"]}), 401
 
-            # Use a new session for each request to avoid issues with Flask's g object
-            session = SessionLocal()
+            # Use the current database session factory for request auth
+            session = database.SessionLocal()
             user = session.query(User).filter_by(id=data["sub"]).first()
             session.close()
 

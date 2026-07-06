@@ -8,7 +8,7 @@ import uuid
 
 class SalesService:
     @staticmethod
-    def create_sale(session: Session, user_id: str, items: list, payment_method: str):
+    def create_sale(session: Session, user_id: str, items: list, payment_method: str, commit: bool = True):
         # Validate stock and calculate totals
         total_amount = Decimal("0.00")
         profit_at_sale = Decimal("0.00")
@@ -86,7 +86,8 @@ class SalesService:
             created_at=datetime.now(timezone.utc)
         ))
 
-        session.commit()
+        if commit:
+            session.commit()
         return sale, None
 
     @staticmethod

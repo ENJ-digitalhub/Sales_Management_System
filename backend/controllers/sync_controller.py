@@ -1,6 +1,7 @@
 
 from flask import request, jsonify, g
 from backend.services.sync_service import SyncService
+from backend.services.conflicts_service import ConflictsService
 from backend.database import get_db
 from backend.utils.auth_middleware import require_auth
 from datetime import datetime
@@ -64,16 +65,17 @@ class SyncController:
     @staticmethod
     @require_auth
     def resolve_conflict():
-        data = request.get_json()
+        data = request.get_json() or {}
         transaction_id = data.get("transaction_id")
-        resolution_payload = data.get("resolution_payload")
+        resolution = data.get("resolution")
+        note = data.get("note")
 
-        if not all([transaction_id, resolution_payload]):
-            return jsonify({"success": False, "message": "Transaction ID and resolution payload are required"}), 400
+        if not transaction_id or resolution not in ["approve", "reject"]:
+            return jsonify({"success": False, "message": "Transaction ID and valid resolution are required"}), 400
 
         session = get_db()
         try:
-            sync_item, error = SyncService.resolve_conflict(session, transaction_id, resolution_payload)
+            sync_item, error = ConflictsService.resolve_conflict(session, transaction_id, resolution, g.user.id, note)
             if error:
                 session.rollback()
                 return jsonify({"success": False, "message": error}), 400
