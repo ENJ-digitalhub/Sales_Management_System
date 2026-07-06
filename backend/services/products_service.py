@@ -130,4 +130,3 @@ def to_dict(self):
         "created_at": self.created_at.isoformat(),
         "updated_at": self.updated_at.isoformat()
     }
-Product.to_dict = to_dict

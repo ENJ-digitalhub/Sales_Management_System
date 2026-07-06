@@ -41,9 +41,11 @@ class AuthService:
             return None, data["error"]
 
         user = session.query(User).filter_by(id=data["sub"]).first()
-        device = session.query(Device).filter_by(id=data["device_id"], user_id=user.id, is_active=True).first()
+        if not user:
+            return None, "Invalid token"
 
-        if not user or not device:
+        device = session.query(Device).filter_by(id=data["device_id"], user_id=user.id, is_active=True).first()
+        if not device:
             return None, "Invalid token or inactive device"
 
         # Update last_seen_at for the device

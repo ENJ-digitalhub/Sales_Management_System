@@ -2,9 +2,11 @@
 from flask import request, jsonify, g
 from backend.services.auth_service import AuthService
 from backend.database import get_db
+from backend.app import limiter
 
 class AuthController:
     @staticmethod
+    @limiter.limit("10 per minute")
     def login():
         data = request.get_json()
         username = data.get("username")

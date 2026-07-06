@@ -145,4 +145,3 @@ def to_dict(self):
         "editable_until": self.editable_until.isoformat(),
         "items": [item.to_dict() for item in self.items]
     }
-Sale.to_dict = to_dict

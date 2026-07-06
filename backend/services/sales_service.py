@@ -1,7 +1,7 @@
 
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import select
-from backend.models.models import Sale, SaleItem, Product, InventoryLog, AuditLog, User
+from backend.models.models import Sale, SaleItem, Product, InventoryLog, AuditLog, User, to_dict
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 import uuid
@@ -190,7 +190,7 @@ class SalesService:
             action_type="edit_sale",
             entity_type="sale",
             entity_id=sale.id,
-            log_metadata={"old_items": [item.to_dict() for item in sale.items], "new_items": [item.to_dict() for item in new_sale_items]},
+            log_metadata={"items": [item.to_dict() for item in sale_items_to_add]},
             created_at=datetime.now(timezone.utc)
         ))
 
@@ -285,9 +285,3 @@ class SalesService:
 
         session.commit()
         return sale, None
-
-
-# Helper for SaleItem to_dict (for audit log metadata)
-def to_dict(self):
-    return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-SaleItem.to_dict = to_dict

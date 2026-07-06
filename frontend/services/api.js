@@ -1,5 +1,5 @@
-
-const API_BASE_URL = 'http://127.0.0.1:5000';
+// frontend\services\api.js
+const API_BASE_URL = window.location.origin;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');

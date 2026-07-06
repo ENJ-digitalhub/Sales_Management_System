@@ -99,4 +99,3 @@ def to_dict(self):
         "last_attempt_at": self.last_attempt_at.isoformat() if self.last_attempt_at else None,
         "created_at": self.created_at.isoformat()
     }
-SyncQueue.to_dict = to_dict

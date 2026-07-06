@@ -248,29 +248,15 @@ class SyncQueue(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     def to_dict(self):
-        payload_parsed = self.payload
-        if isinstance(self.payload, str):
-            try:
-                payload_parsed = json.loads(self.payload)
-            except Exception:
-                payload_parsed = self.payload
-
         return {
             "id": self.id,
-            "transaction_id": self.transaction_id,
-            "device_id": self.device_id,
-            "entity_type": self.entity_type,
-            "operation": self.operation,
-            "payload": payload_parsed,
-            "status": self.status,
-            "conflict_type": self.conflict_type,
-            "resolution": self.resolution,
-            "resolved_by": self.resolved_by,
-            "resolution_note": self.resolution_note,
-            "resolved_at": self.resolved_at.isoformat() if self.resolved_at else None,
-            "retry_count": self.retry_count,
-            "last_attempt_at": self.last_attempt_at.isoformat() if self.last_attempt_at else None,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "sale_id": self.sale_id,
+            "product_id": self.product_id,
+            "quantity": self.quantity,
+            "unit_price": float(self.unit_price),
+            "cost_price_at_sale": float(self.cost_price_at_sale),
+            "total_price": float(self.total_price),
+            "product": {"id": self.product.id, "name": self.product.name} if self.product else None,
         }
 
     __table_args__ = (

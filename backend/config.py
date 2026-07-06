@@ -24,3 +24,9 @@ class Config:
     LOG_FILE = BASE_DIR / "app.log"
     BACKUP_DIR = BASE_DIR / "backups"
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    
+class ProductionConfig(Config):
+    DEBUG = False
+    TESTING = False
+    SESSION_COOKIE_SECURE = False
+    SESSION_COOKIE_HTTPONLY = True

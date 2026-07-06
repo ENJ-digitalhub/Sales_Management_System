@@ -8,6 +8,10 @@ from backend.routes.sales import sales_bp
 from backend.routes.products import products_bp
 from backend.routes.sync import sync_bp
 from backend.routes.purchases import purchases_bp
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+limiter = Limiter(key_func=get_remote_address)
 
 # conflict routes may be registered later if present
 try:
@@ -50,5 +54,7 @@ def create_app(config_class=Config):
     @app.route("/")
     def index():
         return jsonify({"message": "Welcome to Sales Management System API"})
-
+    
+    limiter.init_app(app)
+    limiter.limit("10 per minute")(app.view_functions.get("auth.login"))
     return app
