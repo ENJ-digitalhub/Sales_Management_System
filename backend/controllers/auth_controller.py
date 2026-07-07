@@ -2,7 +2,7 @@
 from flask import request, jsonify, g
 from backend.services.auth_service import AuthService
 from backend.database import get_db
-from backend.app import limiter
+from backend.extensions import limiter
 
 class AuthController:
     @staticmethod
@@ -19,8 +19,8 @@ class AuthController:
         session = get_db()
         try:
             result, error = AuthService.login(session, username, password, device_name)
-            if error:
-                return jsonify({"success": False, "message": error}), 401
+            if error or result is None:
+                return jsonify({"success": False, "message": error or "Login failed"}), 401
             session.commit()
             return jsonify({"success": True, "token": result["token"], "user": result["user"]}), 200
         except Exception as e:

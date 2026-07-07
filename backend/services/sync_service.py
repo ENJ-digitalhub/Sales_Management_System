@@ -42,7 +42,7 @@ class SyncService:
             device_id=device_id,
             entity_type=entity_type,
             operation=operation,
-            payload=json.dumps(payload),
+            payload=payload,
             status="pending",
             created_at=datetime.now(timezone.utc)
         )

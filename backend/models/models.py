@@ -2,7 +2,8 @@
 from decimal import Decimal
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Numeric, Boolean, JSON, CheckConstraint, ForeignKey, Integer, DateTime, Text
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
+from backend.utils.time import now_utc
 import json
 import uuid
 
@@ -25,7 +26,7 @@ class User(Base):
     account_number: Mapped[str | None] = mapped_column(String(20))
     pin_hash: Mapped[str | None] = mapped_column(String(100))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
 
     devices: Mapped[list["Device"]] = relationship("Device", back_populates="user")
     sales: Mapped[list["Sale"]] = relationship("Sale", back_populates="user")
@@ -49,8 +50,8 @@ class Product(Base):
     cost_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     stock_quantity: Mapped[int] = mapped_column(Integer, default=0)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc, onupdate=now_utc)
 
     sale_items: Mapped[list["SaleItem"]] = relationship("SaleItem", back_populates="product")
     purchase_items: Mapped[list["PurchaseItem"]] = relationship("PurchaseItem", back_populates="product")
@@ -87,8 +88,8 @@ class Sale(Base):
     profit_at_sale: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     payment_method: Mapped[str] = mapped_column(String(20))
     status: Mapped[str] = mapped_column(String(20), default="completed")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    editable_until: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.utcnow() + timedelta(minutes=20))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
+    editable_until: Mapped[datetime] = mapped_column(DateTime, default=lambda: now_utc() + timedelta(minutes=20))
 
     user: Mapped["User"] = relationship("User", back_populates="sales")
     items: Mapped[list["SaleItem"]] = relationship("SaleItem", back_populates="sale", cascade="all, delete-orphan")
@@ -144,7 +145,7 @@ class InventoryLog(Base):
     change_type: Mapped[str] = mapped_column(String(20))
     quantity_change: Mapped[int] = mapped_column(Integer)
     reference_id: Mapped[str | None] = mapped_column(String(255))
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
 
     product: Mapped["Product"] = relationship("Product", back_populates="inventory_logs")
 
@@ -162,7 +163,7 @@ class AuditLog(Base):
     entity_type: Mapped[str] = mapped_column(String(20))
     entity_id: Mapped[str | None] = mapped_column(String(255))
     log_metadata: Mapped[dict | None] = mapped_column(JSON)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
 
     user: Mapped["User"] = relationship("User", back_populates="audit_logs")
 
@@ -180,7 +181,7 @@ class Purchase(Base):
     supplier: Mapped[str | None] = mapped_column(String(100))
     status: Mapped[str] = mapped_column(String(20), default="pending")
     total_cost: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=0)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
     approved_by: Mapped[str | None] = mapped_column(ForeignKey(User.id, ondelete="SET NULL"))
     approved_at: Mapped[datetime | None] = mapped_column(DateTime)
 
@@ -190,8 +191,21 @@ class Purchase(Base):
 
     __table_args__ = (
         CheckConstraint("total_cost >= 0", name="total_cost_positive"),
-        CheckConstraint("status IN ('pending', 'approved', 'rejected')", name="valid_purchase_status"),
+        CheckConstraint("status IN (\'pending\', \'approved\', \'rejected\')", name="valid_purchase_status"),
     )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "created_by": self.created_by,
+            "supplier": self.supplier,
+            "status": self.status,
+            "total_cost": float(self.total_cost) if isinstance(self.total_cost, Decimal) else self.total_cost,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "approved_by": self.approved_by,
+            "approved_at": self.approved_at.isoformat() if self.approved_at else None,
+            "items": [item.to_dict() for item in self.items] if self.items else []
+        }
 
 class PurchaseItem(Base):
     """Defines the PurchaseItem model"""
@@ -211,6 +225,15 @@ class PurchaseItem(Base):
         CheckConstraint("cost_price >= 0", name="purchase_cost_price_positive"),
     )
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "purchase_id": self.purchase_id,
+            "product_id": self.product_id,
+            "quantity": self.quantity,
+            "cost_price": float(self.cost_price) if isinstance(self.cost_price, Decimal) else self.cost_price,
+        }
+
 class Device(Base):
     """Defines the Device model"""
     __tablename__ = "devices"
@@ -219,7 +242,7 @@ class Device(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey(User.id, ondelete="CASCADE"))
     device_name: Mapped[str | None] = mapped_column(String(100))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    last_seen_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_seen_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc, onupdate=now_utc)
 
     user: Mapped["User"] = relationship("User", back_populates="devices")
 
@@ -245,19 +268,7 @@ class SyncQueue(Base):
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     retry_count: Mapped[int] = mapped_column(Integer, default=0)
     last_attempt_at: Mapped[datetime | None] = mapped_column(DateTime)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "sale_id": self.sale_id,
-            "product_id": self.product_id,
-            "quantity": self.quantity,
-            "unit_price": float(self.unit_price),
-            "cost_price_at_sale": float(self.cost_price_at_sale),
-            "total_price": float(self.total_price),
-            "product": {"id": self.product.id, "name": self.product.name} if self.product else None,
-        }
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
 
     __table_args__ = (
         CheckConstraint("status IN ('pending', 'synced', 'failed', 'conflict')", name="valid_sync_status"),
@@ -265,3 +276,17 @@ class SyncQueue(Base):
         CheckConstraint("operation IN ('CREATE', 'UPDATE', 'DELETE')", name="valid_sync_operation"),
         CheckConstraint("conflict_type IN ('stock', 'deleted_product', 'duplicate') OR conflict_type IS NULL", name="valid_sync_conflict_type"),
     )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "transaction_id": self.transaction_id,
+            "device_id": self.device_id,
+            "entity_type": self.entity_type,
+            "operation": self.operation,
+            "payload": json.loads(self.payload) if isinstance(self.payload, str) else self.payload,
+            "status": self.status,
+            "retry_count": self.retry_count,
+            "last_attempt_at": self.last_attempt_at.isoformat() if self.last_attempt_at else None,
+            "created_at": self.created_at.isoformat()
+        }

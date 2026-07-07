@@ -1,3 +1,4 @@
+# backend/config.py
 import os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -18,7 +19,9 @@ class Config:
 
     # Add other configurations as needed for different phases
     # For example, for Phase 9 deployment
-    SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key") # Flask secret key
+    SECRET_KEY = os.getenv("SECRET_KEY") # Flask secret key
+    if not SECRET_KEY:
+        raise ValueError("SECRET_KEY not set in environment. Add it to your .env file.")
     WAITRESS_PORT = int(os.getenv("WAITRESS_PORT", 5000))
     WAITRESS_HOST = os.getenv("WAITRESS_HOST", "0.0.0.0")
     LOG_FILE = BASE_DIR / "app.log"

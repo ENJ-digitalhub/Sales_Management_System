@@ -1,8 +1,9 @@
 
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import select
-from backend.models.models import Sale, SaleItem, Product, InventoryLog, AuditLog, User, to_dict
-from datetime import datetime, timedelta, timezone
+from backend.models.models import Sale, SaleItem, Product, InventoryLog, AuditLog, User
+from datetime import datetime, timedelta
+from backend.utils.time import now_utc
 from decimal import Decimal
 import uuid
 
@@ -62,8 +63,8 @@ class SalesService:
             profit_at_sale=profit_at_sale,
             payment_method=payment_method,
             status="completed",
-            created_at=datetime.now(timezone.utc),
-            editable_until=datetime.now(timezone.utc) + timedelta(minutes=20)
+            created_at=now_utc(),
+            editable_until=now_utc() + timedelta(minutes=20)
         )
         session.add(sale)
         session.flush() # Flush to get sale.id
@@ -83,7 +84,7 @@ class SalesService:
             entity_type="sale",
             entity_id=sale.id,
             log_metadata={"items": [item.to_dict() for item in sale_items_to_add]},
-            created_at=datetime.now(timezone.utc)
+            created_at=now_utc()
         ))
 
         if commit:
@@ -109,7 +110,7 @@ class SalesService:
             return None, "Sale not found"
 
         # Check edit window for employees
-        if role == "employee" and datetime.now(timezone.utc) > sale.editable_until:
+        if role == "employee" and now_utc() > sale.editable_until:
             return None, "Edit window has closed. Manager approval required."
 
         # Revert old stock
@@ -123,7 +124,7 @@ class SalesService:
                     change_type="cancellation",
                     quantity_change=old_item.quantity,
                     reference_id=sale.id,
-                    created_at=datetime.now(timezone.utc)
+                    created_at=now_utc()
                 ))
         
         # Clear old sale items
@@ -170,7 +171,7 @@ class SalesService:
                 change_type="sale",
                 quantity_change=-quantity,
                 reference_id=sale.id,
-                created_at=datetime.now(timezone.utc)
+                created_at=now_utc()
             ))
             product.stock_quantity -= quantity
             session.add(product)
@@ -179,7 +180,7 @@ class SalesService:
         sale.profit_at_sale = profit_at_sale
         sale.payment_method = payment_method
         sale.status = "edited"
-        sale.editable_until = datetime.now(timezone.utc) + timedelta(minutes=20) # Reset edit window
+        sale.editable_until = now_utc() + timedelta(minutes=20) # Reset edit window
 
         session.add_all(new_sale_items)
         session.add_all(new_inventory_logs)
@@ -190,8 +191,8 @@ class SalesService:
             action_type="edit_sale",
             entity_type="sale",
             entity_id=sale.id,
-            log_metadata={"items": [item.to_dict() for item in sale_items_to_add]},
-            created_at=datetime.now(timezone.utc)
+            log_metadata={"items": [item.to_dict() for item in new_sale_items]},
+            created_at=now_utc()
         ))
 
         session.commit()
@@ -221,7 +222,7 @@ class SalesService:
                     change_type="cancellation",
                     quantity_change=item.quantity,
                     reference_id=sale.id,
-                    created_at=datetime.now(timezone.utc)
+                    created_at=now_utc()
                 ))
 
         sale.status = "cancelled"
@@ -233,7 +234,7 @@ class SalesService:
             entity_type="sale",
             entity_id=sale.id,
             log_metadata={"reason": "Cancelled by user"},
-            created_at=datetime.now(timezone.utc)
+            created_at=now_utc()
         ))
 
         session.commit()
@@ -251,7 +252,7 @@ class SalesService:
             entity_type="sale",
             entity_id=sale.id,
             log_metadata={"reason": "Deleted by admin"},
-            created_at=datetime.now(timezone.utc)
+            created_at=now_utc()
         ))
 
         session.delete(sale)
@@ -264,7 +265,7 @@ class SalesService:
         if not sale:
             return None, "Sale not found"
 
-        if datetime.now(timezone.utc) <= sale.editable_until:
+        if now_utc() <= sale.editable_until:
             return None, "Sale is still within the editable window and does not require a late edit request"
 
         if role not in ["admin", "manager"]:
@@ -280,7 +281,7 @@ class SalesService:
                 "proposed_changes": proposed_changes,
                 "late_edit_request": True
             },
-            created_at=datetime.now(timezone.utc)
+            created_at=now_utc()
         ))
 
         session.commit()

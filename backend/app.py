@@ -1,4 +1,4 @@
-
+# backend\app.py
 from flask import Flask, jsonify, g
 from flask_cors import CORS
 from backend.config import Config
@@ -8,10 +8,7 @@ from backend.routes.sales import sales_bp
 from backend.routes.products import products_bp
 from backend.routes.sync import sync_bp
 from backend.routes.purchases import purchases_bp
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-
-limiter = Limiter(key_func=get_remote_address)
+from backend.extensions import limiter
 
 # conflict routes may be registered later if present
 try:
@@ -21,7 +18,10 @@ except ImportError:
 
 
 def create_app(config_class=Config):
-    app = Flask(__name__)
+    import os
+    # Point to the frontend directory relative to this file
+    frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+    app = Flask(__name__, static_folder=frontend_dir, static_url_path="")
     app.config.from_object(config_class)
     app.url_map.strict_slashes = False
 
@@ -53,7 +53,11 @@ def create_app(config_class=Config):
 
     @app.route("/")
     def index():
-        return jsonify({"message": "Welcome to Sales Management System API"})
+        return app.send_static_file("index.html")
+
+    @app.route("/frontend/<path:path>")
+    def serve_frontend(path):
+        return app.send_static_file(path)
     
     limiter.init_app(app)
     limiter.limit("10 per minute")(app.view_functions.get("auth.login"))
