@@ -116,17 +116,3 @@ class ProductService:
 
         session.commit()
         return True, None
-
-# Helper for Product to_dict
-def to_dict(self):
-    return {
-        "id": self.id,
-        "name": self.name,
-        "category": self.category,
-        "selling_price": float(self.selling_price),
-        "cost_price": float(self.cost_price),
-        "stock_quantity": self.stock_quantity,
-        "is_active": self.is_active,
-        "created_at": self.created_at.isoformat(),
-        "updated_at": self.updated_at.isoformat()
-    }

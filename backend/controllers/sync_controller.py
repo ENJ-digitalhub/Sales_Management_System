@@ -84,18 +84,3 @@ class SyncController:
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-
-# Helper for SyncQueue to_dict
-def to_dict(self):
-    return {
-        "id": self.id,
-        "transaction_id": self.transaction_id,
-        "device_id": self.device_id,
-        "entity_type": self.entity_type,
-        "operation": self.operation,
-        "payload": json.loads(self.payload) if isinstance(self.payload, str) else self.payload,
-        "status": self.status,
-        "retry_count": self.retry_count,
-        "last_attempt_at": self.last_attempt_at.isoformat() if self.last_attempt_at else None,
-        "created_at": self.created_at.isoformat()
-    }

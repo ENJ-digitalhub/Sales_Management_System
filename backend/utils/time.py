@@ -1,5 +1,5 @@
-# backend\utils\time.py
-from datetime import datetime
+# backend/utils/time.py
+from datetime import datetime, timezone
 
 def now_utc() -> datetime:
-    return datetime.utcnow()
+    return datetime.now(timezone.utc)

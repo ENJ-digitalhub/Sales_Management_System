@@ -13,8 +13,6 @@ class PurchasesController:
 
         if not items or not isinstance(items, list):
             return jsonify({"success": False, "message": "Items must be a non-empty list"}), 400
-        if not supplier:
-            return jsonify({"success": False, "message": "Supplier is required"}), 400
 
         session = get_db()
         try:

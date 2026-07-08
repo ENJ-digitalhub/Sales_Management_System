@@ -11,4 +11,4 @@ sales_bp.route("/<string:sale_id>", methods=["GET"])(require_auth(SalesControlle
 sales_bp.route("/<string:sale_id>", methods=["PATCH", "PUT"])(require_auth(SalesController.edit_sale))
 sales_bp.route("/<string:sale_id>", methods=["DELETE"])(require_auth(require_role("admin")(SalesController.delete_sale)))
 sales_bp.route("/<string:sale_id>/cancel", methods=["POST"])(require_auth(require_role("admin", "manager")(SalesController.cancel_sale)))
-sales_bp.route("/<string:sale_id>/request-edit", methods=["POST"])(require_auth(require_role("admin", "manager")(SalesController.request_edit)))
+sales_bp.route("/<string:sale_id>/request-edit", methods=["POST"])(require_auth(SalesController.request_edit))

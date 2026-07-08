@@ -99,9 +99,11 @@ class SalesService:
         return sale, None
 
     @staticmethod
-    def get_all_sales(session: Session):
-        sales = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.product)).all()
-        return sales, None
+    def get_all_sales(session: Session, user_id: str = None, role: str = None):
+        query = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.product))
+        if role == "employee":
+            query = query.filter(Sale.user_id == user_id)
+        return query.all(), None
 
     @staticmethod
     def edit_sale(session: Session, sale_id: str, user_id: str, role: str, items: list, payment_method: str):
@@ -206,10 +208,6 @@ class SalesService:
 
         if sale.status == "cancelled":
             return None, "Sale is already cancelled"
-
-        # Only managers and admins can cancel
-        if role not in ["admin", "manager"]:
-            return None, "Permission denied: Only managers or admins can cancel sales."
 
         # Restore stock
         for item in sale.items:

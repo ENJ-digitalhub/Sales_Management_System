@@ -60,5 +60,4 @@ def create_app(config_class=Config):
         return app.send_static_file(path)
     
     limiter.init_app(app)
-    limiter.limit("10 per minute")(app.view_functions.get("auth.login"))
     return app

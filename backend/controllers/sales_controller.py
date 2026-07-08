@@ -33,7 +33,7 @@ class SalesController:
     def get_all_sales():
         session = get_db()
         try:
-            sales, error = SalesService.get_all_sales(session)
+            sales, error = SalesService.get_all_sales(session, user_id=g.user.id, role=g.user.role)
             if error:
                 return jsonify({"success": False, "message": error}), 400
             return jsonify({"success": True, "sales": [s.to_dict() for s in sales]}), 200
@@ -110,7 +110,6 @@ class SalesController:
 
     @staticmethod
     @require_auth
-    @require_role("admin", "manager")
     def request_edit(sale_id):
         data = request.get_json() or {}
         reason = data.get("reason")
@@ -130,18 +129,3 @@ class SalesController:
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
-
-# Helper for Sale to_dict
-def to_dict(self):
-    return {
-        "id": self.id,
-        "receipt_number": self.receipt_number,
-        "user_id": self.user_id,
-        "total_amount": float(self.total_amount),
-        "profit_at_sale": float(self.profit_at_sale),
-        "payment_method": self.payment_method,
-        "status": self.status,
-        "created_at": self.created_at.isoformat(),
-        "editable_until": self.editable_until.isoformat(),
-        "items": [item.to_dict() for item in self.items]
-    }
