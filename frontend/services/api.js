@@ -58,7 +58,7 @@ export const createProduct = async (productData) => {
 
 export const updateProduct = async (productId, productData) => {
   const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
-    method: 'PUT',
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify(productData),
   });
@@ -137,6 +137,60 @@ export const resolveConflict = async (transactionId, resolutionPayload) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify({ transaction_id: transactionId, resolution_payload: resolutionPayload }),
+  });
+  return handleResponse(response);
+};
+
+// --- Purchases ---
+export const createPurchase = async (payload) => {
+  const response = await fetch(`${API_BASE_URL}/purchases/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(response);
+};
+
+export const getPurchaseHistory = async () => {
+  const response = await fetch(`${API_BASE_URL}/purchases/history`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const approvePurchase = async (purchaseId) => {
+  const response = await fetch(`${API_BASE_URL}/purchases/${purchaseId}/approve`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+// --- Reports ---
+export const getDailyReport = async (date) => {
+  const qs = date ? `?date=${date}` : '';
+  const response = await fetch(`${API_BASE_URL}/reports/daily${qs}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const getMonthlyReport = async (month) => {
+  const qs = month ? `?month=${month}` : '';
+  const response = await fetch(`${API_BASE_URL}/reports/monthly${qs}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const getYearlyReport = async (year) => {
+  const qs = year ? `?year=${year}` : '';
+  const response = await fetch(`${API_BASE_URL}/reports/yearly${qs}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
   });
   return handleResponse(response);
 };
