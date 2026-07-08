@@ -30,6 +30,7 @@
   button{ font-family:inherit; cursor:pointer; }
   @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
 
+<<<<<<< HEAD
   header{ padding:18px 24px; display:flex; align-items:center; justify-content:space-between; }
   .logo{ display:flex; align-items:center; gap:9px; font-weight:700; font-size:17px; font-family:'Space Grotesk',sans-serif; }
   .logo .mark{ width:28px; height:28px; border-radius:8px; background:linear-gradient(145deg,var(--orange),#C2410C); display:flex; align-items:center; justify-content:center; color:#0F0F0F; font-weight:800; font-size:13px; box-shadow:0 4px 14px rgba(249,115,22,.35); }
@@ -206,5 +207,110 @@
     document.getElementById('successState').classList.add('show');
   });
 </script>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Sales Management System</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <h1>Sales Management System</h1>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="login-wrap">
+
+        <div class="card login-card">
+          <h2>Sign in</h2>
+          <p>Enter your credentials to access the system.</p>
+
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="e.g. john_doe"
+              autocomplete="username"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+            >
+          </div>
+
+          <div id="loginError" class="login-error" hidden>
+            Invalid username or password.
+          </div>
+
+          <button class="btn btn-primary btn-block" id="loginBtn" type="button">
+            Sign in
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+<script type="module">
+    import { login, getCurrentUser, getDashboardForRole, isAuthenticated } from '../modules/auth.js';
+
+    // If already logged in, skip the login form entirely
+    if (isAuthenticated()) {
+      const user = getCurrentUser();
+      window.location.href = getDashboardForRole(user?.role);
+    }
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+
+    async function handleLogin() {
+      loginError.hidden = true;
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username || !password) {
+        loginError.textContent = 'Please enter both username and password.';
+        loginError.hidden = false;
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Signing in...';
+
+      try {
+        const user = await login(username, password);
+        window.location.href = getDashboardForRole(user.role);
+      } catch (err) {
+        loginError.textContent = err.message || 'Invalid username or password.';
+        loginError.hidden = false;
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign in';
+      }
+    }
+
+    loginBtn.addEventListener('click', handleLogin);
+    passwordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
+>>>>>>> 55aa052d591d81c8024d752d0d2f32ff3f3b674b
 </body>
 </html>

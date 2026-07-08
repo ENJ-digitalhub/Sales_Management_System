@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Dashboard — Sales Management System</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <h1>Sales Management System</h1>
+      <div id="userInfo" class="text-faint text-mono"></div>
+      <button class="btn" id="logoutBtn" type="button">Log out</button>
+    </div>
+  </header>
+
+  <div id="offlineBanner" class="login-error" hidden>
+    Offline Mode — changes will sync when reconnected
+  </div>
+
+  <main>
+    <div class="container">
+      <div class="page-header mt-2">
+        <h2>Sales Dashboard</h2>
+      </div>
+
+      <div class="product-grid mt-3" id="productList"></div>
+
+      <div class="card mt-3">
+        <h3>Cart</h3>
+        <div id="cartItems" class="mt-2"></div>
+        <div class="mt-2"><strong>Total: ₦<span id="cartTotal">0</span></strong></div>
+
+        <div class="form-group mt-3">
+          <label>Payment Method</label>
+          <div>
+            <button class="btn btn-outline" data-method="cash">Cash</button>
+            <button class="btn btn-outline" data-method="transfer">Transfer</button>
+            <button class="btn btn-outline" data-method="pos">POS</button>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block mt-2" id="completeSaleBtn">Complete Sale</button>
+        <div id="saleError" class="login-error mt-2" hidden></div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { requireAuth, getCurrentUser, logout, getToken } from '../modules/auth.js';
+    import { enqueue } from '../modules/queue.js';
+    import { getProducts, createSale } from '../services/api.js';
+
+    requireAuth();
+    const user = getCurrentUser();
+    document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await logout();
+      window.location.href = 'login.html';
+    });
+
+    // cart state: Map keeps product uniqueness, updates quantity in place
+    const cart = new Map();
+    let paymentMethod = null;
+    let products = [];
+
+    function renderOfflineBanner() {
+      document.getElementById('offlineBanner').hidden = navigator.onLine;
+    }
+    window.addEventListener('online', renderOfflineBanner);
+    window.addEventListener('offline', renderOfflineBanner);
+    renderOfflineBanner();
+
+    async function loadProducts() {
+      const data = await getProducts();
+      products = data.products || [];
+      renderProducts();
+    }
+
+    function renderProducts() {
+      const el = document.getElementById('productList');
+      el.innerHTML = products.map(p => `
+        <article class="card product-card">
+          <div class="product-name">${p.name}</div>
+          <div class="product-meta mt-2">
+            <span class="text-accent">₦${Number(p.selling_price).toLocaleString()}</span>
+            <span class="${p.stock_quantity <= 5 ? 'stock-low' : ''}">${p.stock_quantity} in stock</span>
+          </div>
+          <button class="btn btn-outline mt-2" data-add="${p.id}">Add to cart</button>
+        </article>
+      `).join('');
+
+      el.querySelectorAll('[data-add]').forEach(btn => {
+        btn.addEventListener('click', () => addToCart(btn.dataset.add));
+      });
+    }
+
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+      const existing = cart.get(productId);
+      cart.set(productId, { product, quantity: existing ? existing.quantity + 1 : 1 });
+      renderCart();
+    }
+
+    function renderCart() {
+      const el = document.getElementById('cartItems');
+      let total = 0;
+      el.innerHTML = [...cart.values()].map(({ product, quantity }) => {
+        const lineTotal = product.selling_price * quantity;
+        total += lineTotal;
+        return `
+          <div class="page-header">
+            <span>${product.name} × ${quantity}</span>
+            <span>
+              ₦${lineTotal.toLocaleString()}
+              <button class="btn btn-ghost" data-remove="${product.id}">✕</button>
+            </span>
+          </div>
+        `;
+      }).join('') || '<p class="text-muted">Cart is empty</p>';
+
+      document.getElementById('cartTotal').textContent = total.toLocaleString();
+
+      el.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.addEventListener('click', () => { cart.delete(btn.dataset.remove); renderCart(); });
+      });
+    }
+
+    document.querySelectorAll('[data-method]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        paymentMethod = btn.dataset.method;
+        document.querySelectorAll('[data-method]').forEach(b => b.classList.remove('btn-primary'));
+        btn.classList.add('btn-primary');
+      });
+    });
+
+    async function completeSale() {
+      const errorEl = document.getElementById('saleError');
+      errorEl.hidden = true;
+
+      if (cart.size === 0) return showError('Cart is empty');
+      if (!paymentMethod) return showError('Select a payment method');
+
+      if (!confirm('Complete this sale?')) return;
+
+      const payload = {
+        items: [...cart.values()].map(({ product, quantity }) => ({
+          product_id: product.id,
+          quantity,
+        })),
+        payment_method: paymentMethod,
+      };
+
+      if (!navigator.onLine) {
+        await enqueue('sale', 'CREATE', payload);
+        alert('Offline — sale saved to queue, will sync on reconnect.');
+        cart.clear();
+        renderCart();
+        return;
+      }
+
+      try {
+        const data = await createSale(payload);
+        alert('Sale completed');
+        cart.clear();
+        paymentMethod = null;
+        renderCart();
+        loadProducts();
+      } catch (err) {
+        if (err.message && err.message.toLowerCase().includes('stock')) {
+          return showError(err.message); // preserve cart per FRONTEND_SPEC §4.5
+        }
+        await enqueue('sale', 'CREATE', payload);
+        alert('Network error — sale saved to queue.');
+        cart.clear();
+        renderCart();
+      }
+    }
+
+    function showError(msg) {
+      const errorEl = document.getElementById('saleError');
+      errorEl.textContent = msg;
+      errorEl.hidden = false;
+    }
+
+    document.getElementById('completeSaleBtn').addEventListener('click', completeSale);
+
+    loadProducts();
+  </script>
+</body>
+</html>

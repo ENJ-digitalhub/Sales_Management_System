@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Sales Management System</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="container">
+      <h1>Sales Management System</h1>
+      <div id="userInfo" class="text-faint text-mono"></div>
+      <button class="btn" id="logoutBtn" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="page-header mt-2">
+        <h2>Admin Dashboard</h2>
+      </div>
+      <p class="text-muted mt-2">Admin workspace — full system controls coming in a later phase.</p>
+      <p class="mt-2"><a href="products.html">View Products</a></p>
+      <p class="mt-2"><a href="inventory.html">Inventory</a></p>
+      <p class="mt-2"><a href="purchases.html">Purchases</a></p>
+      <p class="mt-2"><a href="report.html">Reports</a></p>
+    </div>
+  </main>
+
+  <script type="module">
+    import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
+
+    requireAuth();
+
+    const user = getCurrentUser();
+    document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await logout();
+      window.location.href = 'login.html';
+    });
+  </script>
+
+</body>
+</html>
