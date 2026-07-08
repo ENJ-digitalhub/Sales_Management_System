@@ -112,6 +112,7 @@ class Sale(Base):
             "status": self.status,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "editable_until": self.editable_until.isoformat() if self.editable_until else None,
+            "items": [item.to_dict() for item in self.items] if self.items else [],
         }
 
 class SaleItem(Base):
@@ -135,6 +136,17 @@ class SaleItem(Base):
         CheckConstraint("cost_price_at_sale >= 0", name="cost_price_at_sale_positive"),
         CheckConstraint("total_price >= 0", name="total_price_positive"),
     )
+    
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "sale_id": self.sale_id,
+            "product_id": self.product_id,
+            "quantity": self.quantity,
+            "unit_price": float(self.unit_price) if isinstance(self.unit_price, Decimal) else self.unit_price,
+            "cost_price_at_sale": float(self.cost_price_at_sale) if isinstance(self.cost_price_at_sale, Decimal) else self.cost_price_at_sale,
+            "total_price": float(self.total_price) if isinstance(self.total_price, Decimal) else self.total_price,
+        }
 
 class InventoryLog(Base):
     """Defines the InventoryLog model"""

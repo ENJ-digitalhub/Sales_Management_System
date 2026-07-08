@@ -129,12 +129,12 @@ function isAuthenticated() {
 function getDashboardForRole(role) {
   switch (role) {
     case 'admin':
-      return '../pages/admin.html';
+      return '../pages/admin_dashboard.html';
     case 'manager':
-      return '../pages/manager.html';
+      return '../pages/manager_dashboard.html';
     case 'employee':
     default:
-      return '../pages/sales.html';
+      return '../pages/employee_dashboard.html';
   }
 }
 
