@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TX RetailOS Hardware Compatibility: Find supported barcode scanners, receipt printers, POS terminals, cash drawers, and other devices.">
+    <meta name="keywords" content="TX RetailOS, hardware, compatibility, barcode scanner, receipt printer, POS terminal, cash drawer, tablet, handheld, desktop">
+    <meta name="author" content="Trexave Technologies">
+    <meta property="og:title" content="TX RetailOS Hardware Compatibility — Devices That Work">
+    <meta property="og:description" content="TX RetailOS Hardware Compatibility: Find supported barcode scanners, receipt printers, POS terminals, cash drawers, and other devices.">
+    <meta property="og:type" content="website">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="TX RetailOS Hardware Compatibility — Devices That Work">
+    <meta property="twitter:description" content="TX RetailOS Hardware Compatibility: Find supported barcode scanners, receipt printers, POS terminals, cash drawers, and other devices.">
+    <title>TX RetailOS Hardware Compatibility</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --orange:#F97316;
+            --orange-dim:#F97316cc;
+            --black:#0F0F0F;
+            --dark-bg:#111827;
+            --white:#FFFFFF;
+            --light-bg:#F8FAFC;
+            --border:#E5E7EB;
+            --gray:#6B7280;
+            --success:#22C55E;
+
+            --bg: var(--black);
+            --surface: #17171A;
+            --surface-2: #1E1E22;
+            --text: #F5F5F4;
+            --text-dim: #A3A3A6;
+            --line: rgba(255,255,255,0.08);
+            --glass-bg: rgba(23,23,26,0.55);
+            --glass-border: rgba(255,255,255,0.09);
+        }
+
+        html[data-theme="light"]{
+            --bg: var(--light-bg);
+            --surface: #FFFFFF;
+            --surface-2: #F1F3F6;
+            --text: #14151A;
+            --text-dim: var(--gray);
+            --line: var(--border);
+            --glass-bg: rgba(255,255,255,0.6);
+            --glass-border: rgba(15,15,15,0.08);
+        }
+
+        *{
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+        }
+        html{
+            scroll-behavior:smooth;
+        }
+        body{
+            background:var(--bg);
+            color:var(--text);
+            font-family:
+'Inter'
+,sans-serif;
+            line-height:1.5;
+            -webkit-font-smoothing:antialiased;
+            transition:background .4s ease, color .4s ease;
+            overflow-x:hidden;
+        }
+        h1,h2,h3,h4{
+            font-family:
+'Space Grotesk'
+,sans-serif;
+            letter-spacing:-0.02em;
+        }
+        .mono{
+            font-family:
+'JetBrains Mono'
+,monospace;
+        }
+        a{
+            color:inherit;
+            text-decoration:none;
+        }
+        img{
+            max-width:100%;
+            display:block;
+        }
+        ul{
+            list-style:none;
+        }
+        button{
+            font-family:inherit;
+            cursor:pointer;
+        }
+        .wrap{
+            max-width:1240px;
+            margin:0 auto;
+            padding:0 24px;
+        }
+        ::selection{
+            background:var(--orange);
+            color:#0F0F0F;
+        }
+
+        @media (prefers-reduced-motion: reduce){
+            *{
+                animation-duration:0.001ms !important;
+                animation-iteration-count:1 !important;
+                transition-duration:0.001ms !important;
+            }
+        }
+
+        /* ---------- Announcement bar ---------- */
+        .announce{
+            background:var(--orange);
+            color:#0F0F0F;
+            text-align:center;
+            font-size:13px;
+            font-weight:600;
+            padding:9px 16px;
+            letter-spacing:.01em;
+        }
+
+        /* ---------- Nav ---------- */
+        header{
+            position:sticky;
+            top:0;
+            z-index:100;
+            background:var(--glass-bg);
+            backdrop-filter:blur(16px) saturate(160%);
+            -webkit-backdrop-filter:blur(16px) saturate(160%);
+            border-bottom:1px solid var(--glass-border);
+        }
+        nav{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:14px 24px;
+            max-width:1240px;
+            margin:0 auto;
+        }
+        .logo{
+            display:flex;
+            align-items:center;
+            gap:9px;
+            font-weight:700;
+            font-size:18px;
+            font-family:
+'Space Grotesk'
+,sans-serif;
+        }
+        .logo .mark{
+            width:30px;
+            height:30px;
+            border-radius:8px;
+            background:linear-gradient(145deg, var(--orange), #C2410C);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:#0F0F0F;
+            font-weight:800;
+            font-size:15px;
+            box-shadow:0 4px 14px rgba(249,115,22,.35);
+        }
+        .logo .sub{
+            color:var(--text-dim);
+            font-weight:500;
+            font-size:11px;
+            letter-spacing:.08em;
+            text-transform:uppercase;
+            margin-left:2px;
+        }
+
+        .nav-links{
+            display:flex;
+            align-items:center;
+            gap:30px;
+        }
+        .nav-links a{
+            font-size:14.5px;
+            font-weight:500;
+            color:var(--text-dim);
+            position:relative;
+            padding:4px 0;
+            transition:color .2s;
+        }
+        .nav-links a::after{
+            content:
+''
+;
+            position:absolute;
+            left:0;
+            bottom:-2px;
+            height:2px;
+            width:0;
+            background:var(--orange);
+            transition:width .25s ease;
+        }
+        .nav-links a:hover{
+            color:var(--text);
+        }
+        .nav-links a:hover::after{
+            width:100%;
+        }
+
+        .nav-right{
+            display:flex;
+            align-items:center;
+            gap:14px;
+        }
+
+        .lang-select{
+            position:relative;
+        }
+        .lang-btn{
+            display:flex;
+            align-items:center;
+            gap:6px;
+            background:transparent;
+            border:1px solid var(--line);
+            color:var(--text-dim);
+            font-size:13px;
+            padding:7px 10px;
+            border-radius:8px;
+            transition:.2s;
+        }
+        .lang-btn:hover{
+            border-color:var(--orange);
+            color:var(--text);
+        }
+        .lang-menu{
+            display:none;
+            position:absolute;
+            top:calc(100% + 8px);
+            right:0;
+            background:var(--surface);
+            border:1px solid var(--line);
+            border-radius:10px;
+            padding:6px;
+            min-width:170px;
+            max-height:280px;
+            overflow-y:auto;
+            box-shadow:0 12px 30px rgba(0,0,0,.35);
+        }
+        .lang-select.open .lang-menu{
+            display:block;
+        }
+        .lang-menu button{
+            width:100%;
+            text-align:left;
+            background:none;
+            border:none;
+            color:var(--text);
+            padding:8px 10px;
+            border-radius:6px;
+            font-size:13.5px;
+            display:flex;
+            gap:8px;
+            align-items:center;
+        }
+        .lang-menu button:hover{
+            background:var(--surface-2);
+        }
+
+        .theme-toggle{
+            width:44px;
+            height:26px;
+            border-radius:20px;
+            border:1px solid var(--line);
+            background:var(--surface-2);
+            position:relative;
+            padding:0;
+            transition:.25s;
+        }
+        .theme-toggle .knob{
+            position:absolute;
+            top:2px;
+            left:2px;
+            width:20px;
+            height:20px;
+            border-radius:50%;
+            background:var(--orange);
+            transition:transform .25s ease;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:11px;
+        }
+        html[data-theme="light"] .theme-toggle .knob{
+            transform:translateX(18px);
+        }
+
+        .btn{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:8px;
+            padding:10px 18px;
+            border-radius:9px;
+            font-size:14px;
+            font-weight:600;
+            border:1px solid transparent;
+            transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+            white-space:nowrap;
+        }
+        .btn-primary{
+            background:var(--orange);
+            color:#0F0F0F;
+            box-shadow:0 6px 18px rgba(249,115,22,.28);
+        }
+        .btn-primary:hover{
+            transform:translateY(-2px);
+            box-shadow:0 10px 26px rgba(249,115,22,.4);
+        }
+        .btn-ghost{
+            border-color:var(--line);
+            color:var(--text);
+        }
+        .btn-ghost:hover{
+            border-color:var(--orange);
+            color:var(--orange);
+        }
+
+        .burger{
+            display:none;
+            background:none;
+            border:none;
+            color:var(--text);
+            font-size:22px;
+        }
+
+        /* ---------- Mobile nav ---------- */
+        .mobile-panel{
+            display:none;
+            flex-direction:column;
+            gap:2px;
+            padding:10px 24px 22px;
+            border-top:1px solid var(--line);
+            background:var(--bg);
+        }
+        .mobile-panel.open{
+            display:flex;
+        }
+        .mobile-panel a, .mobile-panel .mp-row{
+            padding:12px 4px;
+            font-size:15px;
+            color:var(--text-dim);
+            border-bottom:1px solid var(--line);
+        }
+        .mobile-panel .btn{
+            margin-top:12px;
+            width:100%;
+        }
+
+        /* ---------- Section shared ---------- */
+        section{
+            padding:100px 24px;
+        }
+        .section-head{
+            max-width:640px;
+            margin:0 auto 56px;
+            text-align:center;
+        }
+        .section-head .eyebrow{
+            display:inline-flex;
+            align-items:center;
+            gap:8px;
+            font-family:
+'JetBrains Mono'
+,monospace;
+            font-size:12px;
+            color:var(--orange);
+            background:rgba(249,115,22,.1);
+            border:1px solid rgba(249,115,22,.25);
+            padding:6px 12px;
+            border-radius:20px;
+            margin-bottom:22px;
+        }
+        .section-head h2{
+            font-size:clamp(30px, 4vw, 48px);
+            font-weight:700;
+            line-height:1.1;
+            letter-spacing:-0.03em;
+            margin-bottom:16px;
+        }
+        .section-head p{
+            font-size:17px;
+            color:var(--text-dim);
+            line-height:1.65;
+        }
+
+        /* Hardware Page Specific Styles */
+        .hero-hardware{
+            padding:120px 24px 80px;
+            text-align:center;
+            background:linear-gradient(180deg, var(--surface-2) 0%, var(--bg) 100%);
+        }
+        .hero-hardware h1{
+            font-size:clamp(40px, 5vw, 64px);
+            font-weight:800;
+            line-height:1.05;
+            letter-spacing:-0.04em;
+            margin-bottom:20px;
+        }
+        .hero-hardware h1 span{
+            color:var(--orange);
+        }
+        .hero-hardware p.lead{
+            max-width:800px;
+            margin:0 auto 40px;
+            font-size:19px;
+            color:var(--text-dim);
+            line-height:1.7;
+        }
+        .hero-hardware .btn-group{
+            display:flex;
+            justify-content:center;
+            gap:16px;
+            flex-wrap:wrap;
+        }
+
+        .compatibility-table-container{
+            overflow-x:auto;
+            margin-bottom:40px;
+        }
+        .compatibility-table{
+            width:100%;
+            border-collapse:collapse;
+            margin:0 auto;
+            background:var(--surface);
+            border:1px solid var(--line);
+            border-radius:12px;
+            overflow:hidden;
+        }
+        .compatibility-table th, .compatibility-table td{
+            padding:15px 20px;
+            text-align:left;
+            border-bottom:1px solid var(--line);
+        }
+        .compatibility-table th{
+            background:var(--surface-2);
+            font-weight:600;
+            color:var(--text);
+            font-size:15px;
+            text-transform:uppercase;
+            letter-spacing:.05em;
+        }
+        .compatibility-table td{
+            font-size:14.5px;
+            color:var(--text-dim);
+        }
+        .compatibility-table tr:last-child td{
+            border-bottom:none;
+        }
+        .compatibility-table tbody tr:hover{
+            background:var(--surface-2);
+        }
+        .status-supported{
+            color:var(--success);
+            font-weight:600;
+        }
+        .status-partial{
+            color:var(--orange);
+            font-weight:600;
+        }
+        .status-not-supported{
+            color:var(--text-dim);
+        }
+
+        .setup-guides-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+            gap:30px;
+            max-width:1240px;
+            margin:0 auto;
+        }
+        .guide-card{
+            background:var(--surface);
+            border:1px solid var(--line);
+            border-radius:12px;
+            padding:30px;
+            transition:transform .3s ease, box-shadow .3s ease;
+        }
+        .guide-card:hover{
+            transform:translateY(-8px);
+            box-shadow:0 15px 30px rgba(0,0,0,.2);
+        }
+        .guide-card .icon{
+            font-size:48px;
+            margin-bottom:20px;
+            color:var(--orange);
+        }
+        .guide-card h3{
+            font-size:24px;
+            margin-bottom:10px;
+        }
+        .guide-card p{
+            color:var(--text-dim);
+            font-size:15px;
+            margin-bottom:20px;
+        }
+
+        /* Footer */
+        footer{
+            border-top:1px solid var(--line);
+            padding:60px 24px 30px;
+            background:var(--surface-2);
+        }
+        .foot-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+            gap:30px;
+            max-width:1240px;
+            margin:0 auto 50px;
+        }
+        .foot-logo{
+            display:flex;
+            align-items:center;
+            gap:9px;
+            font-weight:700;
+            font-size:18px;
+            font-family:
+'Space Grotesk'
+,sans-serif;
+            margin-bottom:15px;
+        }
+        .foot-logo .mark{
+            width:30px;
+            height:30px;
+            border-radius:8px;
+            background:linear-gradient(145deg, var(--orange), #C2410C);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:#0F0F0F;
+            font-weight:800;
+            font-size:15px;
+            box-shadow:0 4px 14px rgba(249,115,22,.35);
+        }
+        .foot-desc{
+            font-size:14px;
+            color:var(--text-dim);
+            line-height:1.6;
+            max-width:300px;
+        }
+        footer h5{
+            font-size:16px;
+            font-weight:600;
+            margin-bottom:18px;
+            color:var(--text);
+        }
+        footer a{
+            display:block;
+            font-size:14px;
+            color:var(--text-dim);
+            margin-bottom:10px;
+            transition:color .2s;
+        }
+        footer a:hover{
+            color:var(--orange);
+        }
+        .copyright{
+            text-align:center;
+            font-size:13px;
+            color:var(--text-dim);
+            padding-top:30px;
+            border-top:1px solid var(--line);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links, .nav-right .lang-select, .nav-right .theme-toggle, .nav-right .btn-primary{
+                display:none;
+            }
+            .burger{
+                display:block;
+            }
+            .hero-hardware{
+                padding:80px 24px 60px;
+            }
+            .hero-hardware h1{
+                font-size:clamp(36px, 8vw, 50px);
+            }
+            .hero-hardware p.lead{
+                font-size:17px;
+            }
+            .setup-guides-grid{
+                grid-template-columns:1fr;
+            }
+            .guide-card{
+                padding:25px;
+            }
+            .foot-grid{
+                grid-template-columns:1fr;
+                text-align:center;
+            }
+            .foot-logo{
+                justify-content:center;
+            }
+            .foot-desc{
+                margin-left:auto;
+                margin-right:auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Announcement Bar -->
+    <div class="announce">
+        <span>✨ Launching soon in East Africa! Request a demo today.</span>
+    </div>
+
+    <!-- Nav -->
+    <header>
+        <nav>
+            <a href="/" class="logo">
+                <span class="mark">TX</span>
+                TX RetailOS <span class="sub">Offline-First</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="./pricing.html">Pricing</a>
+                <a href="./FeaturesPage.html">Features</a>
+                <a href="./product-tour.html">Product Tour</a>
+                <a href="./solutions.html">Solutions</a>
+                <a href="./docs.html">Docs</a>
+                <a href="./hardware.html\" class=\"active\">Hardware</a>
+                <a href="./contact.html">Contact</a>
+            </div>
+
+            <div class="nav-right">
+                <div class="lang-select">
+                    <button class="lang-btn" aria-label="Select language" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                        EN
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="lang-menu">
+                        <button data-lang="en">English</button>
+                        <button data-lang="sw">Kiswahili</button>
+                        <button data-lang="fr">Français</button>
+                    </div>
+                </div>
+
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <span class="knob">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    </span>
+                </button>
+
+                <a href="#" class="btn btn-primary">Request Demo</a>
+
+                <button class="burger" aria-label="Open mobile menu" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                </button>
+            </div>
+        </nav>
+        <!-- Mobile Nav -->
+        <div class="mobile-panel">
+            <a href="/">Home</a>
+            <a href="/pages/careers.html">Careers</a>
+            <a href="/pages/partners.html">Partners</a>
+            <a href="/pages/developers.html">Developers</a>
+            <a href="/pages/hardware.html">Hardware</a>
+            <div class="mp-row">
+                <span>Language</span>
+                <div class="lang-select">
+                    <button class="lang-btn" aria-label="Select language" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                        EN
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="lang-menu">
+                        <button data-lang="en">English</button>
+                        <button data-lang="sw">Kiswahili</button>
+                        <button data-lang="fr">Français</button>
+                    </div>
+                </div>
+            </div>
+            <button class="theme-toggle" aria-label="Toggle theme">
+                <span class="knob">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    </span>
+                </button>
+                <a href="#" class="btn btn-primary">Request Demo</a>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero-hardware">
+                <div class="wrap">
+                    <span class="eyebrow">Seamless Integration</span>
+                    <h1>TX RetailOS Hardware <span>Compatibility</span>.</h1>
+                    <p class="lead">Find the right hardware to power your TX RetailOS experience. Our system is designed to work with a wide range of devices.</p>
+                    <div class="btn-group">
+                        <a href="#compatibility-list" class="btn btn-primary">View Compatibility List</a>
+                        <a href="#setup-guides" class="btn btn-ghost">Setup Guides</a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="compatibility-list">
+                <div class="section-head">
+                    <span class="eyebrow">Supported Devices</span>
+                    <h2>Hardware Compatibility List</h2>
+                    <p>Below is a list of hardware categories and examples of devices officially supported or recommended for use with TX RetailOS.</p>
+                </div>
+                <div class="wrap compatibility-table-container">
+                    <table class="compatibility-table">
+                        <thead>
+                            <tr>
+                                <th>Device Type</th>
+                                <th>Examples / Brands</th>
+                                <th>Connectivity</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Barcode Scanners</td>
+                                <td>Honeywell, Zebra, Datalogic</td>
+                                <td>USB, Bluetooth</td>
+                                <td class="status-supported">Supported</td>
+                            </tr>
+                            <tr>
+                                <td>Receipt Printers</td>
+                                <td>Epson, Star Micronics, Bixolon</td>
+                                <td>USB, Ethernet, Bluetooth</td>
+                                <td class="status-supported">Supported</td>
+                            </tr>
+                            <tr>
+                                <td>POS Terminals</td>
+                                <td>Verifone, Ingenico (Android-based)</td>
+                                <td>Wi-Fi, Ethernet, 4G</td>
+                                <td class="status-partial">Partial (Android only)</td>
+                            </tr>
+                            <tr>
+                                <td>Cash Drawers</td>
+                                <td>APG, M-S Cash Drawer</td>
+                                <td>Printer-driven (RJ11/RJ12)</td>
+                                <td class="status-supported">Supported</td>
+                            </tr>
+                            <tr>
+                                <td>Tablets</td>
+                                <td>Samsung Galaxy Tab, Lenovo Tab (Android)</td>
+                                <td>Wi-Fi, 4G</td>
+                                <td class="status-supported">Supported</td>
+                            </tr>
+                            <tr>
+                                <td>Handheld Devices</td>
+                                <td>Zebra TC Series, Honeywell EDA Series</td>
+                                <td>Wi-Fi, 4G</td>
+                                <td class="status-supported">Supported</td>
+                            </tr>
+                            <tr>
+                                <td>Desktop Systems</td>
+                                <td>Windows 10/11, Ubuntu Linux</td>
+                                <td>Ethernet, Wi-Fi</td>
+                                <td class="status-supported">Supported</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="setup-guides">
+                <div class="section-head">
+                    <span class="eyebrow">Easy Integration</span>
+                    <h2>Setup Instructions & Guides</h2>
+                    <p>Follow our step-by-step guides to quickly set up your hardware with TX RetailOS.</p>
+                </div>
+                <div class="setup-guides-grid wrap">
+                    <div class="guide-card">
+                        <div class="icon">🖨️</div>
+                        <h3>Receipt Printer Setup</h3>
+                        <p>Detailed instructions for connecting and configuring your receipt printer.</p>
+                        <a href="#" class="btn btn-ghost">Read Guide</a>
+                    </div>
+                    <div class="guide-card">
+                        <div class="icon"> SCAN</div>
+                        <h3>Barcode Scanner Setup</h3>
+                        <p>Learn how to connect and test your barcode scanner for efficient scanning.</p>
+                        <a href="#" class="btn btn-ghost">Read Guide</a>
+                    </div>
+                    <div class="guide-card">
+                        <div class="icon"> 💳</div>
+                        <h3>POS Terminal Integration</h3>
+                        <p>Guide to integrating Android-based POS terminals with TX RetailOS.</p>
+                        <a href="#" class="btn btn-ghost">Read Guide</a>
+                    </div>
+                </div>
+            </section>
+
+            <section id="recommended-hardware">
+                <div class="section-head">
+                    <span class="eyebrow">Our Picks</span>
+                    <h2>Recommended Hardware</h2>
+                    <p>We've tested and recommend these devices for optimal performance and reliability with TX RetailOS.</p>
+                </div>
+                <div class="wrap">
+                    <div class="setup-guides-grid">
+                        <div class="guide-card">
+                            <div class="icon">⭐</div>
+                            <h3>Epson TM-T88VI Receipt Printer</h3>
+                            <p>Reliable, fast, and versatile thermal receipt printer with multiple connectivity options.</p>
+                            <a href="#" class="btn btn-ghost">View Product</a>
+                        </div>
+                        <div class="guide-card">
+                            <div class="icon">⭐</div>
+                            <h3>Honeywell Xenon 1900 Barcode Scanner</h3>
+                            <p>High-performance 2D area-imaging scanner for various retail environments.</p>
+                            <a href="#" class="btn btn-ghost">View Product</a>
+                        </div>
+                        <div class="guide-card">
+                            <div class="icon">⭐</div>
+                            <h3>Samsung Galaxy Tab A8</h3>
+                            <p>Affordable and robust Android tablet, ideal for mobile POS applications.</p>
+                            <a href="#" class="btn btn-ghost">View Product</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <div class="foot-grid wrap">
+                <div>
+                    <a href="/" class="foot-logo">
+                        <span class="mark">TX</span>
+                        TX RetailOS
+                    </a>
+                    <p class="foot-desc">Offline-First Retail OS for African businesses. Never stop selling, even without internet.</p>
+                </div>
+                <div>
+                    <h5>Product</h5>
+                    <a href="/">Home</a>
+                    <a href="#features">Features</a>
+                    <a href="#how-it-works">How it Works</a>
+                    <a href="#industries">Industries</a>
+                </div>
+                <div>
+                    <h5>Company</h5>
+                    <a href="#about">About Us</a>
+                    <a href="#contact">Contact</a>
+                    <a href="/pages/careers.html">Careers</a>
+                    <a href="/pages/partners.html">Partners</a>
+                </div>
+                <div>
+                    <h5>Developers</h5>
+                    <a href="/pages/developers.html">API Documentation</a>
+                    <a href="#sdks">SDKs</a>
+                    <a href="#webhooks">Webhooks</a>
+                </div>
+                <div>
+                    <h5>Hardware</h5>
+                    <a href="/pages/hardware.html">Compatibility List</a>
+                    <a href="#setup-guides">Setup Guides</a>
+                    <a href="#recommended-hardware">Recommended</a>
+                </div>
+            </div>
+            <div class="copyright wrap">
+                &copy; 2026 TX RetailOS. All rights reserved.
+            </div>
+        </footer>
+
+        <script>
+            // ============================================
+            // 1. Theme Toggle (Dark/Light)
+            // ============================================
+            function initThemeToggle() {
+                const themeToggles = document.querySelectorAll(
+'.theme-toggle'
+);
+                const html = document.documentElement;
+
+                // Load saved theme preference or default to dark
+                const savedTheme = localStorage.getItem(
+'theme'
+) || 
+'dark'
+;
+                html.setAttribute(
+'data-theme'
+, savedTheme);
+
+                themeToggles.forEach(toggle => {
+                    toggle.addEventListener(
+'click'
+, () => {
+                        const currentTheme = html.getAttribute(
+'data-theme'
+);
+                        const newTheme = currentTheme === 
+'dark'
+ ? 
+'light'
+ : 
+'dark'
+;
+                        html.setAttribute(
+'data-theme'
+, newTheme);
+                        localStorage.setItem(
+'theme'
+, newTheme);
+                    });
+                });
+            }
+
+            // ============================================
+            // 2. Language Selector
+            // ============================================
+            function initLanguageSelector() {
+                const langSelects = document.querySelectorAll(
+'.lang-select'
+);
+
+                langSelects.forEach(select => {
+                    const btn = select.querySelector(
+'.lang-btn'
+);
+                    const menu = select.querySelector(
+'.lang-menu'
+);
+                    const langButtons = menu.querySelectorAll(
+'button'
+);
+
+                    btn.addEventListener(
+'click'
+, (e) => {
+                        e.stopPropagation();
+                        select.classList.toggle(
+'open'
+);
+                        btn.setAttribute(
+'aria-expanded'
+, select.classList.contains(
+'open'
+));
+                    });
+
+                    langButtons.forEach(langBtn => {
+                        langBtn.addEventListener(
+'click'
+, () => {
+                            const lang = langBtn.getAttribute(
+'data-lang'
+);
+                            const langText = langBtn.textContent;
+                            btn.textContent = lang.toUpperCase();
+                            select.classList.remove(
+'open'
+);
+                            btn.setAttribute(
+'aria-expanded'
+, 
+'false'
+);
+                            localStorage.setItem(
+'language'
+, lang);
+                        });
+                    });
+                });
+
+                // Close language menu when clicking outside
+                document.addEventListener(
+'click'
+, (e) => {
+                    langSelects.forEach(select => {
+                        if (!select.contains(e.target)) {
+                            select.classList.remove(
+'open'
+);
+                            select.querySelector(
+'.lang-btn'
+).setAttribute(
+'aria-expanded'
+, 
+'false'
+);
+                        }
+                    });
+                });
+            }
+
+            // ============================================
+            // 3. Mobile Nav Burger Menu
+            // ============================================
+            function initMobileNav() {
+                const burger = document.querySelector(
+'.burger'
+);
+                const mobilePanel = document.querySelector(
+'.mobile-panel'
+);
+                const mobileLinks = mobilePanel.querySelectorAll(
+'a'
+);
+
+                burger.addEventListener(
+'click'
+, () => {
+                    mobilePanel.classList.toggle(
+'open'
+);
+                    burger.setAttribute(
+'aria-expanded'
+, mobilePanel.classList.contains(
+'open'
+));
+                });
+
+                mobileLinks.forEach(link => {
+                    link.addEventListener(
+'click'
+, () => {
+                        mobilePanel.classList.remove(
+'open'
+);
+                        burger.setAttribute(
+'aria-expanded'
+, 
+'false'
+);
+                    });
+                });
+            }
+
+            // ============================================
+            // 4. Smooth Scroll for Anchor Links
+            // ============================================
+            function initSmoothScroll() {
+                document.querySelectorAll(
+'a[href^="#"]'
+).forEach(anchor => {
+                    anchor.addEventListener(
+'click'
+, function (e) {
+                        const href = this.getAttribute(
+'href'
+);
+                        if (href === 
+'#'
+) return;
+
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            const headerHeight = document.querySelector(
+'header'
+).offsetHeight;
+                            const targetPosition = target.offsetTop - headerHeight;
+                            window.scrollTo({
+                                top: targetPosition,
+                                behavior: 
+'smooth'
+                            });
+                        }
+                    });
+                });
+            }
+
+            // ============================================
+            // 5. Intersection Observer for Fade-in Effects
+            // ============================================
+            function initIntersectionObserver() {
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: 
+'0px 0px -50px 0px'
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = 
+'1'
+;
+                            entry.target.style.transform = 
+'translateY(0)'
+;
+                        }
+                    });
+                }, observerOptions);
+
+                // Observe elements for fade-in
+                document.querySelectorAll(
+'.guide-card, .compatibility-table'
+).forEach(el => {
+                    el.style.opacity = 
+'0'
+;
+                    el.style.transform = 
+'translateY(20px)'
+;
+                    el.style.transition = 
+'opacity 0.6s ease, transform 0.6s ease'
+;
+                    observer.observe(el);
+                });
+            }
+
+            // ============================================
+            // 6. Initialize All Features
+            // ============================================
+            document.addEventListener(
+'DOMContentLoaded'
+, () => {
+                initThemeToggle();
+                initLanguageSelector();
+                initMobileNav();
+                initSmoothScroll();
+                initIntersectionObserver();
+            });
+
+            // ============================================
+            // 7. Keyboard Navigation Support
+            // ============================================
+            document.addEventListener(
+'keydown'
+, (e) => {
+                // Escape key closes mobile menu and language menu
+                if (e.key === 
+'Escape'
+) {
+                    document.querySelector(
+'.mobile-panel'
+).classList.remove(
+'open'
+);
+                    document.querySelectorAll(
+'.lang-select'
+).forEach(select => {
+                        select.classList.remove(
+'open'
+);
+                        select.querySelector(
+'.lang-btn'
+).setAttribute(
+'aria-expanded'
+, 
+'false'
+);
+                    });
+                }
+            });
+        </script>
+    </body>
+    </html>

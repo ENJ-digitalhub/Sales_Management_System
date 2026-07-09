@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TX RetailOS Legal Documents — Privacy Policy, Terms of Service, Cookie Policy, License Agreement, and Data Processing Agreement.">
+  <meta name="keywords" content="legal, privacy, terms, cookies, license, TX RetailOS">
+  <meta name="author" content="TX RetailOS">
+  <meta property="og:title" content="Legal Documents — TX RetailOS">
+  <meta property="og:description" content="Privacy Policy, Terms of Service, Cookie Policy, License Agreement, and Data Processing Agreement.">
+  <meta property="og:type" content="website">
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="Legal Documents — TX RetailOS">
+  <meta property="twitter:description" content="Legal documents and policies for TX RetailOS.">
+  <title>Legal Documents — TX RetailOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #F97316;
+      --orange-dim: #F97316cc;
+      --black: #0F0F0F;
+      --dark-bg: #111827;
+      --white: #FFFFFF;
+      --light-bg: #F8FAFC;
+      --border: #E5E7EB;
+      --gray: #6B7280;
+      --success: #22C55E;
+
+      --bg: var(--black);
+      --surface: #17171A;
+      --surface-2: #1E1E22;
+      --text: #F5F5F4;
+      --text-dim: #A3A3A6;
+      --line: rgba(255, 255, 255, 0.08);
+      --glass-bg: rgba(23, 23, 26, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.09);
+    }
+
+    html[data-theme="light"] {
+      --bg: var(--light-bg);
+      --surface: #FFFFFF;
+      --surface-2: #F1F3F6;
+      --text: #14151A;
+      --text-dim: var(--gray);
+      --line: var(--border);
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(15, 15, 15, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.4s ease, color 0.4s ease;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    ::selection {
+      background: var(--orange);
+      color: #0F0F0F;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
+    /* ---------- Announcement bar ---------- */
+    .announce {
+      background: var(--orange);
+      color: #0F0F0F;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 16px;
+      letter-spacing: 0.01em;
+    }
+
+    /* ---------- Nav ---------- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 700;
+      font-size: 18px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .logo .mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, var(--orange), #C2410C);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0F0F0F;
+      font-weight: 800;
+      font-size: 15px;
+      box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
+    }
+
+    .logo .sub {
+      color: var(--text-dim);
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-left: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      font-size: 14.5px;
+      font-weight: 500;
+      color: var(--text-dim);
+      position: relative;
+      padding: 4px 0;
+      transition: color 0.2s;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      height: 2px;
+      width: 0;
+      background: var(--orange);
+      transition: width 0.25s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .lang-select {
+      position: relative;
+    }
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text-dim);
+      font-size: 13px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    .lang-btn:hover {
+      border-color: var(--orange);
+      color: var(--text);
+    }
+
+    .lang-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 6px;
+      min-width: 170px;
+      max-height: 280px;
+      overflow-y: auto;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .lang-select.open .lang-menu {
+      display: block;
+    }
+
+    .lang-menu button {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .lang-menu button:hover {
+      background: var(--surface-2);
+    }
+
+    .theme-toggle {
+      width: 44px;
+      height: 26px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      position: relative;
+      padding: 0;
+      transition: 0.25s;
+    }
+
+    .theme-toggle .knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--orange);
+      transition: transform 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    html[data-theme="light"] .theme-toggle .knob {
+      transform: translateX(18px);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color: #0F0F0F;
+      box-shadow: 0 6px 18px rgba(249, 115, 22, 0.28);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(249, 115, 22, 0.4);
+    }
+
+    .btn-ghost {
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .burger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 22px;
+    }
+
+    /* ---------- Mobile nav ---------- */
+    .mobile-panel {
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      padding: 10px 24px 22px;
+      border-top: 1px solid var(--line);
+      background: var(--bg);
+    }
+
+    .mobile-panel.open {
+      display: flex;
+    }
+
+    .mobile-panel a,
+    .mobile-panel .mp-row {
+      padding: 12px 4px;
+      font-size: 15px;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mobile-panel .btn {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      position: relative;
+      padding: 60px 24px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ---------- Tabs ---------- */
+    .tabs-container {
+      padding: 40px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tabs-nav {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0;
+    }
+
+    .tab-btn {
+      padding: 12px 16px;
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--orange);
+      border-bottom-color: var(--orange);
+    }
+
+    /* ---------- Content ---------- */
+    .legal-content {
+      padding: 60px 24px;
+    }
+
+    .legal-section {
+      max-width: 900px;
+      margin: 0 auto;
+      display: none;
+    }
+
+    .legal-section.active {
+      display: block;
+    }
+
+    .legal-section h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .legal-section .last-updated {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .legal-section h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    .legal-section p {
+      margin-bottom: 16px;
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    .legal-section ul {
+      margin-left: 20px;
+      margin-bottom: 16px;
+    }
+
+    .legal-section li {
+      list-style: disc;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .legal-section strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .legal-section a {
+      color: var(--orange);
+      transition: color 0.2s;
+    }
+
+    .legal-section a:hover {
+      color: var(--orange);
+      text-decoration: underline;
+    }
+
+    /* ---------- Footer ---------- */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--line);
+      padding: 60px 24px 40px;
+    }
+
+    .foot-grid {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.2fr repeat(3, 1fr);
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .foot-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .foot-brand .logo {
+      gap: 9px;
+    }
+
+    .foot-brand p {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .foot-col h4 {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .foot-col ul {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .foot-col a {
+      font-size: 13px;
+      color: var(--text-dim);
+      transition: color 0.2s;
+    }
+
+    .foot-col a:hover {
+      color: var(--orange);
+    }
+
+    .foot-bottom {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .foot-bottom a {
+      transition: color 0.2s;
+    }
+
+    .foot-bottom a:hover {
+      color: var(--orange);
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .burger {
+        display: block;
+      }
+
+      .tabs-nav {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .tab-btn {
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .foot-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .foot-bottom {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+
+      .legal-section h2 {
+        font-size: 24px;
+      }
+
+      .legal-section h3 {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .tabs-nav {
+        gap: 4px;
+      }
+
+      .tab-btn {
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      .legal-section {
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Announcement Bar -->
+  <div class="announce">
+    <span>✨ Launching soon in East Africa! Request a demo today.</span>
+  </div>
+
+  <!-- Nav -->
+  <header>
+    <nav>
+      <a href="/" class="logo">
+        <span class="mark">TX</span>
+        TX RetailOS <span class="sub">Offline-First</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="./pricing.html">Pricing</a>
+        <a href="./FeaturesPage.html">Features</a>
+        <a href="./product-tour.html">Product Tour</a>
+        <a href="./solutions.html">Solutions</a>
+        <a href="./docs.html">Docs</a>
+        <a href="./legal.html" class="active">Legal</a>
+        <a href="./contact.html">Contact</a>
+      </div>
+
+      <div class="nav-right">
+        <div class="lang-select">
+          <button class="lang-btn" aria-label="Select language" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            EN
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="lang-menu">
+            <button data-lang="en">English</button>
+            <button data-lang="sw">Kiswahili</button>
+            <button data-lang="fr">Français</button>
+          </div>
+        </div>
+
+        <button class="theme-toggle" aria-label="Toggle theme">
+          <span class="knob">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </span>
+        </button>
+
+        <a href="/" class="btn btn-primary">Back to Home</a>
+
+        <button class="burger" aria-label="Open mobile menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        </button>
+      </div>
+    </nav>
+    <!-- Mobile Nav -->
+    <div class="mobile-panel">
+      <a href="/">Home</a>
+      <a href="/#features">Features</a>
+      <a href="/#contact">Contact</a>
+      <a href="/pages/legal.html">Legal</a>
+      <div class="mp-row">
+        <span>Language</span>
+        <div class="lang-select">
+          <button class="lang-btn" aria-label="Select language" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            EN
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="lang-menu">
+            <button data-lang="en">English</button>
+            <button data-lang="sw">Kiswahili</button>
+            <button data-lang="fr">Français</button>
+          </div>
+        </div>
+      </div>
+      <button class="theme-toggle" aria-label="Toggle theme">
+        <span class="knob">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </span>
+      </button>
+      <a href="/" class="btn btn-primary">Back to Home</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <h1>Legal Documents</h1>
+      <p>Our policies and agreements that govern the use of TX RetailOS.</p>
+    </section>
+
+    <!-- Tabs -->
+    <section class="tabs-container">
+      <div class="wrap">
+        <div class="tabs-nav">
+          <button class="tab-btn active" data-tab="privacy">Privacy Policy</button>
+          <button class="tab-btn" data-tab="terms">Terms of Service</button>
+          <button class="tab-btn" data-tab="cookies">Cookie Policy</button>
+          <button class="tab-btn" data-tab="license">License Agreement</button>
+          <button class="tab-btn" data-tab="dpa">Data Processing</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content -->
+    <section class="legal-content">
+      <!-- Privacy Policy -->
+      <div class="legal-section active" id="privacy">
+        <h2>Privacy Policy</h2>
+        <p class="last-updated">Last updated: July 1, 2026</p>
+
+        <h3>1. Introduction</h3>
+        <p>TX RetailOS ("Company," "we," "us," or "our") operates the TX RetailOS service (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
+
+        <h3>2. Information Collection and Use</h3>
+        <p>We collect several different types of information for various purposes to provide and improve our Service to you.</p>
+        <ul>
+          <li><strong>Personal Data:</strong> While using our Service, we may ask you to provide us with certain personally identifiable information that can be used to contact or identify you ("Personal Data"). This may include, but is not limited to:
+            <ul style="margin-top: 8px;">
+              <li>Email address</li>
+              <li>First name and last name</li>
+              <li>Phone number</li>
+              <li>Address, State, Province, ZIP/Postal code, City</li>
+              <li>Cookies and Usage Data</li>
+            </ul>
+          </li>
+          <li><strong>Usage Data:</strong> We may also collect information on how the Service is accessed and used ("Usage Data"). This may include information such as your computer's Internet Protocol address (e.g. IP address), browser type, browser version, the pages you visit, the time and date of your visit, and other diagnostic data.</li>
+        </ul>
+
+        <h3>3. Use of Data</h3>
+        <p>TX RetailOS uses the collected data for various purposes:</p>
+        <ul>
+          <li>To provide and maintain the Service</li>
+          <li>To notify you about changes to our Service</li>
+          <li>To allow you to participate in interactive features of our Service when you choose to do so</li>
+          <li>To provide customer care and support</li>
+          <li>To gather analysis or valuable information so that we can improve the Service</li>
+          <li>To monitor the usage of the Service</li>
+          <li>To detect, prevent and address technical issues</li>
+        </ul>
+
+        <h3>4. Security of Data</h3>
+        <p>The security of your data is important to us, but remember that no method of transmission over the Internet or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security.</p>
+
+        <h3>5. Changes to This Privacy Policy</h3>
+        <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "effective date" at the top of this Privacy Policy.</p>
+
+        <h3>6. Contact Us</h3>
+        <p>If you have any questions about this Privacy Policy, please contact us at <strong>privacy@txretailos.com</strong></p>
+      </div>
+
+      <!-- Terms of Service -->
+      <div class="legal-section" id="terms">
+        <h2>Terms of Service</h2>
+        <p class="last-updated">Last updated: July 1, 2026</p>
+
+        <h3>1. Acceptance of Terms</h3>
+        <p>By accessing and using TX RetailOS, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.</p>
+
+        <h3>2. Use License</h3>
+        <p>Permission is granted to temporarily download one copy of the materials (information or software) on TX RetailOS for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:</p>
+        <ul>
+          <li>Modifying or copying the materials</li>
+          <li>Using the materials for any commercial purpose or for any public display</li>
+          <li>Attempting to decompile or reverse engineer any software contained on TX RetailOS</li>
+          <li>Removing any copyright or other proprietary notations from the materials</li>
+          <li>Transferring the materials to another person or "mirroring" the materials on any other server</li>
+        </ul>
+
+        <h3>3. Disclaimer</h3>
+        <p>The materials on TX RetailOS are provided on an 'as is' basis. TX RetailOS makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.</p>
+
+        <h3>4. Limitations</h3>
+        <p>In no event shall TX RetailOS or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on TX RetailOS, even if TX RetailOS or an authorized representative has been notified orally or in writing of the possibility of such damage.</p>
+
+        <h3>5. Accuracy of Materials</h3>
+        <p>The materials appearing on TX RetailOS could include technical, typographical, or photographic errors. TX RetailOS does not warrant that any of the materials on our website are accurate, complete, or current. TX RetailOS may make changes to the materials contained on our website at any time without notice.</p>
+
+        <h3>6. Modifications</h3>
+        <p>TX RetailOS may revise these terms of service for our website at any time without notice. By using this website, you are agreeing to be bound by the then current version of these terms of service.</p>
+
+        <h3>7. Governing Law</h3>
+        <p>These terms and conditions are governed by and construed in accordance with the laws of Kenya, and you irrevocably submit to the exclusive jurisdiction of the courts in that location.</p>
+      </div>
+
+      <!-- Cookie Policy -->
+      <div class="legal-section" id="cookies">
+        <h2>Cookie Policy</h2>
+        <p class="last-updated">Last updated: July 1, 2026</p>
+
+        <h3>1. What Are Cookies</h3>
+        <p>Cookies are small pieces of data stored on your device (computer or mobile device) when you visit a website. They are widely used to make websites work, or work more efficiently, as well as to provide information to the owners of the site.</p>
+
+        <h3>2. How We Use Cookies</h3>
+        <p>TX RetailOS uses cookies for the following purposes:</p>
+        <ul>
+          <li><strong>Essential Cookies:</strong> These cookies are necessary for the website to function properly. They enable core functionality such as security, network management, and accessibility.</li>
+          <li><strong>Performance Cookies:</strong> These cookies collect information about how you use our website, such as which pages you visit most often and whether you receive error messages.</li>
+          <li><strong>Functional Cookies:</strong> These cookies remember your preferences and choices to provide a personalized experience.</li>
+          <li><strong>Marketing Cookies:</strong> These cookies are used to track your activity across websites to display targeted advertisements.</li>
+        </ul>
+
+        <h3>3. Types of Cookies We Use</h3>
+        <ul>
+          <li><strong>Session Cookies:</strong> These are temporary cookies that are deleted when you close your browser.</li>
+          <li><strong>Persistent Cookies:</strong> These cookies remain on your device for a set period or until you delete them.</li>
+          <li><strong>Third-Party Cookies:</strong> These are set by domains other than the one you are visiting.</li>
+        </ul>
+
+        <h3>4. Your Cookie Choices</h3>
+        <p>You can control and/or delete cookies as you wish. You can delete all cookies that are already on your computer and you can set most browsers to prevent them from being placed. If you do this, however, you may have to manually adjust some preferences every time you visit a website and some services and functionalities may not work.</p>
+
+        <h3>5. Contact Us</h3>
+        <p>If you have any questions about our use of cookies, please contact us at <strong>privacy@txretailos.com</strong></p>
+      </div>
+
+      <!-- License Agreement -->
+      <div class="legal-section" id="license">
+        <h2>License Agreement</h2>
+        <p class="last-updated">Last updated: July 1, 2026</p>
+
+        <h3>1. Grant of License</h3>
+        <p>TX RetailOS grants you a limited, non-exclusive, non-transferable, revocable license to use the TX RetailOS software and documentation (the "Software") solely for your personal, non-commercial use in accordance with the terms of this License Agreement.</p>
+
+        <h3>2. Restrictions</h3>
+        <p>You may not:</p>
+        <ul>
+          <li>Copy, modify, or create derivative works based on the Software</li>
+          <li>Rent, lease, lend, sell, redistribute, or sublicense the Software</li>
+          <li>Reverse engineer, disassemble, decompile, or translate the Software</li>
+          <li>Use the Software for any commercial purpose or for any public display</li>
+          <li>Attempt to gain unauthorized access to the Software or its related systems</li>
+        </ul>
+
+        <h3>3. Intellectual Property Rights</h3>
+        <p>The Software and all copies thereof are proprietary to TX RetailOS and/or its suppliers. All rights in the Software not expressly granted to you in this License Agreement are reserved to TX RetailOS. You acknowledge that no title to the intellectual property in the Software is transferred to you.</p>
+
+        <h3>4. Termination</h3>
+        <p>This License Agreement is effective until terminated. Your rights under this license will terminate automatically without notice from TX RetailOS if you fail to comply with any terms of this License Agreement.</p>
+
+        <h3>5. Disclaimer of Warranties</h3>
+        <p>THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</p>
+
+        <h3>6. Limitation of Liability</h3>
+        <p>IN NO EVENT SHALL TX RETAILOS BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</p>
+      </div>
+
+      <!-- Data Processing Agreement -->
+      <div class="legal-section" id="dpa">
+        <h2>Data Processing Agreement</h2>
+        <p class="last-updated">Last updated: July 1, 2026</p>
+
+        <h3>1. Scope</h3>
+        <p>This Data Processing Agreement ("DPA") forms part of the Service Agreement between TX RetailOS and Customer. It sets out the terms that apply to the processing of Personal Data by TX RetailOS on behalf of Customer.</p>
+
+        <h3>2. Definitions</h3>
+        <ul>
+          <li><strong>Personal Data:</strong> Any information relating to an identified or identifiable natural person.</li>
+          <li><strong>Processing:</strong> Any operation performed on Personal Data, such as collection, recording, organization, structuring, storage, adaptation, retrieval, consultation, use, disclosure, or erasure.</li>
+          <li><strong>Data Subject:</strong> The individual to whom Personal Data relates.</li>
+          <li><strong>Data Controller:</strong> The entity that determines the purposes and means of processing Personal Data.</li>
+          <li><strong>Data Processor:</strong> The entity that processes Personal Data on behalf of the Data Controller.</li>
+        </ul>
+
+        <h3>3. Processing of Personal Data</h3>
+        <p>TX RetailOS processes Personal Data only on documented instructions from the Customer and for the purposes specified in the Service Agreement. TX RetailOS shall not process Personal Data for any other purpose.</p>
+
+        <h3>4. Data Subject Rights</h3>
+        <p>TX RetailOS shall, taking into account the nature of processing, assist the Customer by appropriate technical and organizational measures in fulfilling the Customer's obligation to respond to Data Subject rights requests.</p>
+
+        <h3>5. Security Measures</h3>
+        <p>TX RetailOS implements and maintains appropriate technical and organizational security measures to protect Personal Data against unauthorized or unlawful processing and against accidental loss, destruction, or damage.</p>
+
+        <h3>6. Sub-processors</h3>
+        <p>TX RetailOS shall not engage sub-processors without prior specific or general written authorization from the Customer. TX RetailOS shall impose the same data protection obligations on sub-processors as are imposed on TX RetailOS under this DPA.</p>
+
+        <h3>7. Data Breach Notification</h3>
+        <p>TX RetailOS shall notify the Customer without undue delay upon becoming aware of a Personal Data breach, and shall cooperate with the Customer in investigating and remediating the breach.</p>
+
+        <h3>8. Deletion or Return of Data</h3>
+        <p>Upon termination of the Service Agreement, TX RetailOS shall, at the Customer's choice, delete or return all Personal Data and existing copies thereof, unless applicable law requires storage of the Personal Data.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="/" class="logo">
+          <span class="mark">TX</span>
+          TX RetailOS
+        </a>
+        <p>The offline-first retail operating system for African businesses. Sales, inventory, and reporting that never stop.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#how-it-works">How it Works</a></li>
+          <li><a href="/pages/status.html">Status</a></li>
+          <li><a href="/pages/changelog.html">Changelog</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#contact">Contact</a></li>
+          <li><a href="/">Blog</a></li>
+          <li><a href="/">Careers</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="/pages/legal.html">Privacy Policy</a></li>
+          <li><a href="/pages/legal.html">Terms of Service</a></li>
+          <li><a href="/pages/legal.html">Cookie Policy</a></li>
+          <li><a href="/pages/legal.html">License</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>&copy; 2026 TX RetailOS by Trexave Technologies. All rights reserved.</p>
+      <div style="display: flex; gap: 24px;">
+        <a href="/pages/legal.html">Privacy</a>
+        <a href="/pages/legal.html">Terms</a>
+        <a href="/pages/status.html">Status</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ============================================
+    // 1. Theme Toggle (Dark/Light Mode)
+    // ============================================
+    function initThemeToggle() {
+      const themeToggles = document.querySelectorAll('.theme-toggle');
+      const html = document.documentElement;
+
+      // Load saved theme or default to dark
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-theme', savedTheme);
+
+      themeToggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const currentTheme = html.getAttribute('data-theme');
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          html.setAttribute('data-theme', newTheme);
+          localStorage.setItem('theme', newTheme);
+        });
+      });
+    }
+
+    // ============================================
+    // 2. Language Selector
+    // ============================================
+    function initLanguageSelector() {
+      const langSelects = document.querySelectorAll('.lang-select');
+
+      langSelects.forEach(select => {
+        const btn = select.querySelector('.lang-btn');
+        const menu = select.querySelector('.lang-menu');
+        const langButtons = menu.querySelectorAll('button');
+
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          select.classList.toggle('open');
+          btn.setAttribute('aria-expanded', select.classList.contains('open'));
+        });
+
+        langButtons.forEach(langBtn => {
+          langBtn.addEventListener('click', () => {
+            const lang = langBtn.getAttribute('data-lang');
+            const langText = langBtn.textContent;
+            btn.textContent = lang.toUpperCase();
+            select.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+            localStorage.setItem('language', lang);
+          });
+        });
+      });
+
+      // Close language menu when clicking outside
+      document.addEventListener('click', (e) => {
+        langSelects.forEach(select => {
+          if (!select.contains(e.target)) {
+            select.classList.remove('open');
+            select.querySelector('.lang-btn').setAttribute('aria-expanded', 'false');
+          }
+        });
+      });
+    }
+
+    // ============================================
+    // 3. Mobile Nav Burger Menu
+    // ============================================
+    function initMobileNav() {
+      const burger = document.querySelector('.burger');
+      const mobilePanel = document.querySelector('.mobile-panel');
+      const mobileLinks = mobilePanel.querySelectorAll('a');
+
+      burger.addEventListener('click', () => {
+        mobilePanel.classList.toggle('open');
+        burger.setAttribute('aria-expanded', mobilePanel.classList.contains('open'));
+      });
+
+      mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          mobilePanel.classList.remove('open');
+          burger.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    // ============================================
+    // 4. Tab Navigation
+    // ============================================
+    function initTabs() {
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const sections = document.querySelectorAll('.legal-section');
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabId = btn.getAttribute('data-tab');
+
+          // Remove active class from all buttons and sections
+          tabBtns.forEach(b => b.classList.remove('active'));
+          sections.forEach(s => s.classList.remove('active'));
+
+          // Add active class to clicked button and corresponding section
+          btn.classList.add('active');
+          document.getElementById(tabId).classList.add('active');
+
+          // Scroll to top of content
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+    }
+
+    // ============================================
+    // 5. Smooth Scroll for Anchor Links
+    // ============================================
+    function initSmoothScroll() {
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          const href = this.getAttribute('href');
+          if (href === '#') return;
+
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            const headerHeight = document.querySelector('header').offsetHeight;
+            const targetPosition = target.offsetTop - headerHeight;
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    }
+
+    // ============================================
+    // 6. Initialize All Features
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+      initThemeToggle();
+      initLanguageSelector();
+      initMobileNav();
+      initTabs();
+      initSmoothScroll();
+    });
+
+    // ============================================
+    // 7. Keyboard Navigation Support
+    // ============================================
+    document.addEventListener('keydown', (e) => {
+      // Escape key closes mobile menu and language menu
+      if (e.key === 'Escape') {
+        document.querySelector('.mobile-panel').classList.remove('open');
+        document.querySelectorAll('.lang-select').forEach(select => {
+          select.classList.remove('open');
+          select.querySelector('.lang-btn').setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>
