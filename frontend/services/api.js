@@ -194,3 +194,33 @@ export const getYearlyReport = async (year) => {
   });
   return handleResponse(response);
 };
+
+// --- Conflicts ---
+export const getConflicts = async () => {
+  const response = await fetch(`${API_BASE_URL}/conflicts`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const getConflict = async (conflictId) => {
+  const response = await fetch(`${API_BASE_URL}/conflicts/${conflictId}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+// --- Health & Status ---
+export const checkHealth = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+    });
+    return response.ok;
+  } catch (err) {
+    console.error('Health check failed:', err);
+    return false;
+  }
+};
