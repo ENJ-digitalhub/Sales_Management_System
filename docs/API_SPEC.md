@@ -8,14 +8,15 @@
 
 ### POST /auth/login
 
-Authenticate user with username and password.
+Authenticate user with username, password, and device metadata.
 
 **Request**
 
 ```json
 {
   "username": "string",
-  "password": "string"
+  "password": "string",
+  "device_name": "string"
 }
 ```
 

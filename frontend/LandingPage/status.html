@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TX RetailOS System Status — Real-time uptime, service health, maintenance schedules, and incident history.">
+  <meta name="keywords" content="status, uptime, system health, incidents, maintenance, TX RetailOS">
+  <meta name="author" content="TX RetailOS">
+  <meta property="og:title" content="System Status — TX RetailOS">
+  <meta property="og:description" content="Real-time uptime, service health, maintenance schedules, and incident history for TX RetailOS.">
+  <meta property="og:type" content="website">
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="System Status — TX RetailOS">
+  <meta property="twitter:description" content="Real-time uptime, service health, maintenance schedules, and incident history.">
+  <title>System Status — TX RetailOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #F97316;
+      --orange-dim: #F97316cc;
+      --black: #0F0F0F;
+      --dark-bg: #111827;
+      --white: #FFFFFF;
+      --light-bg: #F8FAFC;
+      --border: #E5E7EB;
+      --gray: #6B7280;
+      --success: #22C55E;
+      --warning: #EAB308;
+      --error: #EF4444;
+
+      --bg: var(--black);
+      --surface: #17171A;
+      --surface-2: #1E1E22;
+      --text: #F5F5F4;
+      --text-dim: #A3A3A6;
+      --line: rgba(255, 255, 255, 0.08);
+      --glass-bg: rgba(23, 23, 26, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.09);
+    }
+
+    html[data-theme="light"] {
+      --bg: var(--light-bg);
+      --surface: #FFFFFF;
+      --surface-2: #F1F3F6;
+      --text: #14151A;
+      --text-dim: var(--gray);
+      --line: var(--border);
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(15, 15, 15, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.4s ease, color 0.4s ease;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    ::selection {
+      background: var(--orange);
+      color: #0F0F0F;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
+    /* ---------- Announcement bar ---------- */
+    .announce {
+      background: var(--orange);
+      color: #0F0F0F;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 16px;
+      letter-spacing: 0.01em;
+    }
+
+    /* ---------- Nav ---------- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 700;
+      font-size: 18px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .logo .mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, var(--orange), #C2410C);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0F0F0F;
+      font-weight: 800;
+      font-size: 15px;
+      box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
+    }
+
+    .logo .sub {
+      color: var(--text-dim);
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-left: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      font-size: 14.5px;
+      font-weight: 500;
+      color: var(--text-dim);
+      position: relative;
+      padding: 4px 0;
+      transition: color 0.2s;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      height: 2px;
+      width: 0;
+      background: var(--orange);
+      transition: width 0.25s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .lang-select {
+      position: relative;
+    }
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text-dim);
+      font-size: 13px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    .lang-btn:hover {
+      border-color: var(--orange);
+      color: var(--text);
+    }
+
+    .lang-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 6px;
+      min-width: 170px;
+      max-height: 280px;
+      overflow-y: auto;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .lang-select.open .lang-menu {
+      display: block;
+    }
+
+    .lang-menu button {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .lang-menu button:hover {
+      background: var(--surface-2);
+    }
+
+    .theme-toggle {
+      width: 44px;
+      height: 26px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      position: relative;
+      padding: 0;
+      transition: 0.25s;
+    }
+
+    .theme-toggle .knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--orange);
+      transition: transform 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    html[data-theme="light"] .theme-toggle .knob {
+      transform: translateX(18px);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color: #0F0F0F;
+      box-shadow: 0 6px 18px rgba(249, 115, 22, 0.28);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(249, 115, 22, 0.4);
+    }
+
+    .btn-ghost {
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .burger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 22px;
+    }
+
+    /* ---------- Mobile nav ---------- */
+    .mobile-panel {
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      padding: 10px 24px 22px;
+      border-top: 1px solid var(--line);
+      background: var(--bg);
+    }
+
+    .mobile-panel.open {
+      display: flex;
+    }
+
+    .mobile-panel a,
+    .mobile-panel .mp-row {
+      padding: 12px 4px;
+      font-size: 15px;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mobile-panel .btn {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      position: relative;
+      padding: 60px 24px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+    }
+
+    /* ---------- Status Dashboard ---------- */
+    .status-dashboard {
+      padding: 60px 24px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .status-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .status-card:hover {
+      border-color: var(--orange);
+      transform: translateY(-2px);
+    }
+
+    .status-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .status-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 700;
+    }
+
+    .status-indicator.operational {
+      background: var(--success);
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+    }
+
+    .status-indicator.degraded {
+      background: var(--warning);
+      box-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
+    }
+
+    .status-indicator.down {
+      background: var(--error);
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+    }
+
+    .status-value {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--orange);
+    }
+
+    .status-label {
+      font-size: 12px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ---------- Uptime Chart ---------- */
+    .uptime-section {
+      padding: 60px 24px;
+    }
+
+    .section-head {
+      max-width: 640px;
+      margin: 0 auto 40px;
+      text-align: center;
+    }
+
+    .section-head h2 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .section-head p {
+      color: var(--text-dim);
+      font-size: 15px;
+    }
+
+    .uptime-chart {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .chart-period {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .uptime-bars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(20px, 1fr));
+      gap: 4px;
+      margin-bottom: 16px;
+    }
+
+    .uptime-bar {
+      height: 40px;
+      border-radius: 4px;
+      background: var(--success);
+      opacity: 0.8;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .uptime-bar:hover {
+      opacity: 1;
+      transform: scaleY(1.1);
+    }
+
+    .uptime-bar.partial {
+      background: linear-gradient(180deg, var(--success) 70%, var(--warning) 100%);
+    }
+
+    .uptime-bar.down {
+      background: var(--error);
+    }
+
+    .uptime-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--orange);
+    }
+
+    /* ---------- Incidents ---------- */
+    .incidents-section {
+      padding: 60px 24px;
+      border-top: 1px solid var(--line);
+    }
+
+    .incident-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .incident-item {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .incident-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .incident-icon.resolved {
+      background: rgba(34, 197, 94, 0.15);
+    }
+
+    .incident-icon.investigating {
+      background: rgba(234, 179, 8, 0.15);
+    }
+
+    .incident-content h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .incident-content p {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .incident-time {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .incident-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .incident-status.resolved {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+    }
+
+    .incident-status.investigating {
+      background: rgba(234, 179, 8, 0.15);
+      color: var(--warning);
+    }
+
+    /* ---------- Maintenance ---------- */
+    .maintenance-section {
+      padding: 60px 24px;
+      border-top: 1px solid var(--line);
+    }
+
+    .maintenance-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .maintenance-item {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 4px solid var(--orange);
+    }
+
+    .maintenance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .maintenance-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .maintenance-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--orange);
+    }
+
+    .maintenance-description {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .maintenance-time {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ---------- Footer ---------- */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--line);
+      padding: 60px 24px 40px;
+    }
+
+    .foot-grid {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.2fr repeat(3, 1fr);
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .foot-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .foot-brand .logo {
+      gap: 9px;
+    }
+
+    .foot-brand p {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .foot-col h4 {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .foot-col ul {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .foot-col a {
+      font-size: 13px;
+      color: var(--text-dim);
+      transition: color 0.2s;
+    }
+
+    .foot-col a:hover {
+      color: var(--orange);
+    }
+
+    .foot-bottom {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .foot-bottom a {
+      transition: color 0.2s;
+    }
+
+    .foot-bottom a:hover {
+      color: var(--orange);
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .burger {
+        display: block;
+      }
+
+      .status-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .foot-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .foot-bottom {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+
+      .incident-item {
+        grid-template-columns: 1fr;
+      }
+
+      .chart-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .status-value {
+        font-size: 24px;
+      }
+
+      .uptime-bars {
+        grid-template-columns: repeat(auto-fit, minmax(16px, 1fr));
+      }
+
+      .uptime-bar {
+        height: 32px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Announcement Bar -->
+  <div class="announce">
+    <span>✨ Launching soon in East Africa! Request a demo today.</span>
+  </div>
+
+  <!-- Nav -->
+  <header>
+    <nav>
+      <a href="/" class="logo">
+        <span class="mark">TX</span>
+        TX RetailOS <span class="sub">Offline-First</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="./pricing.html">Pricing</a>
+        <a href="./FeaturesPage.html">Features</a>
+        <a href="./product-tour.html">Product Tour</a>
+        <a href="./solutions.html">Solutions</a>
+        <a href="./docs.html">Docs</a>
+        <a href="./status.html" class="active">Status</a>
+        <a href="./contact.html">Contact</a>
+      </div>
+
+      <div class="nav-right">
+        <div class="lang-select">
+          <button class="lang-btn" aria-label="Select language" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            EN
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="lang-menu">
+            <button data-lang="en">English</button>
+            <button data-lang="sw">Kiswahili</button>
+            <button data-lang="fr">Français</button>
+          </div>
+        </div>
+
+        <button class="theme-toggle" aria-label="Toggle theme">
+          <span class="knob">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </span>
+        </button>
+
+        <a href="/" class="btn btn-primary">Back to Home</a>
+
+        <button class="burger" aria-label="Open mobile menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        </button>
+      </div>
+    </nav>
+    <!-- Mobile Nav -->
+    <div class="mobile-panel">
+      <a href="/">Home</a>
+      <a href="/#features">Features</a>
+      <a href="/#contact">Contact</a>
+      <a href="/pages/status.html">Status</a>
+      <div class="mp-row">
+        <span>Language</span>
+        <div class="lang-select">
+          <button class="lang-btn" aria-label="Select language" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            EN
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="lang-menu">
+            <button data-lang="en">English</button>
+            <button data-lang="sw">Kiswahili</button>
+            <button data-lang="fr">Français</button>
+          </div>
+        </div>
+      </div>
+      <button class="theme-toggle" aria-label="Toggle theme">
+        <span class="knob">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </span>
+      </button>
+      <a href="/" class="btn btn-primary">Back to Home</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <h1>System Status</h1>
+      <p>Real-time monitoring of TX RetailOS services, uptime history, and maintenance schedules.</p>
+    </section>
+
+    <!-- Status Dashboard -->
+    <section class="status-dashboard">
+      <div class="wrap">
+        <div class="status-grid">
+          <div class="status-card">
+            <div class="status-header">
+              <span class="status-title">API Services</span>
+              <div class="status-indicator operational"></div>
+            </div>
+            <div class="status-value">99.98%</div>
+            <span class="status-label">Uptime (30 days)</span>
+          </div>
+
+          <div class="status-card">
+            <div class="status-header">
+              <span class="status-title">Database</span>
+              <div class="status-indicator operational"></div>
+            </div>
+            <div class="status-value">100%</div>
+            <span class="status-label">Uptime (30 days)</span>
+          </div>
+
+          <div class="status-card">
+            <div class="status-header">
+              <span class="status-title">Sync Engine</span>
+              <div class="status-indicator operational"></div>
+            </div>
+            <div class="status-value">99.95%</div>
+            <span class="status-label">Uptime (30 days)</span>
+          </div>
+
+          <div class="status-card">
+            <div class="status-header">
+              <span class="status-title">Authentication</span>
+              <div class="status-indicator operational"></div>
+            </div>
+            <div class="status-value">99.99%</div>
+            <span class="status-label">Uptime (30 days)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Uptime History -->
+    <section class="uptime-section">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>30-Day Uptime History</h2>
+          <p>Detailed uptime metrics for all TX RetailOS services</p>
+        </div>
+
+        <div class="uptime-chart">
+          <div class="chart-header">
+            <span class="chart-title">API Services</span>
+            <span class="chart-period">Last 30 days</span>
+          </div>
+          <div class="uptime-bars">
+            <div class="uptime-bar" title="Day 1: 100%"></div>
+            <div class="uptime-bar" title="Day 2: 100%"></div>
+            <div class="uptime-bar" title="Day 3: 100%"></div>
+            <div class="uptime-bar partial" title="Day 4: 99.5%"></div>
+            <div class="uptime-bar" title="Day 5: 100%"></div>
+            <div class="uptime-bar" title="Day 6: 100%"></div>
+            <div class="uptime-bar" title="Day 7: 100%"></div>
+            <div class="uptime-bar" title="Day 8: 100%"></div>
+            <div class="uptime-bar" title="Day 9: 100%"></div>
+            <div class="uptime-bar" title="Day 10: 100%"></div>
+            <div class="uptime-bar" title="Day 11: 100%"></div>
+            <div class="uptime-bar" title="Day 12: 100%"></div>
+            <div class="uptime-bar" title="Day 13: 100%"></div>
+            <div class="uptime-bar" title="Day 14: 100%"></div>
+            <div class="uptime-bar" title="Day 15: 100%"></div>
+            <div class="uptime-bar" title="Day 16: 100%"></div>
+            <div class="uptime-bar" title="Day 17: 100%"></div>
+            <div class="uptime-bar" title="Day 18: 100%"></div>
+            <div class="uptime-bar" title="Day 19: 100%"></div>
+            <div class="uptime-bar" title="Day 20: 100%"></div>
+            <div class="uptime-bar" title="Day 21: 100%"></div>
+            <div class="uptime-bar" title="Day 22: 100%"></div>
+            <div class="uptime-bar" title="Day 23: 100%"></div>
+            <div class="uptime-bar" title="Day 24: 100%"></div>
+            <div class="uptime-bar" title="Day 25: 100%"></div>
+            <div class="uptime-bar" title="Day 26: 100%"></div>
+            <div class="uptime-bar" title="Day 27: 100%"></div>
+            <div class="uptime-bar" title="Day 28: 100%"></div>
+            <div class="uptime-bar" title="Day 29: 100%"></div>
+            <div class="uptime-bar" title="Day 30: 100%"></div>
+          </div>
+          <div class="uptime-stats">
+            <div class="stat-item">
+              <span class="stat-label">Average Uptime</span>
+              <span class="stat-value">99.98%</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Incidents</span>
+              <span class="stat-value">1</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Total Downtime</span>
+              <span class="stat-value">28 min</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Longest Outage</span>
+              <span class="stat-value">28 min</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Incidents -->
+    <section class="incidents-section">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Recent Incidents</h2>
+          <p>Historical record of service incidents and resolutions</p>
+        </div>
+
+        <div class="incident-list">
+          <div class="incident-item">
+            <div class="incident-icon resolved">✓</div>
+            <div class="incident-content">
+              <h4>API Rate Limiting Issue Resolved</h4>
+              <p>Temporary spike in API requests caused rate limiting on sync operations. Issue identified and mitigated within 28 minutes.</p>
+              <span class="incident-time">July 4, 2026 at 14:32 UTC</span>
+            </div>
+            <div class="incident-status resolved">
+              <span>●</span> Resolved
+            </div>
+          </div>
+
+          <div class="incident-item">
+            <div class="incident-icon resolved">✓</div>
+            <div class="incident-content">
+              <h4>Database Maintenance Completed</h4>
+              <p>Scheduled maintenance on primary database cluster completed successfully. No service interruption occurred.</p>
+              <span class="incident-time">June 28, 2026 at 02:15 UTC</span>
+            </div>
+            <div class="incident-status resolved">
+              <span>●</span> Completed
+            </div>
+          </div>
+
+          <div class="incident-item">
+            <div class="incident-icon resolved">✓</div>
+            <div class="incident-content">
+              <h4>Authentication Service Update</h4>
+              <p>Security patches applied to authentication service. Zero downtime deployment completed successfully.</p>
+              <span class="incident-time">June 20, 2026 at 10:45 UTC</span>
+            </div>
+            <div class="incident-status resolved">
+              <span>●</span> Resolved
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scheduled Maintenance -->
+    <section class="maintenance-section">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Scheduled Maintenance</h2>
+          <p>Upcoming maintenance windows and system updates</p>
+        </div>
+
+        <div class="maintenance-list">
+          <div class="maintenance-item">
+            <div class="maintenance-header">
+              <h4 class="maintenance-title">Sync Engine Infrastructure Upgrade</h4>
+              <span class="maintenance-badge">Scheduled</span>
+            </div>
+            <p class="maintenance-description">We'll be upgrading our sync engine infrastructure to improve performance and reliability. This is a zero-downtime deployment.</p>
+            <span class="maintenance-time">July 15, 2026 • 22:00 - 23:30 UTC</span>
+          </div>
+
+          <div class="maintenance-item">
+            <div class="maintenance-header">
+              <h4 class="maintenance-title">Database Cluster Maintenance</h4>
+              <span class="maintenance-badge">Scheduled</span>
+            </div>
+            <p class="maintenance-description">Routine database maintenance and optimization. We expect no impact on service availability during this window.</p>
+            <span class="maintenance-time">July 22, 2026 • 01:00 - 02:00 UTC</span>
+          </div>
+
+          <div class="maintenance-item">
+            <div class="maintenance-header">
+              <h4 class="maintenance-title">Security Patches and Updates</h4>
+              <span class="maintenance-badge">Scheduled</span>
+            </div>
+            <p class="maintenance-description">Regular security updates and patches will be applied across all services. Zero-downtime deployment strategy in place.</p>
+            <span class="maintenance-time">August 5, 2026 • 03:00 - 04:00 UTC</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="/" class="logo">
+          <span class="mark">TX</span>
+          TX RetailOS
+        </a>
+        <p>The offline-first retail operating system for African businesses. Sales, inventory, and reporting that never stop.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#how-it-works">How it Works</a></li>
+          <li><a href="/pages/status.html">Status</a></li>
+          <li><a href="/pages/changelog.html">Changelog</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#contact">Contact</a></li>
+          <li><a href="/">Blog</a></li>
+          <li><a href="/">Careers</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="/pages/legal.html">Privacy Policy</a></li>
+          <li><a href="/pages/legal.html">Terms of Service</a></li>
+          <li><a href="/pages/legal.html">Cookie Policy</a></li>
+          <li><a href="/pages/legal.html">License</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>&copy; 2026 TX RetailOS by Trexave Technologies. All rights reserved.</p>
+      <div style="display: flex; gap: 24px;">
+        <a href="/">Privacy</a>
+        <a href="/">Terms</a>
+        <a href="/">Status</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ============================================
+    // 1. Theme Toggle (Dark/Light Mode)
+    // ============================================
+    function initThemeToggle() {
+      const themeToggles = document.querySelectorAll('.theme-toggle');
+      const html = document.documentElement;
+
+      // Load saved theme or default to dark
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-theme', savedTheme);
+
+      themeToggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const currentTheme = html.getAttribute('data-theme');
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          html.setAttribute('data-theme', newTheme);
+          localStorage.setItem('theme', newTheme);
+        });
+      });
+    }
+
+    // ============================================
+    // 2. Language Selector
+    // ============================================
+    function initLanguageSelector() {
+      const langSelects = document.querySelectorAll('.lang-select');
+
+      langSelects.forEach(select => {
+        const btn = select.querySelector('.lang-btn');
+        const menu = select.querySelector('.lang-menu');
+        const langButtons = menu.querySelectorAll('button');
+
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          select.classList.toggle('open');
+          btn.setAttribute('aria-expanded', select.classList.contains('open'));
+        });
+
+        langButtons.forEach(langBtn => {
+          langBtn.addEventListener('click', () => {
+            const lang = langBtn.getAttribute('data-lang');
+            const langText = langBtn.textContent;
+            btn.textContent = lang.toUpperCase();
+            select.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+            localStorage.setItem('language', lang);
+          });
+        });
+      });
+
+      // Close language menu when clicking outside
+      document.addEventListener('click', (e) => {
+        langSelects.forEach(select => {
+          if (!select.contains(e.target)) {
+            select.classList.remove('open');
+            select.querySelector('.lang-btn').setAttribute('aria-expanded', 'false');
+          }
+        });
+      });
+    }
+
+    // ============================================
+    // 3. Mobile Nav Burger Menu
+    // ============================================
+    function initMobileNav() {
+      const burger = document.querySelector('.burger');
+      const mobilePanel = document.querySelector('.mobile-panel');
+      const mobileLinks = mobilePanel.querySelectorAll('a');
+
+      burger.addEventListener('click', () => {
+        mobilePanel.classList.toggle('open');
+        burger.setAttribute('aria-expanded', mobilePanel.classList.contains('open'));
+      });
+
+      mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          mobilePanel.classList.remove('open');
+          burger.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    // ============================================
+    // 4. Smooth Scroll for Anchor Links
+    // ============================================
+    function initSmoothScroll() {
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          const href = this.getAttribute('href');
+          if (href === '#') return;
+
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            const headerHeight = document.querySelector('header').offsetHeight;
+            const targetPosition = target.offsetTop - headerHeight;
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    }
+
+    // ============================================
+    // 5. Initialize All Features
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+      initThemeToggle();
+      initLanguageSelector();
+      initMobileNav();
+      initSmoothScroll();
+    });
+
+    // ============================================
+    // 6. Keyboard Navigation Support
+    // ============================================
+    document.addEventListener('keydown', (e) => {
+      // Escape key closes mobile menu and language menu
+      if (e.key === 'Escape') {
+        document.querySelector('.mobile-panel').classList.remove('open');
+        document.querySelectorAll('.lang-select').forEach(select => {
+          select.classList.remove('open');
+          select.querySelector('.lang-btn').setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TX RetailOS Demo Request - Schedule your personalized demo and see how our offline-first retail operating system can transform your business.">
+    <meta name="keywords" content="demo request, schedule demo, book demo, retail software demo, TX RetailOS">
+    <meta name="author" content="TX RetailOS">
+    <meta property="og:title" content="TX RetailOS — Book Your Demo">
+    <meta property="og:description" content="Schedule a personalized demo of TX RetailOS and discover how our offline-first retail operating system can transform your business.">
+    <meta property="og:type" content="website">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="TX RetailOS — Book Your Demo">
+    <meta property="twitter:description" content="Schedule a personalized demo of TX RetailOS and discover how our offline-first retail operating system can transform your business.">
+    <title>TX RetailOS — Book Your Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --orange:#F97316;
+            --orange-dim:#F97316cc;
+            --black:#0F0F0F;
+            --dark-bg:#111827;
+            --white:#FFFFFF;
+            --light-bg:#F8FAFC;
+            --border:#E5E7EB;
+            --gray:#6B7280;
+            --success:#22C55E;
+
+            --bg: var(--black);
+            --surface: #17171A;
+            --surface-2: #1E1E22;
+            --text: #F5F5F4;
+            --text-dim: #A3A3A6;
+            --line: rgba(255,255,255,0.08);
+            --glass-bg: rgba(23,23,26,0.55);
+            --glass-border: rgba(255,255,255,0.09);
+        }
+
+        html[data-theme="light"]{
+            --bg: var(--light-bg);
+            --surface: #FFFFFF;
+            --surface-2: #F1F3F6;
+            --text: #14151A;
+            --text-dim: var(--gray);
+            --line: var(--border);
+            --glass-bg: rgba(255,255,255,0.6);
+            --glass-border: rgba(15,15,15,0.08);
+        }
+
+        *{
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+        }
+        html{
+            scroll-behavior:smooth;
+        }
+        body{
+            background:var(--bg);
+            color:var(--text);
+            font-family:'Inter',sans-serif;
+            line-height:1.5;
+            -webkit-font-smoothing:antialiased;
+            transition:background .4s ease, color .4s ease;
+            overflow-x:hidden;
+        }
+        h1,h2,h3,h4{
+            font-family:'Space Grotesk',sans-serif;
+            letter-spacing:-0.02em;
+        }
+        .mono{
+            font-family:'JetBrains Mono',monospace;
+        }
+        a{
+            color:inherit;
+            text-decoration:none;
+        }
+        img{
+            max-width:100%;
+            display:block;
+        }
+        ul{
+            list-style:none;
+        }
+        button{
+            font-family:inherit;
+            cursor:pointer;
+        }
+        .wrap{
+            max-width:1240px;
+            margin:0 auto;
+            padding:0 24px;
+        }
+        ::selection{
+            background:var(--orange);
+            color:#0F0F0F;
+        }
+
+        @media (prefers-reduced-motion: reduce){
+            *{
+                animation-duration:0.001ms !important;
+                animation-iteration-count:1 !important;
+                transition-duration:0.001ms !important;
+            }
+        }
+
+        /* ---------- Announcement bar ---------- */
+        .announce{
+            background:var(--orange);
+            color:#0F0F0F;
+            text-align:center;
+            font-size:13px;
+            font-weight:600;
+            padding:9px 16px;
+            letter-spacing:.01em;
+        }
+
+        /* ---------- Nav ---------- */
+        header{
+            position:sticky;
+            top:0;
+            z-index:100;
+            background:var(--glass-bg);
+            backdrop-filter:blur(16px) saturate(160%);
+            -webkit-backdrop-filter:blur(16px) saturate(160%);
+            border-bottom:1px solid var(--glass-border);
+        }
+        nav{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:14px 24px;
+            max-width:1240px;
+            margin:0 auto;
+        }
+        .logo{
+            display:flex;
+            align-items:center;
+            gap:9px;
+            font-weight:700;
+            font-size:18px;
+            font-family:'Space Grotesk',sans-serif;
+        }
+        .logo .mark{
+            width:30px;
+            height:30px;
+            border-radius:8px;
+            background:linear-gradient(145deg, var(--orange), #C2410C);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:#0F0F0F;
+            font-weight:800;
+            font-size:15px;
+            box-shadow:0 4px 14px rgba(249,115,22,.35);
+        }
+        .logo .sub{
+            color:var(--text-dim);
+            font-weight:500;
+            font-size:11px;
+            letter-spacing:.08em;
+            text-transform:uppercase;
+            margin-left:2px;
+        }
+
+        .nav-links{
+            display:flex;
+            align-items:center;
+            gap:30px;
+        }
+        .nav-links a{
+            font-size:14.5px;
+            font-weight:500;
+            color:var(--text-dim);
+            position:relative;
+            padding:4px 0;
+            transition:color .2s;
+        }
+        .nav-links a::after{
+            content:'';
+            position:absolute;
+            left:0;
+            bottom:-2px;
+            height:2px;
+            width:0;
+            background:var(--orange);
+            transition:width .25s ease;
+        }
+        .nav-links a:hover{
+            color:var(--text);
+        }
+        .nav-links a:hover::after{
+            width:100%;
+        }
+
+        .nav-right{
+            display:flex;
+            align-items:center;
+            gap:14px;
+        }
+
+        .lang-select{
+            position:relative;
+        }
+        .lang-btn{
+            display:flex;
+            align-items:center;
+            gap:6px;
+            background:transparent;
+            border:1px solid var(--line);
+            color:var(--text-dim);
+            font-size:13px;
+            padding:7px 10px;
+            border-radius:8px;
+            transition:.2s;
+        }
+        .lang-btn:hover{
+            border-color:var(--orange);
+            color:var(--text);
+        }
+        .lang-menu{
+            display:none;
+            position:absolute;
+            top:calc(100% + 8px);
+            right:0;
+            background:var(--surface);
+            border:1px solid var(--line);
+            border-radius:10px;
+            padding:6px;
+            min-width:170px;
+            max-height:280px;
+            overflow-y:auto;
+            box-shadow:0 12px 30px rgba(0,0,0,.35);
+        }
+        .lang-select.open .lang-menu{
+            display:block;
+        }
+        .lang-menu button{
+            width:100%;
+            text-align:left;
+            background:none;
+            border:none;
+            color:var(--text);
+            padding:8px 10px;
+            border-radius:6px;
+            font-size:13.5px;
+            display:flex;
+            gap:8px;
+            align-items:center;
+        }
+        .lang-menu button:hover{
+            background:var(--surface-2);
+        }
+
+        .theme-toggle{
+            width:44px;
+            height:26px;
+            border-radius:20px;
+            border:1px solid var(--line);
+            background:var(--surface-2);
+            position:relative;
+            padding:0;
+            transition:.25s;
+        }
+        .theme-toggle .knob{
+            position:absolute;
+            top:2px;
+            left:2px;
+            width:20px;
+            height:20px;
+            border-radius:50%;
+            background:var(--orange);
+            transition:transform .25s ease;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:11px;
+        }
+        html[data-theme="light"] .theme-toggle .knob{
+            transform:translateX(18px);
+        }
+
+        .btn{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:8px;
+            padding:10px 18px;
+            border-radius:9px;
+            font-size:14px;
+            font-weight:600;
+            border:1px solid transparent;
+            transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+            white-space:nowrap;
+        }
+        .btn-primary{
+            background:var(--orange);
+            color:#0F0F0F;
+            box-shadow:0 6px 18px rgba(249,115,22,.28);
+        }
+        .btn-primary:hover{
+            transform:translateY(-2px);
+            box-shadow:0 10px 26px rgba(249,115,22,.4);
+        }
+        .btn-ghost{
+            border-color:var(--line);
+            color:var(--text);
+        }
+        .btn-ghost:hover{
+            border-color:var(--orange);
+            color:var(--orange);
+        }
+
+        .burger{
+            display:none;
+            background:none;
+            border:none;
+            color:var(--text);
+            font-size:22px;
+        }
+
+        /* ---------- Mobile nav ---------- */
+        .mobile-panel{
+            display:none;
+            flex-direction:column;
+            gap:2px;
+            padding:10px 24px 22px;
+            border-top:1px solid var(--line);
+            background:var(--bg);
+        }
+        .mobile-panel.open{
+            display:flex;
+        }
+        .mobile-panel a, .mobile-panel .mp-row{
+            padding:12px 4px;
+            font-size:15px;
+            color:var(--text-dim);
+            border-bottom:1px solid var(--line);
+        }
+        .mobile-panel .btn{
+            margin-top:12px;
+            width:100%;
+        }
+
+        /* Demo Page Specific Styles */
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            padding: 80px 0;
+            min-height: 100vh;
+        }
+
+        .demo-left {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .demo-left h1 {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .demo-left h1 span {
+            color: var(--orange);
+        }
+
+        .demo-left p {
+            font-size: 18px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .trust-indicators {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            color: var(--text-dim);
+        }
+
+        .trust-item svg {
+            color: var(--success);
+            flex-shrink: 0;
+        }
+
+        .testimonial-card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .testimonial-quote {
+            font-size: 15px;
+            font-style: italic;
+            color: var(--text);
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--orange);
+            font-size: 14px;
+        }
+
+        .testimonial-role {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        /* Form Styles */
+        .demo-form {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .form-header {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-header h2 {
+            font-size: 28px;
+            color: var(--text);
+        }
+
+        .form-header p {
+            font-size: 14px;
+            color: var(--text-dim);
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--surface-2);
+            color: var(--text);
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option:hover {
+            border-color: var(--orange);
+            background: rgba(249, 115, 22, 0.05);
+        }
+
+        .radio-option input[type="radio"] {
+            cursor: pointer;
+            accent-color: var(--orange);
+        }
+
+        .radio-option.selected {
+            border-color: var(--orange);
+            background: rgba(249, 115, 22, 0.1);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .form-buttons button {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-next {
+            background: var(--orange);
+            color: #0F0F0F;
+            box-shadow: 0 6px 18px rgba(249, 115, 22, 0.28);
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 26px rgba(249, 115, 22, 0.4);
+        }
+
+        .btn-prev {
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--line);
+        }
+
+        .btn-prev:hover {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        .btn-prev:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--surface-2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--orange);
+            transition: width 0.3s ease;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            animation: slideIn 0.5s ease;
+        }
+
+        .success-message.active {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .success-message h3 {
+            font-size: 28px;
+            color: var(--text);
+        }
+
+        .success-message p {
+            font-size: 16px;
+            color: var(--text-dim);
+            max-width: 400px;
+        }
+
+        /* Footer */
+        footer{
+            border-top:1px solid var(--line);
+            padding:50px 24px;
+            font-size:14px;
+            color:var(--text-dim);
+        }
+        .footer-grid{
+            display:grid;
+            grid-template-columns:1.5fr repeat(3,1fr);
+            gap:30px;
+            max-width:1240px;
+            margin:0 auto;
+        }
+        .footer-about .logo{
+            margin-bottom:15px;
+        }
+        .footer-about p{
+            max-width:300px;
+            line-height:1.6;
+        }
+        .footer-links h4{
+            font-size:15px;
+            font-weight:600;
+            color:var(--text);
+            margin-bottom:15px;
+        }
+        .footer-links ul li{
+            margin-bottom:10px;
+        }
+        .footer-links ul li a:hover{
+            color:var(--orange);
+        }
+        .footer-bottom{
+            max-width:1240px;
+            margin:50px auto 0;
+            padding-top:30px;
+            border-top:1px solid var(--line);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:20px;
+        }
+        .social-links{
+            display:flex;
+            gap:15px;
+        }
+        .social-links a{
+            color:var(--text-dim);
+            font-size:18px;
+        }
+        .social-links a:hover{
+            color:var(--orange);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links, .nav-right > *:not(.burger) {
+                display: none;
+            }
+            .burger {
+                display: block;
+            }
+            .demo-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 40px 0;
+                min-height: auto;
+            }
+            .demo-form {
+                padding: 30px 20px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer-about p {
+                max-width: 100%;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+            .social-links {
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .demo-left h1 {
+                font-size: 28px;
+            }
+            .demo-form {
+                padding: 20px;
+            }
+            .form-buttons {
+                flex-direction: column;
+            }
+            .form-buttons button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Announcement Bar -->
+    <div class="announce">
+        <span>✨ Launching soon in East Africa! Request a demo today.</span>
+    </div>
+
+    <!-- Nav -->
+    <header>
+        <nav>
+            <a href="/" class="logo">
+                <span class="mark">TX</span>
+                TX RetailOS <span class="sub">Offline-First</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="./pricing.html">Pricing</a>
+                <a href="./FeaturesPage.html">Features</a>
+                <a href="./product-tour.html">Product Tour</a>
+                <a href="./solutions.html">Solutions</a>
+                <a href="./docs.html">Docs</a>
+                <a href="./demo.html" class="active">Demo</a>
+                <a href="./contact.html">Contact</a>
+            </div>
+
+            <div class="nav-right">
+                <div class="lang-select">
+                    <button class="lang-btn" aria-label="Select language" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                        EN
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="lang-menu">
+                        <button data-lang="en">English</button>
+                        <button data-lang="sw">Kiswahili</button>
+                        <button data-lang="fr">Français</button>
+                    </div>
+                </div>
+
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <span class="knob">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                    </span>
+                </button>
+
+                <a href="/demo.html" class="btn btn-primary">Request Demo</a>
+
+                <button class="burger" aria-label="Open mobile menu" aria-expanded="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                </button>
+            </div>
+        </nav>
+        <!-- Mobile Nav -->
+        <div class="mobile-panel">
+            <a href="../index.html">Home</a>
+            <a href="./pricing.html">Pricing</a>
+            <a href="./FeaturesPage.html">Features</a>
+            <a href="./product-tour.html">Product Tour</a>
+            <a href="./solutions.html">Solutions</a>
+            <a href="./docs.html">Docs</a>
+            <a href="./demo.html">Demo</a>
+            <a href="./contact.html">Contact</a>
+            <div class="mp-row">
+                <span>Language</span>
+                <div class="lang-select">
+                    <button class="lang-btn" aria-label="Select language" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                        EN
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="lang-menu">
+                        <button data-lang="en">English</button>
+                        <button data-lang="sw">Kiswahili</button>
+                        <button data-lang="fr">Français</button>
+                    </div>
+                </div>
+            </div>
+            <button class="theme-toggle" aria-label="Toggle theme">
+                <span class="knob">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                </span>
+            </button>
+            <a href="/demo.html" class="btn btn-primary">Request Demo</a>
+        </div>
+    </header>
+
+    <main>
+        <section>
+            <div class="wrap">
+                <div class="demo-container">
+                    <div class="demo-left">
+                        <div>
+                            <h1>Schedule Your <span>Personal Demo</span></h1>
+                            <p>See TX RetailOS in action and discover how our offline-first retail operating system can transform your business. Our team will walk you through features tailored to your industry.</p>
+                        </div>
+
+                        <div class="trust-indicators">
+                            <div class="trust-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>30-minute personalized demo</span>
+                            </div>
+                            <div class="trust-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Industry-specific features showcase</span>
+                            </div>
+                            <div class="trust-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>No credit card required</span>
+                            </div>
+                            <div class="trust-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Expert support team</span>
+                            </div>
+                        </div>
+
+                        <div class="testimonial-card">
+                            <div class="testimonial-quote">"The demo was incredibly helpful. The team showed us exactly how TX RetailOS would work for our supermarket. We were impressed by the offline capabilities and the ease of use."</div>
+                            <div class="testimonial-author">Sarah Kipchoge</div>
+                            <div class="testimonial-role">Manager, Fresh Mart Supermarket</div>
+                        </div>
+                    </div>
+
+                    <div class="demo-form">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 25%;"></div>
+                        </div>
+
+                        <div class="form-header">
+                            <h2>Book Your Demo</h2>
+                            <p id="stepIndicator">Step 1 of 4</p>
+                        </div>
+
+                        <form id="demoForm">
+                            <!-- Step 1: Contact Info -->
+                            <div class="form-step active" id="step1">
+                                <div class="form-group">
+                                    <label for="firstName">First Name *</label>
+                                    <input type="text" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name *</label>
+                                    <input type="text" id="lastName" name="lastName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email Address *</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number *</label>
+                                    <input type="tel" id="phone" name="phone" required>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Company Info -->
+                            <div class="form-step" id="step2">
+                                <div class="form-group">
+                                    <label for="companyName">Company Name *</label>
+                                    <input type="text" id="companyName" name="companyName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="companySize">Number of Employees *</label>
+                                    <select id="companySize" name="companySize" required>
+                                        <option value="">Select company size</option>
+                                        <option value="1-5">1-5 employees</option>
+                                        <option value="6-20">6-20 employees</option>
+                                        <option value="21-50">21-50 employees</option>
+                                        <option value="51-100">51-100 employees</option>
+                                        <option value="100+">100+ employees</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="location">Location (City) *</label>
+                                    <input type="text" id="location" name="location" required>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Industry & Business -->
+                            <div class="form-step" id="step3">
+                                <div class="form-group">
+                                    <label>What type of retail business are you? *</label>
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="industry" value="supermarket" required>
+                                            <span>Supermarket</span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="industry" value="pharmacy" required>
+                                            <span>Pharmacy</span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="industry" value="fashion" required>
+                                            <span>Fashion Store</span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="industry" value="electronics" required>
+                                            <span>Electronics Retailer</span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="industry" value="restaurant" required>
+                                            <span>Restaurant</span>
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="industry" value="other" required>
+                                            <span>Other</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Preferences -->
+                            <div class="form-step" id="step4">
+                                <div class="form-group">
+                                    <label for="preferredDate">Preferred Demo Date *</label>
+                                    <input type="date" id="preferredDate" name="preferredDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="preferredTime">Preferred Time *</label>
+                                    <select id="preferredTime" name="preferredTime" required>
+                                        <option value="">Select time</option>
+                                        <option value="09:00">9:00 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="14:00">2:00 PM</option>
+                                        <option value="15:00">3:00 PM</option>
+                                        <option value="16:00">4:00 PM</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="message">Additional Questions or Notes</label>
+                                    <textarea id="message" name="message" placeholder="Tell us more about your business or ask any questions..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Success Message -->
+                            <div class="success-message" id="successMessage">
+                                <div class="success-icon">✓</div>
+                                <h3>Demo Scheduled Successfully!</h3>
+                                <p>Thank you for booking your demo. Our team will send you a confirmation email shortly with all the details. We're excited to show you how TX RetailOS can transform your retail business.</p>
+                                <a href="/" class="btn btn-primary" style="margin-top: 20px;">Back to Home</a>
+                            </div>
+
+                            <div class="form-buttons">
+                                <button type="button" class="btn-prev" id="prevBtn" onclick="changeStep(-1)" disabled>← Previous</button>
+                                <button type="button" class="btn-next" id="nextBtn" onclick="changeStep(1)">Next →</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-grid wrap">
+            <div class="footer-about">
+                <a href="../index.html" class="logo">
+                    <span class="mark">TX</span>
+                    TX RetailOS <span class="sub">Offline-First</span>
+                </a>
+                <p>Empowering African businesses with reliable, offline-first retail operating solutions.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="./FeaturesPage.html">Features</a></li>
+                    <li><a href="./pricing.html">Pricing</a></li>
+                    <li><a href="./product-tour.html">Product Tour</a></li>
+                    <li><a href="./demo.html">Request Demo</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="./about.html">About Us</a></li>
+                    <li><a href="./careers.html">Careers</a></li>
+                    <li><a href="./blog.html">Blog</a></li>
+                    <li><a href="./changelog.html">Changelog</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="./docs.html">Documentation</a></li>
+                    <li><a href="./developers.html">Developers</a></li>
+                    <li><a href="./help.html">Help Center</a></li>
+                    <li><a href="./hardware.html">Hardware</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Sales</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom wrap">
+            <p>&copy; 2026 TX RetailOS. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+                <a href="#" aria-label="Twitter"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17-18 11.6 2.2.1 4.4-.6 6-2 1.1 1.2 3 1.9 5 2 1.3-.2 2.5-.9 3.4-1.8 2.2.4 4.5-.6 6-2-1 .2-2.1.5-3.2.7z"/></svg></a>
+                <a href="#" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Dark/Light Mode Toggle
+        const themeToggle = document.querySelector('.theme-toggle');
+        const html = document.documentElement;
+
+        themeToggle.addEventListener('click', () => {
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.setAttribute('data-theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+            }
+        });
+
+        // Language Selector Toggle
+        const langSelect = document.querySelector('.lang-select');
+        const langBtn = langSelect.querySelector('.lang-btn');
+
+        langBtn.addEventListener('click', () => {
+            langSelect.classList.toggle('open');
+            langBtn.setAttribute('aria-expanded', langSelect.classList.contains('open'));
+        });
+
+        // Close language menu when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!langSelect.contains(event.target)) {
+                langSelect.classList.remove('open');
+                langBtn.setAttribute('aria-expanded', false);
+            }
+        });
+
+        // Mobile Nav Toggle
+        const burger = document.querySelector('.burger');
+        const mobilePanel = document.querySelector('.mobile-panel');
+
+        burger.addEventListener('click', () => {
+            mobilePanel.classList.toggle('open');
+            burger.setAttribute('aria-expanded', mobilePanel.classList.contains('open'));
+        });
+
+        // Close mobile nav when clicking a link
+        mobilePanel.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobilePanel.classList.remove('open');
+                burger.setAttribute('aria-expanded', false);
+            });
+        });
+
+        // Form Navigation
+        function changeStep(direction) {
+            const currentStepEl = document.getElementById(`step${currentStep}`);
+            const inputs = currentStepEl.querySelectorAll('input[required], select[required]');
+            
+            if (direction === 1) {
+                let isValid = true;
+                inputs.forEach(input => {
+                    if (!input.value) {
+                        isValid = false;
+                        input.style.borderColor = 'red';
+                    } else {
+                        input.style.borderColor = '';
+                    }
+                });
+
+                if (!isValid) return;
+
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateForm();
+                } else {
+                    submitForm();
+                }
+            } else if (direction === -1) {
+                if (currentStep > 1) {
+                    currentStep--;
+                    updateForm();
+                }
+            }
+        }
+
+        function updateForm() {
+            // Hide all steps
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`step${i}`).classList.remove('active');
+            }
+
+            // Show current step
+            document.getElementById(`step${currentStep}`).classList.add('active');
+
+            // Update progress bar
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            // Update step indicator
+            document.getElementById('stepIndicator').textContent = `Step ${currentStep} of ${totalSteps}`;
+
+            // Update button states
+            document.getElementById('prevBtn').disabled = currentStep === 1;
+            document.getElementById('nextBtn').textContent = currentStep === totalSteps ? 'Submit' : 'Next →';
+        }
+
+        function submitForm() {
+            const form = document.getElementById('demoForm');
+            const formData = new FormData(form);
+            
+            // Log form data (in real implementation, send to server)
+            console.log('Form submitted with data:', Object.fromEntries(formData));
+
+            // Show success message
+            form.style.display = 'none';
+            document.getElementById('successMessage').classList.add('active');
+        }
+
+        // Radio button styling
+        document.querySelectorAll('.radio-option input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.radio-option').forEach(opt => opt.classList.remove('selected'));
+                this.closest('.radio-option').classList.add('selected');
+            });
+        });
+
+        // Set minimum date to today
+        const dateInput = document.getElementById('preferredDate');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+    </script>
+</body>
+</html>

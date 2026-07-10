@@ -1,54 +1,226 @@
-/* ==========================================================================
-   api.js — Fetch wrapper for Sales Management System.
-   All API calls go through here. Token handling is delegated entirely
-   to auth.js — this file never touches localStorage directly.
-   ========================================================================== */
+// frontend\services\api.js
+const API_BASE_URL = window.location.origin;
 
-import { getToken, logout } from '../modules/auth.js';
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+};
 
-const BASE_URL = 'http://127.0.0.1:5000';
-
-async function request(method, path, body = null) {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
-
-  const token = getToken();
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const options = { method, headers };
-  if (body) {
-    options.body = JSON.stringify(body);
-  }
-
-  const response = await fetch(`${BASE_URL}${path}`, options);
-  const data = await response.json();
-
-  if (response.status === 401) {
-    await logout();
-    window.location.href = '../pages/login.html';
-    throw { status: 401, data };
-  }
-
+const handleResponse = async (response) => {
   if (!response.ok) {
-    throw { status: response.status, data };
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Something went wrong');
   }
-
-  return data;
-}
-
-const api = {
-  get: (path) => request('GET', path),
-  post: (path, body) => request('POST', path, body),
-  patch: (path, body) => request('PATCH', path, body),
-  delete: (path) => request('DELETE', path),
+  return response.json();
 };
 
-const ProductsAPI = {
-  // Balanced path matches backend: http://127.0.0.1:5000/sales/products
-  getAll: () => api.get('/sales/products'),
+export const loginUser = async (username, password, deviceName) => {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password, device_name: deviceName }),
+  });
+  return handleResponse(response);
 };
 
-export { api, ProductsAPI };
+export const logoutUser = async () => {
+  const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+  });
+  return handleResponse(response);
+};
+
+export const verifyToken = async () => {
+  const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return response.json(); // Verify token might return {valid: false} without throwing an error
+};
+
+export const getProducts = async () => {
+  const response = await fetch(`${API_BASE_URL}/products`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const createProduct = async (productData) => {
+  const response = await fetch(`${API_BASE_URL}/products`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify(productData),
+  });
+  return handleResponse(response);
+};
+
+export const updateProduct = async (productId, productData) => {
+  const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify(productData),
+  });
+  return handleResponse(response);
+};
+
+export const deleteProduct = async (productId) => {
+  const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+    method: 'DELETE',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const createSale = async (saleData) => {
+  const response = await fetch(`${API_BASE_URL}/sales`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify(saleData),
+  });
+  return handleResponse(response);
+};
+
+export const getSales = async () => {
+  const response = await fetch(`${API_BASE_URL}/sales`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const getSale = async (saleId) => {
+  const response = await fetch(`${API_BASE_URL}/sales/${saleId}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const editSale = async (saleId, saleData) => {
+  const response = await fetch(`${API_BASE_URL}/sales/${saleId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify(saleData),
+  });
+  return handleResponse(response);
+};
+
+export const cancelSale = async (saleId) => {
+  const response = await fetch(`${API_BASE_URL}/sales/${saleId}/cancel`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const pushChanges = async (changes) => {
+  const response = await fetch(`${API_BASE_URL}/sync/push`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify({ changes }),
+  });
+  return handleResponse(response);
+};
+
+export const pullChanges = async (lastSyncTime) => {
+  const response = await fetch(`${API_BASE_URL}/sync/pull?last_sync_time=${lastSyncTime.toISOString()}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const resolveConflict = async (transactionId, resolutionPayload) => {
+  const response = await fetch(`${API_BASE_URL}/sync/resolve-conflict`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify({ transaction_id: transactionId, resolution_payload: resolutionPayload }),
+  });
+  return handleResponse(response);
+};
+
+// --- Purchases ---
+export const createPurchase = async (payload) => {
+  const response = await fetch(`${API_BASE_URL}/purchases/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(response);
+};
+
+export const getPurchaseHistory = async () => {
+  const response = await fetch(`${API_BASE_URL}/purchases/history`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const approvePurchase = async (purchaseId) => {
+  const response = await fetch(`${API_BASE_URL}/purchases/${purchaseId}/approve`, {
+    method: 'POST',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+// --- Reports ---
+export const getDailyReport = async (date) => {
+  const qs = date ? `?date=${date}` : '';
+  const response = await fetch(`${API_BASE_URL}/reports/daily${qs}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const getMonthlyReport = async (month) => {
+  const qs = month ? `?month=${month}` : '';
+  const response = await fetch(`${API_BASE_URL}/reports/monthly${qs}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const getYearlyReport = async (year) => {
+  const qs = year ? `?year=${year}` : '';
+  const response = await fetch(`${API_BASE_URL}/reports/yearly${qs}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+// --- Conflicts ---
+export const getConflicts = async () => {
+  const response = await fetch(`${API_BASE_URL}/conflicts`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+export const getConflict = async (conflictId) => {
+  const response = await fetch(`${API_BASE_URL}/conflicts/${conflictId}`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  });
+  return handleResponse(response);
+};
+
+// --- Health & Status ---
+export const checkHealth = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+    });
+    return response.ok;
+  } catch (err) {
+    console.error('Health check failed:', err);
+    return false;
+  }
+};

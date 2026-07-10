@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TX RetailOS Changelog — Product releases, new features, bug fixes, and improvements. Track all updates to the offline-first retail OS.">
+  <meta name="keywords" content="changelog, releases, updates, features, bug fixes, TX RetailOS">
+  <meta name="author" content="TX RetailOS">
+  <meta property="og:title" content="Changelog — TX RetailOS">
+  <meta property="og:description" content="Track all product releases, new features, bug fixes, and improvements to TX RetailOS.">
+  <meta property="og:type" content="website">
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="Changelog — TX RetailOS">
+  <meta property="twitter:description" content="Track all product releases, new features, bug fixes, and improvements.">
+  <title>Changelog — TX RetailOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #F97316;
+      --orange-dim: #F97316cc;
+      --black: #0F0F0F;
+      --dark-bg: #111827;
+      --white: #FFFFFF;
+      --light-bg: #F8FAFC;
+      --border: #E5E7EB;
+      --gray: #6B7280;
+      --success: #22C55E;
+      --warning: #EAB308;
+
+      --bg: var(--black);
+      --surface: #17171A;
+      --surface-2: #1E1E22;
+      --text: #F5F5F4;
+      --text-dim: #A3A3A6;
+      --line: rgba(255, 255, 255, 0.08);
+      --glass-bg: rgba(23, 23, 26, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.09);
+    }
+
+    html[data-theme="light"] {
+      --bg: var(--light-bg);
+      --surface: #FFFFFF;
+      --surface-2: #F1F3F6;
+      --text: #14151A;
+      --text-dim: var(--gray);
+      --line: var(--border);
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(15, 15, 15, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.4s ease, color 0.4s ease;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    ::selection {
+      background: var(--orange);
+      color: #0F0F0F;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
+    /* ---------- Announcement bar ---------- */
+    .announce {
+      background: var(--orange);
+      color: #0F0F0F;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 16px;
+      letter-spacing: 0.01em;
+    }
+
+    /* ---------- Nav ---------- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-weight: 700;
+      font-size: 18px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .logo .mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, var(--orange), #C2410C);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0F0F0F;
+      font-weight: 800;
+      font-size: 15px;
+      box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
+    }
+
+    .logo .sub {
+      color: var(--text-dim);
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-left: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      font-size: 14.5px;
+      font-weight: 500;
+      color: var(--text-dim);
+      position: relative;
+      padding: 4px 0;
+      transition: color 0.2s;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      height: 2px;
+      width: 0;
+      background: var(--orange);
+      transition: width 0.25s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .lang-select {
+      position: relative;
+    }
+
+    .lang-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text-dim);
+      font-size: 13px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    .lang-btn:hover {
+      border-color: var(--orange);
+      color: var(--text);
+    }
+
+    .lang-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 6px;
+      min-width: 170px;
+      max-height: 280px;
+      overflow-y: auto;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .lang-select.open .lang-menu {
+      display: block;
+    }
+
+    .lang-menu button {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .lang-menu button:hover {
+      background: var(--surface-2);
+    }
+
+    .theme-toggle {
+      width: 44px;
+      height: 26px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      position: relative;
+      padding: 0;
+      transition: 0.25s;
+    }
+
+    .theme-toggle .knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--orange);
+      transition: transform 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    html[data-theme="light"] .theme-toggle .knob {
+      transform: translateX(18px);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color: #0F0F0F;
+      box-shadow: 0 6px 18px rgba(249, 115, 22, 0.28);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(249, 115, 22, 0.4);
+    }
+
+    .btn-ghost {
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .burger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 22px;
+    }
+
+    /* ---------- Mobile nav ---------- */
+    .mobile-panel {
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      padding: 10px 24px 22px;
+      border-top: 1px solid var(--line);
+      background: var(--bg);
+    }
+
+    .mobile-panel.open {
+      display: flex;
+    }
+
+    .mobile-panel a,
+    .mobile-panel .mp-row {
+      padding: 12px 4px;
+      font-size: 15px;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mobile-panel .btn {
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    /* ---------- Hero ---------- */
+    .hero {
+      position: relative;
+      padding: 60px 24px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ---------- Filters ---------- */
+    .filters-section {
+      padding: 40px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .filters-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+    }
+
+    .filter-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .filter-btn.active {
+      background: var(--orange);
+      color: #0F0F0F;
+      border-color: var(--orange);
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    /* ---------- Changelog ---------- */
+    .changelog-section {
+      padding: 60px 24px;
+    }
+
+    .changelog-list {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .release {
+      position: relative;
+      padding-left: 32px;
+    }
+
+    .release::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--orange);
+      border: 3px solid var(--bg);
+      box-shadow: 0 0 0 1px var(--line);
+    }
+
+    .release:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 20px;
+      width: 2px;
+      height: calc(100% + 12px);
+      background: var(--line);
+    }
+
+    .release-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .release-version {
+      font-size: 18px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+    }
+
+    .release-date {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .release-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .release-badge.major {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--orange);
+    }
+
+    .release-badge.minor {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+    }
+
+    .release-badge.patch {
+      background: rgba(234, 179, 8, 0.15);
+      color: var(--warning);
+    }
+
+    .release-description {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .release-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .release-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .item-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .item-icon.feature {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success);
+    }
+
+    .item-icon.fix {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--orange);
+    }
+
+    .item-icon.improvement {
+      background: rgba(100, 116, 139, 0.15);
+      color: #64748b;
+    }
+
+    .item-text {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .item-text strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ---------- CTA Section ---------- */
+    .cta-section {
+      padding: 60px 24px;
+      border-top: 1px solid var(--line);
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .cta-content {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .cta-content h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .cta-content p {
+      font-size: 15px;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ---------- Footer ---------- */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--line);
+      padding: 60px 24px 40px;
+    }
+
+    .foot-grid {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.2fr repeat(3, 1fr);
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .foot-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .foot-brand .logo {
+      gap: 9px;
+    }
+
+    .foot-brand p {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.6;
+    }
+
+    .foot-col h4 {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .foot-col ul {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .foot-col a {
+      font-size: 13px;
+      color: var(--text-dim);
+      transition: color 0.2s;
+    }
+
+    .foot-col a:hover {
+      color: var(--orange);
+    }
+
+    .foot-bottom {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .foot-bottom a {
+      transition: color 0.2s;
+    }
+
+    .foot-bottom a:hover {
+      color: var(--orange);
+    }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .burger {
+        display: block;
+      }
+
+      .filters-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-box {
+        min-width: 100%;
+      }
+
+      .release-header {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .foot-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .foot-bottom {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+      }
+
+      .cta-buttons .btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .release-version {
+        font-size: 16px;
+      }
+
+      .release-item {
+        gap: 10px;
+      }
+
+      .item-icon {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Announcement Bar -->
+  <div class="announce">
+    <span>✨ Launching soon in East Africa! Request a demo today.</span>
+  </div>
+
+  <!-- Nav -->
+  <header>
+    <nav>
+      <a href="/" class="logo">
+        <span class="mark">TX</span>
+        TX RetailOS <span class="sub">Offline-First</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="../index.html">Home</a>
+        <a href="./pricing.html">Pricing</a>
+        <a href="./FeaturesPage.html">Features</a>
+        <a href="./product-tour.html">Product Tour</a>
+        <a href="./solutions.html">Solutions</a>
+        <a href="./docs.html">Docs</a>
+        <a href="./changelog.html" class="active">Changelog</a>
+        <a href="./contact.html">Contact</a>
+      </div>
+
+      <div class="nav-right">
+        <div class="lang-select">
+          <button class="lang-btn" aria-label="Select language" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            EN
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="lang-menu">
+            <button data-lang="en">English</button>
+            <button data-lang="sw">Kiswahili</button>
+            <button data-lang="fr">Français</button>
+          </div>
+        </div>
+
+        <button class="theme-toggle" aria-label="Toggle theme">
+          <span class="knob">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </span>
+        </button>
+
+        <a href="/" class="btn btn-primary">Back to Home</a>
+
+        <button class="burger" aria-label="Open mobile menu" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        </button>
+      </div>
+    </nav>
+    <!-- Mobile Nav -->
+    <div class="mobile-panel">
+      <a href="/">Home</a>
+      <a href="/#features">Features</a>
+      <a href="/#contact">Contact</a>
+      <a href="/pages/changelog.html">Changelog</a>
+      <div class="mp-row">
+        <span>Language</span>
+        <div class="lang-select">
+          <button class="lang-btn" aria-label="Select language" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            EN
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="lang-menu">
+            <button data-lang="en">English</button>
+            <button data-lang="sw">Kiswahili</button>
+            <button data-lang="fr">Français</button>
+          </div>
+        </div>
+      </div>
+      <button class="theme-toggle" aria-label="Toggle theme">
+        <span class="knob">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </span>
+      </button>
+      <a href="/" class="btn btn-primary">Back to Home</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <h1>Changelog</h1>
+      <p>Track all product releases, new features, bug fixes, and improvements to TX RetailOS.</p>
+    </section>
+
+    <!-- Filters -->
+    <section class="filters-section">
+      <div class="filters-container">
+        <span class="filter-label">Filter by:</span>
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="feature">Features</button>
+        <button class="filter-btn" data-filter="fix">Bug Fixes</button>
+        <button class="filter-btn" data-filter="improvement">Improvements</button>
+        <input type="text" class="search-box" placeholder="Search releases..." id="searchInput">
+      </div>
+    </section>
+
+    <!-- Changelog -->
+    <section class="changelog-section">
+      <div class="changelog-list">
+        <!-- v2.3.0 -->
+        <div class="release" data-version="2.3.0">
+          <div class="release-header">
+            <span class="release-version">v2.3.0</span>
+            <span class="release-date">July 1, 2026</span>
+            <span class="release-badge major">Major Release</span>
+          </div>
+          <p class="release-description">Introducing advanced analytics dashboard and improved offline sync performance. This release includes significant improvements to data synchronization and reporting capabilities.</p>
+          <div class="release-items">
+            <div class="release-item" data-type="feature">
+              <div class="item-icon feature">✨</div>
+              <div class="item-text"><strong>Advanced Analytics Dashboard:</strong> New real-time analytics dashboard with customizable charts and KPI tracking for sales, inventory, and customer insights.</div>
+            </div>
+            <div class="release-item" data-type="improvement">
+              <div class="item-icon improvement">⚡</div>
+              <div class="item-text"><strong>Improved Sync Performance:</strong> Optimized synchronization engine reduces sync time by 40% and improves battery efficiency on mobile devices.</div>
+            </div>
+            <div class="release-item" data-type="feature">
+              <div class="item-icon feature">✨</div>
+              <div class="item-text"><strong>Multi-Currency Support:</strong> Full support for multiple currencies with real-time exchange rates and automatic conversion.</div>
+            </div>
+            <div class="release-item" data-type="fix">
+              <div class="item-icon fix">🔧</div>
+              <div class="item-text"><strong>Fixed:</strong> Resolved issue with inventory sync when processing large batches of transactions.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- v2.2.5 -->
+        <div class="release" data-version="2.2.5">
+          <div class="release-header">
+            <span class="release-version">v2.2.5</span>
+            <span class="release-date">June 15, 2026</span>
+            <span class="release-badge patch">Patch Release</span>
+          </div>
+          <p class="release-description">Security updates and bug fixes to improve system stability and data protection.</p>
+          <div class="release-items">
+            <div class="release-item" data-type="fix">
+              <div class="item-icon fix">🔧</div>
+              <div class="item-text"><strong>Security Patches:</strong> Applied critical security updates to authentication and data encryption modules.</div>
+            </div>
+            <div class="release-item" data-type="fix">
+              <div class="item-icon fix">🔧</div>
+              <div class="item-text"><strong>Fixed:</strong> Corrected calculation error in discount application for bulk orders.</div>
+            </div>
+            <div class="release-item" data-type="improvement">
+              <div class="item-icon improvement">⚡</div>
+              <div class="item-text"><strong>Performance:</strong> Improved database query optimization for faster report generation.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- v2.2.0 -->
+        <div class="release" data-version="2.2.0">
+          <div class="release-header">
+            <span class="release-version">v2.2.0</span>
+            <span class="release-date">June 1, 2026</span>
+            <span class="release-badge minor">Minor Release</span>
+          </div>
+          <p class="release-description">New customer loyalty program features and enhanced reporting capabilities.</p>
+          <div class="release-items">
+            <div class="release-item" data-type="feature">
+              <div class="item-icon feature">✨</div>
+              <div class="item-text"><strong>Loyalty Program:</strong> Built-in customer loyalty and rewards program with points tracking and redemption.</div>
+            </div>
+            <div class="release-item" data-type="feature">
+              <div class="item-icon feature">✨</div>
+              <div class="item-text"><strong>Custom Reports:</strong> Create and schedule custom reports with drag-and-drop report builder.</div>
+            </div>
+            <div class="release-item" data-type="improvement">
+              <div class="item-icon improvement">⚡</div>
+              <div class="item-text"><strong>UI Improvements:</strong> Redesigned customer management interface for better usability.</div>
+            </div>
+            <div class="release-item" data-type="fix">
+              <div class="item-icon fix">🔧</div>
+              <div class="item-text"><strong>Fixed:</strong> Resolved issue with receipt printing on certain thermal printers.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- v2.1.0 -->
+        <div class="release" data-version="2.1.0">
+          <div class="release-header">
+            <span class="release-version">v2.1.0</span>
+            <span class="release-date">May 10, 2026</span>
+            <span class="release-badge minor">Minor Release</span>
+          </div>
+          <p class="release-description">Mobile app enhancements and improved offline capabilities.</p>
+          <div class="release-items">
+            <div class="release-item" data-type="feature">
+              <div class="item-icon feature">✨</div>
+              <div class="item-text"><strong>Mobile App Redesign:</strong> Complete redesign of mobile interface with improved touch controls and faster navigation.</div>
+            </div>
+            <div class="release-item" data-type="improvement">
+              <div class="item-icon improvement">⚡</div>
+              <div class="item-text"><strong>Offline Mode:</strong> Enhanced offline capabilities with better data caching and conflict resolution.</div>
+            </div>
+            <div class="release-item" data-type="feature">
+              <div class="item-icon feature">✨</div>
+              <div class="item-text"><strong>Barcode Scanning:</strong> Integrated barcode scanner support for faster product lookup and inventory management.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- v2.0.0 -->
+        <div class="release" data-version="2.0.0">
+          <div class="release-header">
+            <span class="release-version">v2.0.0</span>
+            <span class="release-date">April 1, 2026</span>
+            <span class="release-badge major">Major Release</span>
+          </div>
+          <p class="release-description">Complete platform redesign with new architecture and improved performance.</p>
+          <div class="release-items">
+            <div class="release-item" data-type="feature">
+              <div class="item-icon feature">✨</div>
+              <div class="item-text"><strong>New Architecture:</strong> Rebuilt on modern tech stack for better scalability and performance.</div>
+            </div>
+            <div class="release-item" data-type="improvement">
+              <div class="item-icon improvement">⚡</div>
+              <div class="item-text"><strong>Performance:</strong> 3x faster transaction processing and improved sync reliability.</div>
+            </div>
+            <div class="release-item" data-type="feature">
+              <div class="item-icon feature">✨</div>
+              <div class="item-text"><strong>Multi-Store Management:</strong> Manage multiple store locations from a single dashboard.</div>
+            </div>
+            <div class="release-item" data-type="feature">
+              <div class="item-icon feature">✨</div>
+              <div class="item-text"><strong>Advanced Permissions:</strong> Granular role-based access control for team members.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- v1.5.2 -->
+        <div class="release" data-version="1.5.2">
+          <div class="release-header">
+            <span class="release-version">v1.5.2</span>
+            <span class="release-date">February 15, 2026</span>
+            <span class="release-badge patch">Patch Release</span>
+          </div>
+          <p class="release-description">Bug fixes and stability improvements.</p>
+          <div class="release-items">
+            <div class="release-item" data-type="fix">
+              <div class="item-icon fix">🔧</div>
+              <div class="item-text"><strong>Fixed:</strong> Resolved critical bug in inventory count reconciliation.</div>
+            </div>
+            <div class="release-item" data-type="fix">
+              <div class="item-icon fix">🔧</div>
+              <div class="item-text"><strong>Fixed:</strong> Improved stability during network reconnection scenarios.</div>
+            </div>
+            <div class="release-item" data-type="improvement">
+              <div class="item-icon improvement">⚡</div>
+              <div class="item-text"><strong>Performance:</strong> Optimized database queries for faster report generation.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2>Stay Updated</h2>
+        <p>Subscribe to our newsletter to get notified about new releases, features, and important updates.</p>
+        <div class="cta-buttons">
+          <a href="/" class="btn btn-primary">Request Early Access</a>
+          <a href="/" class="btn btn-ghost">Subscribe to Updates</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a href="/" class="logo">
+          <span class="mark">TX</span>
+          TX RetailOS
+        </a>
+        <p>The offline-first retail operating system for African businesses. Sales, inventory, and reporting that never stop.</p>
+      </div>
+      <div class="foot-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="/#features">Features</a></li>
+          <li><a href="/#how-it-works">How it Works</a></li>
+          <li><a href="/pages/status.html">Status</a></li>
+          <li><a href="/pages/changelog.html">Changelog</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#contact">Contact</a></li>
+          <li><a href="/">Blog</a></li>
+          <li><a href="/">Careers</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="/pages/legal.html">Privacy Policy</a></li>
+          <li><a href="/pages/legal.html">Terms of Service</a></li>
+          <li><a href="/pages/legal.html">Cookie Policy</a></li>
+          <li><a href="/pages/legal.html">License</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>&copy; 2026 TX RetailOS by Trexave Technologies. All rights reserved.</p>
+      <div style="display: flex; gap: 24px;">
+        <a href="/">Privacy</a>
+        <a href="/">Terms</a>
+        <a href="/pages/status.html">Status</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ============================================
+    // 1. Theme Toggle (Dark/Light Mode)
+    // ============================================
+    function initThemeToggle() {
+      const themeToggles = document.querySelectorAll('.theme-toggle');
+      const html = document.documentElement;
+
+      // Load saved theme or default to dark
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      html.setAttribute('data-theme', savedTheme);
+
+      themeToggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const currentTheme = html.getAttribute('data-theme');
+          const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          html.setAttribute('data-theme', newTheme);
+          localStorage.setItem('theme', newTheme);
+        });
+      });
+    }
+
+    // ============================================
+    // 2. Language Selector
+    // ============================================
+    function initLanguageSelector() {
+      const langSelects = document.querySelectorAll('.lang-select');
+
+      langSelects.forEach(select => {
+        const btn = select.querySelector('.lang-btn');
+        const menu = select.querySelector('.lang-menu');
+        const langButtons = menu.querySelectorAll('button');
+
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          select.classList.toggle('open');
+          btn.setAttribute('aria-expanded', select.classList.contains('open'));
+        });
+
+        langButtons.forEach(langBtn => {
+          langBtn.addEventListener('click', () => {
+            const lang = langBtn.getAttribute('data-lang');
+            const langText = langBtn.textContent;
+            btn.textContent = lang.toUpperCase();
+            select.classList.remove('open');
+            btn.setAttribute('aria-expanded', 'false');
+            localStorage.setItem('language', lang);
+          });
+        });
+      });
+
+      // Close language menu when clicking outside
+      document.addEventListener('click', (e) => {
+        langSelects.forEach(select => {
+          if (!select.contains(e.target)) {
+            select.classList.remove('open');
+            select.querySelector('.lang-btn').setAttribute('aria-expanded', 'false');
+          }
+        });
+      });
+    }
+
+    // ============================================
+    // 3. Mobile Nav Burger Menu
+    // ============================================
+    function initMobileNav() {
+      const burger = document.querySelector('.burger');
+      const mobilePanel = document.querySelector('.mobile-panel');
+      const mobileLinks = mobilePanel.querySelectorAll('a');
+
+      burger.addEventListener('click', () => {
+        mobilePanel.classList.toggle('open');
+        burger.setAttribute('aria-expanded', mobilePanel.classList.contains('open'));
+      });
+
+      mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          mobilePanel.classList.remove('open');
+          burger.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+
+    // ============================================
+    // 4. Changelog Filtering
+    // ============================================
+    function initFiltering() {
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      const releases = document.querySelectorAll('.release');
+      const searchInput = document.getElementById('searchInput');
+
+      function filterReleases() {
+        const activeFilter = document.querySelector('.filter-btn.active').getAttribute('data-filter');
+        const searchTerm = searchInput.value.toLowerCase();
+
+        releases.forEach(release => {
+          let show = true;
+
+          // Filter by type
+          if (activeFilter !== 'all') {
+            const items = release.querySelectorAll(`[data-type="${activeFilter}"]`);
+            show = items.length > 0;
+          }
+
+          // Filter by search term
+          if (show && searchTerm) {
+            const text = release.textContent.toLowerCase();
+            show = text.includes(searchTerm);
+          }
+
+          release.style.display = show ? 'block' : 'none';
+        });
+      }
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          filterReleases();
+        });
+      });
+
+      searchInput.addEventListener('input', filterReleases);
+    }
+
+    // ============================================
+    // 5. Smooth Scroll for Anchor Links
+    // ============================================
+    function initSmoothScroll() {
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          const href = this.getAttribute('href');
+          if (href === '#') return;
+
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            const headerHeight = document.querySelector('header').offsetHeight;
+            const targetPosition = target.offsetTop - headerHeight;
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    }
+
+    // ============================================
+    // 6. Initialize All Features
+    // ============================================
+    document.addEventListener('DOMContentLoaded', () => {
+      initThemeToggle();
+      initLanguageSelector();
+      initMobileNav();
+      initFiltering();
+      initSmoothScroll();
+    });
+
+    // ============================================
+    // 7. Keyboard Navigation Support
+    // ============================================
+    document.addEventListener('keydown', (e) => {
+      // Escape key closes mobile menu and language menu
+      if (e.key === 'Escape') {
+        document.querySelector('.mobile-panel').classList.remove('open');
+        document.querySelectorAll('.lang-select').forEach(select => {
+          select.classList.remove('open');
+          select.querySelector('.lang-btn').setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

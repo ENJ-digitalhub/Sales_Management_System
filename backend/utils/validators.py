@@ -4,7 +4,11 @@ from datetime import date, datetime as dt, timedelta
 VALID_PAYMENT_METHODS = {"cash", "transfer", "pos"}
 
 
+<<<<<<< HEAD
 def validate_sale_payload(data, require_transaction_id=True):
+=======
+def validate_sale_payload(data):
+>>>>>>> a9333a422bf619f612b4742acd01eac2428da808
     if not isinstance(data, dict):
         return {"valid": False, "error": "Invalid payload format"}
 
@@ -16,9 +20,35 @@ def validate_sale_payload(data, require_transaction_id=True):
     if not items or not isinstance(items, list):
         return {"valid": False, "error": "Items must be a non-empty list"}
 
+<<<<<<< HEAD
+=======
+    seen_product_ids = set()
+    validated_items = []
+
+    for idx, item in enumerate(items):
+        if not isinstance(item, dict):
+            return {"valid": False, "error": f"Invalid item format at index {idx}"}
+
+        product_id = item.get("product_id")
+        quantity = item.get("quantity")
+
+        if not isinstance(product_id, str) or not product_id:
+            return {"valid": False, "error": f"Invalid product_id at index {idx}"}
+
+        if product_id in seen_product_ids:
+            return {"valid": False, "error": f"Duplicate product_id: {product_id}"}
+        seen_product_ids.add(product_id)
+
+        if not isinstance(quantity, int) or quantity <= 0:
+            return {"valid": False, "error": f"Quantity must be positive for product {product_id}"}
+
+        validated_items.append({"product_id": product_id, "quantity": quantity})
+
+>>>>>>> a9333a422bf619f612b4742acd01eac2428da808
     if payment_method not in VALID_PAYMENT_METHODS:
         return {"valid": False, "error": "Invalid payment_method"}
 
+<<<<<<< HEAD
     seen = set()
     normalized = []
 
@@ -52,10 +82,13 @@ def validate_sale_payload(data, require_transaction_id=True):
         if not device_id:
             return {"valid": False, "error": "device_id is required"}
 
+=======
+>>>>>>> a9333a422bf619f612b4742acd01eac2428da808
     return {
         "valid": True,
         "items": normalized,
         "payment_method": payment_method,
+<<<<<<< HEAD
         "payment_provider": None,
         "payment_details": None,
         "device_id": device_id,
@@ -223,3 +256,6 @@ def validate_employee_report_params(from_param, to_param):
         return {"valid": False, "error": "from date must be before or equal to to date"}
 
     return {"valid": True, "from_date": from_date, "to_date": to_date}
+=======
+    }
+>>>>>>> a9333a422bf619f612b4742acd01eac2428da808

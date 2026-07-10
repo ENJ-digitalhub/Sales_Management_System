@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 import os
 import logging
 import flask
+=======
+# backend\app.py
+from flask import Flask, jsonify, g
+>>>>>>> a9333a422bf619f612b4742acd01eac2428da808
 from flask_cors import CORS
 from backend.config import Config
-from backend.routes.sales import sales_bp
+from backend.database import create_all_tables, set_database_uri
 from backend.routes.auth import auth_bp
+<<<<<<< HEAD
 from backend.routes.products import products_bp
 from backend.routes.purchase import purchases_bp
 from backend.routes.reports import reports_bp
@@ -16,8 +22,31 @@ FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
 def create_app(config_class=Config):
     """Initializes and configures the core Flask application."""
     app = flask.Flask(__name__, static_folder=FRONTEND_DIR, static_url_path='/')
-    app.config.from_object(config_class)
+=======
+from backend.routes.sales import sales_bp
+from backend.routes.products import products_bp
+from backend.routes.sync import sync_bp
+from backend.routes.purchases import purchases_bp
+from backend.routes.reports import reports_bp
+from backend.extensions import limiter
 
+# conflict routes may be registered later if present
+try:
+    from backend.routes.conflicts import conflicts_bp
+except ImportError:
+    conflicts_bp = None
+
+
+def create_app(config_class=Config):
+    import os
+    # Point to the frontend directory relative to this file
+    frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "frontend"))
+    app = Flask(__name__, static_folder=frontend_dir, static_url_path="")
+>>>>>>> a9333a422bf619f612b4742acd01eac2428da808
+    app.config.from_object(config_class)
+    app.url_map.strict_slashes = False
+
+<<<<<<< HEAD
     # Configure logging
     logging.basicConfig(level=logging.INFO)
     app.logger.setLevel(logging.INFO)
@@ -36,9 +65,34 @@ def create_app(config_class=Config):
             "supports_credentials": True
         }
     })
+=======
+    set_database_uri(app.config["SQLALCHEMY_DATABASE_URI"])
+    CORS(app, supports_credentials=True)
 
-    @app.route('/health', methods=['GET'])
+    # Initialize database
+    with app.app_context():
+        create_all_tables()
+
+    # Register blueprints
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(sales_bp)
+    app.register_blueprint(products_bp)
+    app.register_blueprint(purchases_bp)
+    app.register_blueprint(sync_bp)
+    app.register_blueprint(reports_bp)
+    if conflicts_bp is not None:
+        app.register_blueprint(conflicts_bp)
+
+    @app.teardown_appcontext
+    def teardown_db(exception):
+        db = g.pop("db", None)
+        if db is not None:
+            db.close()
+>>>>>>> a9333a422bf619f612b4742acd01eac2428da808
+
+    @app.route("/health", methods=["GET"])
     def health_check():
+<<<<<<< HEAD
         return flask.jsonify({"status": "healthy", "success": True}), 200
 
     @app.teardown_appcontext
@@ -72,3 +126,17 @@ def create_app(config_class=Config):
     app.register_blueprint(reports_bp)  # Relies cleanly on the '/reports' prefix inside reports.py
     app.register_blueprint(sync_bp)  # Relies cleanly on the '/sync' prefix inside sync.py
     return app
+=======
+        return jsonify({"status": "healthy"}), 200
+
+    @app.route("/")
+    def index():
+        return app.send_static_file("index.html")
+
+    @app.route("/frontend/<path:path>")
+    def serve_frontend(path):
+        return app.send_static_file(path)
+    
+    limiter.init_app(app)
+    return app
+>>>>>>> a9333a422bf619f612b4742acd01eac2428da808
