@@ -1,10 +1,10 @@
-
+# cli\cli.py
 from pathlib import Path
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
-from backend.models.models import Base, Product, User, Sale, SaleItem, InventoryLog, AuditLog, Purchase, PurchaseItem, Device, SyncQueue
+from backend.models.models import Base, Item, User, Sale, SaleItem, InventoryLog, AuditLog, Purchase, PurchaseItem, Device, SyncQueue
 from backend.utils.security import Security
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from decimal import Decimal
 import uuid
 from backend.database import engine, SessionLocal
@@ -33,21 +33,21 @@ class CLI:
         try:
             with SessionLocal() as session:
                 # Idempotency check: no duplicate
-                product_existing = session.execute(select(Product)).first()
+                item_existing = session.execute(select(Item)).first()
                 user_existing = session.execute(select(User)).first()
                 
-                if product_existing or user_existing:
+                if item_existing or user_existing:
                     print("Already seeded. Skipping.")
                     return
                 
-                # Create & Add products
-                product1 = Product(name="Rice", category="Grains", selling_price=15.00, cost_price=10.00, stock_quantity=100)
-                product2 = Product(name="Vegetable Oil", category="Cooking", selling_price=25.50, cost_price=18.00, stock_quantity=50)
-                product3 = Product(name="Sugar", category="Sweeteners", selling_price=8.75, cost_price=5.50, stock_quantity=200)
-                product4 = Product(name="Flour", category="Baking", selling_price=12.20, cost_price=8.00, stock_quantity=150)
-                product5 = Product(name="Tomato Paste", category="Canned Goods", selling_price=6.90, cost_price=4.00, stock_quantity=80)
+                # Create & Add items
+                item1 = Item(name="Rice", selling_price=15.00, cost_price=10.00, stock_quantity=100)
+                item2 = Item(name="Vegetable Oil", selling_price=25.50, cost_price=18.00, stock_quantity=50)
+                item3 = Item(name="Sugar", selling_price=8.75, cost_price=5.50, stock_quantity=200)
+                item4 = Item(name="Printing",type="service", selling_price=12.20, cost_price=8.00)
+                item5 = Item(name="Photocopy",type="service", selling_price=6.90, cost_price=4.00)
 
-                session.add_all([product1, product2, product3, product4, product5])
+                session.add_all([item1, item2, item3, item4, item5])
                 session.flush()
                 
                 # Create & Add Users
@@ -67,11 +67,11 @@ class CLI:
                 session.flush()
 
                 # --- Sales: spread across 3 months so daily/monthly/yearly reports have real data ---
-                products_list = [product1, product2, product3, product4, product5]
+                items_list = [item1, item2, item3, item4, item5]
                 employees_list = [user_employee, user_manager, user_admin]  # employee, manager, admin
                 payment_methods = ["cash", "transfer", "pos"]
 
-                now = datetime.utcnow()
+                now = datetime.now(UTC)
                 sales_created = []
 
                 for month_offset in range(3):              # this month, last month, month before
@@ -79,10 +79,10 @@ class CLI:
                         sale_date = now - timedelta(days=(month_offset * 30) + day_offset)
 
                         for i, employee in enumerate(employees_list):
-                            product = products_list[(month_offset + day_offset + i) % len(products_list)]
+                            item = items_list[(month_offset + day_offset + i) % len(items_list)]
                             quantity = (i % 3) + 1
-                            unit_price = product.selling_price
-                            cost_price = product.cost_price
+                            unit_price = item.selling_price
+                            cost_price = item.cost_price
                             total_price = unit_price * quantity
                             profit = (unit_price - cost_price) * quantity
 
@@ -94,14 +94,13 @@ class CLI:
                                 payment_method=payment_methods[i % len(payment_methods)],
                                 status="completed",
                                 created_at=sale_date,
-                                editable_until=sale_date + timedelta(minutes=20),
                             )
                             session.add(sale)
                             session.flush()  # need sale.id before the FK rows below
 
                             session.add(SaleItem(
                                 sale_id=sale.id,
-                                product_id=product.id,
+                                item_id=item.id,
                                 quantity=quantity,
                                 unit_price=unit_price,
                                 cost_price_at_sale=cost_price,
@@ -109,7 +108,7 @@ class CLI:
                             ))
 
                             session.add(InventoryLog(
-                                product_id=product.id,
+                                item_id=item.id,
                                 change_type="sale",
                                 quantity_change=-quantity,
                                 reference_id=sale.id,
@@ -121,7 +120,7 @@ class CLI:
                                 action_type="create_sale",
                                 entity_type="sale",
                                 entity_id=sale.id,
-                                log_metadata={"items": [{"product_id": product.id, "quantity": quantity}]}
+                                log_metadata={"items": [{"item_id": item.id, "quantity": quantity}]}
 ,                                created_at=sale_date,
                             ))
 
@@ -132,25 +131,25 @@ class CLI:
                 # Create & Add Purchases
                 purchase1 = Purchase(created_by=user_manager.id, supplier="Supplier A", status="pending", total_cost=Decimal("100.00"))
                 purchase2 = Purchase(created_by=user_employee.id, supplier="Supplier B", status="rejected", total_cost=Decimal("50.00"))
-                purchase3 = Purchase(created_by=user_admin.id, supplier="Supplier C", status="approved", total_cost=Decimal("200.00"), approved_by=user_admin.id, approved_at=datetime.utcnow())
+                purchase3 = Purchase(created_by=user_admin.id, supplier="Supplier C", status="approved", total_cost=Decimal("200.00"), approved_by=user_admin.id, approved_at=datetime.now(UTC))
                 
                 session.add_all([purchase1, purchase2, purchase3])
                 session.flush()
                 
-                item1 = PurchaseItem(purchase_id=purchase1.id, product_id=product1.id, quantity=10, cost_price=Decimal("7.50"))
-                item2 = PurchaseItem(purchase_id=purchase2.id, product_id=product2.id, quantity=5, cost_price=Decimal("12.00"))
-                item3 = PurchaseItem(purchase_id=purchase3.id, product_id=product3.id, quantity=20, cost_price=Decimal("4.00"))
+                item1 = PurchaseItem(purchase_id=purchase1.id, item_id=item1.id, quantity=10, cost_price=Decimal("7.50"))
+                item2 = PurchaseItem(purchase_id=purchase2.id, item_id=item2.id, quantity=5, cost_price=Decimal("12.00"))
+                item3 = PurchaseItem(purchase_id=purchase3.id, item_id=item3.id, quantity=20, cost_price=Decimal("4.00"))
 
                 session.add_all([item1, item2, item3])
                 session.flush()
 
                 # Add InventoryLog for approved purchase
                 session.add(InventoryLog(
-                    product_id=product3.id,
+                    item_id=item3.id,
                     change_type="restock",
                     quantity_change=20,
                     reference_id=purchase3.id,
-                    created_at=datetime.utcnow(),
+                    created_at=datetime.now(UTC),
                 ))
 
                 print(f"Created 3 purchases.")

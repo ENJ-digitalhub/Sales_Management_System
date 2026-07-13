@@ -1,15 +1,15 @@
 // frontend\modules\inventory_page.js
 import { requireAuth, getCurrentUser } from './auth.js';
-import { getProducts, createProduct, updateProduct, deleteProduct } from '../services/api.js';
+import { getItems, createItem, updateItem, deleteItem } from '../services/api.js';
 
 requireAuth();
 const user = getCurrentUser();
 const canManage = user && (user.role === 'admin' || user.role === 'manager');
 
-const tableBody = document.getElementById('product-table-body');
+const tableBody = document.getElementById('item-table-body');
 const actionsHeader = document.getElementById('actions-header');
-const addSection = document.getElementById('add-product-section');
-const addForm = document.getElementById('add-product-form');
+const addSection = document.getElementById('add-item-section');
+const addForm = document.getElementById('add-item-form');
 const lowStockBanner = document.getElementById('low-stock-banner');
 
 if (canManage) {
@@ -17,14 +17,14 @@ if (canManage) {
   addSection.style.display = '';
 }
 
-let products = [];
+let items = [];
 
 function render() {
-  const hasLowStock = products.some(p => p.stock_quantity <= 5);
+  const hasLowStock = items.some(p => p.stock_quantity <= 5);
   lowStockBanner.style.display = hasLowStock ? '' : 'none';
-  lowStockBanner.textContent = hasLowStock ? '⚠ Some products are low on stock' : '';
+  lowStockBanner.textContent = hasLowStock ? '⚠ Some items are low on stock' : '';
 
-  tableBody.innerHTML = products.map(p => `
+  tableBody.innerHTML = items.map(p => `
     <tr>
       <td>${p.name}</td>
       <td>${p.category || '-'}</td>
@@ -41,49 +41,49 @@ function render() {
 
   if (canManage) {
     tableBody.querySelectorAll('[data-edit]').forEach(btn => {
-      btn.addEventListener('click', () => editProduct(btn.dataset.edit));
+      btn.addEventListener('click', () => editItem(btn.dataset.edit));
     });
     tableBody.querySelectorAll('[data-delete]').forEach(btn => {
-      btn.addEventListener('click', () => removeProduct(btn.dataset.delete));
+      btn.addEventListener('click', () => removeItem(btn.dataset.delete));
     });
   }
 }
 
-async function loadProducts() {
-  const data = await getProducts();
-  products = data.products || [];
+async function loadItems() {
+  const data = await getItems();
+  items = data.items || [];
   render();
 }
 
-async function editProduct(productId) {
-  const product = products.find(p => p.id === productId);
-  if (!product) return;
+async function editItem(itemId) {
+  const item = items.find(p => p.id === itemId);
+  if (!item) return;
 
-  const name = prompt('Name', product.name) ?? product.name;
-  const sellingPrice = prompt('Selling price', product.selling_price) ?? product.selling_price;
-  const costPrice = prompt('Cost price', product.cost_price) ?? product.cost_price;
-  const stock = prompt('Stock quantity', product.stock_quantity) ?? product.stock_quantity;
+  const name = prompt('Name', item.name) ?? item.name;
+  const sellingPrice = prompt('Selling price', item.selling_price) ?? item.selling_price;
+  const costPrice = prompt('Cost price', item.cost_price) ?? item.cost_price;
+  const stock = prompt('Stock quantity', item.stock_quantity) ?? item.stock_quantity;
 
   try {
-    await updateProduct(productId, {
+    await updateItem(itemId, {
       name,
       selling_price: sellingPrice,
       cost_price: costPrice,
       stock_quantity: Number(stock),
     });
-    await loadProducts();
+    await loadItems();
   } catch (err) {
-    alert(err.message || 'Failed to update product');
+    alert(err.message || 'Failed to update item');
   }
 }
 
-async function removeProduct(productId) {
-  if (!confirm('Deactivate this product?')) return;
+async function removeItem(itemId) {
+  if (!confirm('Deactivate this item?')) return;
   try {
-    await deleteProduct(productId);
-    await loadProducts();
+    await deleteItem(itemId);
+    await loadItems();
   } catch (err) {
-    alert(err.message || 'Failed to delete product');
+    alert(err.message || 'Failed to delete item');
   }
 }
 
@@ -91,7 +91,7 @@ if (canManage && addForm) {
   addForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     try {
-      await createProduct({
+      await createItem({
         name: document.getElementById('new-name').value,
         category: document.getElementById('new-category').value || null,
         selling_price: document.getElementById('new-selling-price').value,
@@ -99,11 +99,11 @@ if (canManage && addForm) {
         stock_quantity: Number(document.getElementById('new-stock').value),
       });
       addForm.reset();
-      await loadProducts();
+      await loadItems();
     } catch (err) {
-      alert(err.message || 'Failed to add product');
+      alert(err.message || 'Failed to add item');
     }
   });
 }
 
-loadProducts();
+loadItems();

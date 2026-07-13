@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func, case, and_, or_
-from backend.models.models import Sale, SaleItem, Product, User
+from backend.models.models import Sale, SaleItem, Item, User
 from datetime import datetime, date, timedelta
 
 VALID_STATUSES = ["completed", "edited"]
@@ -47,29 +47,29 @@ class ReportsService:
             "pos": sales_query.filter(Sale.payment_method == "pos").with_entities(func.coalesce(func.sum(Sale.total_amount), 0)).scalar() or 0,
         }
 
-        top_products_query = (
+        top_items_query = (
             session.query(
-                SaleItem.product_id,
-                Product.name,
+                SaleItem.item_id,
+                Item.name,
                 func.coalesce(func.sum(SaleItem.quantity), 0).label("quantity_sold"),
                 func.coalesce(func.sum(SaleItem.total_price), 0).label("revenue")
             )
-            .join(Product, SaleItem.product_id == Product.id)
+            .join(Item, SaleItem.item_id == Item.id)
             .join(Sale, SaleItem.sale_id == Sale.id)
             .filter(Sale.status.in_(VALID_STATUSES), Sale.created_at.between(start, end))
-            .group_by(SaleItem.product_id, Product.name)
+            .group_by(SaleItem.item_id, Item.name)
             .order_by(func.sum(SaleItem.quantity).desc())
             .limit(5)
         )
 
-        top_products = [
+        top_items = [
             {
-                "product_id": row.product_id,
+                "item_id": row.item_id,
                 "name": row.name,
                 "quantity_sold": int(row.quantity_sold),
                 "revenue": float(row.revenue)
             }
-            for row in top_products_query.all()
+            for row in top_items_query.all()
         ]
 
         employee_performance_query = (
@@ -101,7 +101,7 @@ class ReportsService:
             "total_profit": float(total_profit),
             "transaction_count": int(transaction_count),
             "payment_breakdown": payment_breakdown,
-            "top_products": top_products,
+            "top_items": top_items,
             "employee_performance": employee_performance,
         }, None
 
@@ -123,7 +123,7 @@ class ReportsService:
             "pos": sales_query.filter(Sale.payment_method == "pos").with_entities(func.coalesce(func.sum(Sale.total_amount), 0)).scalar() or 0,
         }
 
-        top_products = []
+        top_items = []
         employee_performance = []
 
         return {
@@ -132,7 +132,7 @@ class ReportsService:
             "total_profit": float(total_profit),
             "transaction_count": int(transaction_count),
             "payment_breakdown": payment_breakdown,
-            "top_products": top_products,
+            "top_items": top_items,
             "employee_performance": employee_performance,
         }, None
 

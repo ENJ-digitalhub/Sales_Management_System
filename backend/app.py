@@ -5,7 +5,7 @@ from backend.config import Config
 from backend.database import create_all_tables, set_database_uri
 from backend.routes.auth import auth_bp
 from backend.routes.sales import sales_bp
-from backend.routes.products import products_bp
+from backend.routes.items import items_bp
 from backend.routes.sync import sync_bp
 from backend.routes.purchases import purchases_bp
 from backend.routes.reports import reports_bp
@@ -36,7 +36,7 @@ def create_app(config_class=Config):
     # Register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(sales_bp)
-    app.register_blueprint(products_bp)
+    app.register_blueprint(items_bp)
     app.register_blueprint(purchases_bp)
     app.register_blueprint(sync_bp)
     app.register_blueprint(reports_bp)

@@ -1,4 +1,4 @@
-
+# backend\models\models.py
 from decimal import Decimal
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Numeric, Boolean, JSON, CheckConstraint, ForeignKey, Integer, DateTime, Text
@@ -39,13 +39,14 @@ class User(Base):
         CheckConstraint("is_active IN (0, 1)", name="valid_user_is_active"),
     )
 
-class Product(Base):
-    """Defines the Product model"""
-    __tablename__ = "products"
+class Item(Base):
+    """Defines the Item model"""
+    __tablename__ = "items"
 
     id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
     name: Mapped[str] = mapped_column(String(100))
-    category: Mapped[str | None] = mapped_column(String(100))
+    type: Mapped[str] = mapped_column(String(20), default="product")
+    category_id: Mapped[str | None] = mapped_column(ForeignKey("categories.id"))
     selling_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     cost_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     stock_quantity: Mapped[int] = mapped_column(Integer, default=0)
@@ -53,21 +54,24 @@ class Product(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc, onupdate=now_utc)
 
-    sale_items: Mapped[list["SaleItem"]] = relationship("SaleItem", back_populates="product")
-    purchase_items: Mapped[list["PurchaseItem"]] = relationship("PurchaseItem", back_populates="product")
-    inventory_logs: Mapped[list["InventoryLog"]] = relationship("InventoryLog", back_populates="product")
+    category: Mapped["Categories"] = relationship()
+    sale_items: Mapped[list["SaleItem"]] = relationship("SaleItem", back_populates="item")
+    purchase_items: Mapped[list["PurchaseItem"]] = relationship("PurchaseItem", back_populates="item")
+    inventory_logs: Mapped[list["InventoryLog"]] = relationship("InventoryLog", back_populates="item")
 
     __table_args__ = (
+        CheckConstraint("type IN ('product', 'service')", name="valid_item_type"),
         CheckConstraint("selling_price >= 0", name="selling_price_positive"),
         CheckConstraint("cost_price >= 0", name="cost_price_positive"),
         CheckConstraint("stock_quantity >= 0", name="stock_quantity_non_negative"),
-        CheckConstraint("is_active IN (0, 1)", name="valid_product_is_active"),
+        CheckConstraint("is_active IN (0, 1)", name="valid_item_is_active"),
     )
 
     def to_dict(self):
         return {
             "id": self.id,
             "name": self.name,
+            "type": self.type,
             "category": self.category,
             "selling_price": float(self.selling_price) if isinstance(self.selling_price, Decimal) else self.selling_price,
             "cost_price": float(self.cost_price) if isinstance(self.cost_price, Decimal) else self.cost_price,
@@ -89,7 +93,9 @@ class Sale(Base):
     payment_method: Mapped[str] = mapped_column(String(20))
     status: Mapped[str] = mapped_column(String(20), default="completed")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
-    editable_until: Mapped[datetime] = mapped_column(DateTime, default=lambda: now_utc() + timedelta(minutes=20))
+    @property
+    def editable_until(self):
+        return self.created_at + timedelta(minutes=20)
 
     user: Mapped["User"] = relationship("User", back_populates="sales")
     items: Mapped[list["SaleItem"]] = relationship("SaleItem", back_populates="sale", cascade="all, delete-orphan")
@@ -121,14 +127,14 @@ class SaleItem(Base):
 
     id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
     sale_id: Mapped[str] = mapped_column(ForeignKey(Sale.id, ondelete="CASCADE"))
-    product_id: Mapped[str] = mapped_column(ForeignKey(Product.id, ondelete="RESTRICT"))
+    item_id: Mapped[str] = mapped_column(ForeignKey(Item.id, ondelete="RESTRICT"))
     quantity: Mapped[int] = mapped_column(Integer)
     unit_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     cost_price_at_sale: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     total_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
 
     sale: Mapped["Sale"] = relationship("Sale", back_populates="items")
-    product: Mapped["Product"] = relationship("Product", back_populates="sale_items")
+    item: Mapped["Item"] = relationship("Item", back_populates="sale_items")
 
     __table_args__ = (
         CheckConstraint("quantity > 0", name="quantity_positive"),
@@ -141,7 +147,7 @@ class SaleItem(Base):
         return {
             "id": self.id,
             "sale_id": self.sale_id,
-            "product_id": self.product_id,
+            "item_id": self.item_id,
             "quantity": self.quantity,
             "unit_price": float(self.unit_price) if isinstance(self.unit_price, Decimal) else self.unit_price,
             "cost_price_at_sale": float(self.cost_price_at_sale) if isinstance(self.cost_price_at_sale, Decimal) else self.cost_price_at_sale,
@@ -153,13 +159,13 @@ class InventoryLog(Base):
     __tablename__ = "inventory_logs"
 
     id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
-    product_id: Mapped[str] = mapped_column(ForeignKey(Product.id, ondelete="RESTRICT"))
+    item_id: Mapped[str] = mapped_column(ForeignKey(Item.id, ondelete="RESTRICT"))
     change_type: Mapped[str] = mapped_column(String(20))
     quantity_change: Mapped[int] = mapped_column(Integer)
     reference_id: Mapped[str | None] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
 
-    product: Mapped["Product"] = relationship("Product", back_populates="inventory_logs")
+    item: Mapped["Item"] = relationship("Item", back_populates="inventory_logs")
 
     __table_args__ = (
         CheckConstraint("change_type IN ('sale', 'restock', 'adjustment', 'cancellation')", name="valid_change_type"),
@@ -180,8 +186,8 @@ class AuditLog(Base):
     user: Mapped["User"] = relationship("User", back_populates="audit_logs")
 
     __table_args__ = (
-        CheckConstraint("action_type IN ('create_sale', 'edit_sale', 'cancel_sale', 'delete_sale', 'create_product', 'edit_product', 'delete_product', 'create_user', 'edit_user', 'deactivate_user', 'login', 'logout', 'approve_purchase', 'create_purchase', 'sync_push', 'sync_conflict')", name="valid_action_type"),
-        CheckConstraint("entity_type IN ('sale', 'product', 'user', 'purchase', 'system')", name="valid_entity_type"),
+        CheckConstraint("action_type IN ('create_sale', 'edit_sale', 'cancel_sale', 'delete_sale', 'create_item', 'edit_item', 'delete_item', 'create_user', 'edit_user', 'deactivate_user', 'login', 'logout', 'approve_purchase', 'create_purchase', 'sync_push', 'sync_conflict')", name="valid_action_type"),
+        CheckConstraint("entity_type IN ('sale', 'item', 'user', 'purchase', 'system')", name="valid_entity_type"),
     )
 
 class Purchase(Base):
@@ -225,12 +231,12 @@ class PurchaseItem(Base):
 
     id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
     purchase_id: Mapped[str] = mapped_column(ForeignKey(Purchase.id, ondelete="CASCADE"))
-    product_id: Mapped[str] = mapped_column(ForeignKey(Product.id, ondelete="RESTRICT"))
+    item_id: Mapped[str] = mapped_column(ForeignKey(Item.id, ondelete="RESTRICT"))
     quantity: Mapped[int] = mapped_column(Integer)
     cost_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
 
     purchase: Mapped["Purchase"] = relationship("Purchase", back_populates="items")
-    product: Mapped["Product"] = relationship("Product", back_populates="purchase_items")
+    item: Mapped["Item"] = relationship("Item", back_populates="purchase_items")
 
     __table_args__ = (
         CheckConstraint("quantity > 0", name="purchase_quantity_positive"),
@@ -241,7 +247,7 @@ class PurchaseItem(Base):
         return {
             "id": self.id,
             "purchase_id": self.purchase_id,
-            "product_id": self.product_id,
+            "item_id": self.item_id,
             "quantity": self.quantity,
             "cost_price": float(self.cost_price) if isinstance(self.cost_price, Decimal) else self.cost_price,
         }
@@ -281,12 +287,13 @@ class SyncQueue(Base):
     retry_count: Mapped[int] = mapped_column(Integer, default=0)
     last_attempt_at: Mapped[datetime | None] = mapped_column(DateTime)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc, onupdate=now_utc)
 
     __table_args__ = (
         CheckConstraint("status IN ('pending', 'synced', 'failed', 'conflict')", name="valid_sync_status"),
-        CheckConstraint("entity_type IN ('sale', 'product', 'user', 'purchase', 'device')", name="valid_sync_entity_type"),
+        CheckConstraint("entity_type IN ('sale', 'item', 'user', 'purchase', 'device')", name="valid_sync_entity_type"),
         CheckConstraint("operation IN ('CREATE', 'UPDATE', 'DELETE')", name="valid_sync_operation"),
-        CheckConstraint("conflict_type IN ('stock', 'deleted_product', 'duplicate') OR conflict_type IS NULL", name="valid_sync_conflict_type"),
+        CheckConstraint("conflict_type IN ('stock', 'deleted_item', 'duplicate') OR conflict_type IS NULL", name="valid_sync_conflict_type"),
     )
 
     def to_dict(self):
@@ -302,3 +309,11 @@ class SyncQueue(Base):
             "last_attempt_at": self.last_attempt_at.isoformat() if self.last_attempt_at else None,
             "created_at": self.created_at.isoformat()
         }
+
+        
+class Categories(Base):
+    __tablename__ = "categories"
+
+    id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
+    name: Mapped[str] = mapped_column(String(50))
+    

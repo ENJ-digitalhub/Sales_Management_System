@@ -11,19 +11,19 @@
     <span id="low-stock-banner" class="low-stock-banner" style="display:none;"></span>
   </header>
 
-  <div id="add-product-section" style="display:none;">
-    <h2>Add Product</h2>
-    <form id="add-product-form">
+  <div id="add-item-section" style="display:none;">
+    <h2>Add Item</h2>
+    <form id="add-item-form">
       <input type="text" id="new-name" placeholder="Name" required />
       <input type="text" id="new-category" placeholder="Category (optional)" />
       <input type="number" id="new-selling-price" placeholder="Selling price" step="0.01" required />
       <input type="number" id="new-cost-price" placeholder="Cost price" step="0.01" required />
       <input type="number" id="new-stock" placeholder="Stock quantity" required />
-      <button type="submit">Add Product</button>
+      <button type="submit">Add Item</button>
     </form>
   </div>
 
-  <table id="product-table">
+  <table id="item-table">
     <thead>
       <tr>
         <th>Name</th>
@@ -34,7 +34,7 @@
         <th id="actions-header" style="display:none;">Actions</th>
       </tr>
     </thead>
-    <tbody id="product-table-body"></tbody>
+    <tbody id="item-table-body"></tbody>
   </table>
 
   <script type="module" src="../modules/inventory_page.js"></script>

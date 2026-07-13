@@ -1,7 +1,7 @@
 
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import select
-from backend.models.models import Sale, SaleItem, Product, InventoryLog, AuditLog, User
+from backend.models.models import Sale, SaleItem, Item, InventoryLog, AuditLog, User
 from datetime import datetime, timedelta
 from backend.utils.time import now_utc
 from decimal import Decimal
@@ -17,19 +17,19 @@ class SalesService:
         inventory_logs_to_add = []
 
         for item_data in items:
-            product_id = item_data["product_id"]
+            Item_id = item_data["Item_id"]
             quantity = item_data["quantity"]
 
-            product = session.query(Product).filter_by(id=product_id, is_active=True).first()
-            if not product:
+            Item = session.query(Item).filter_by(id=Item_id, is_active=True).first()
+            if not Item:
                 session.rollback()
-                return None, f"Product with ID {product_id} not found or inactive."
-            if product.stock_quantity < quantity:
+                return None, f"Item with ID {Item_id} not found or inactive."
+            if Item.stock_quantity < quantity:
                 session.rollback()
-                return None, f"Insufficient stock for product: {product.name}. Available: {product.stock_quantity}, Requested: {quantity}"
+                return None, f"Insufficient stock for Item: {Item.name}. Available: {Item.stock_quantity}, Requested: {quantity}"
 
-            unit_price = product.selling_price
-            cost_price = product.cost_price
+            unit_price = Item.selling_price
+            cost_price = Item.cost_price
             item_total_price = unit_price * quantity
             item_profit = (unit_price - cost_price) * quantity
 
@@ -37,7 +37,7 @@ class SalesService:
             profit_at_sale += item_profit
 
             sale_items_to_add.append(SaleItem(
-                product_id=product_id,
+                Item_id=Item_id,
                 quantity=quantity,
                 unit_price=unit_price,
                 cost_price_at_sale=cost_price,
@@ -46,14 +46,14 @@ class SalesService:
 
             # Prepare inventory log for stock deduction
             inventory_logs_to_add.append(InventoryLog(
-                product_id=product_id,
+                Item_id=Item_id,
                 change_type="sale",
                 quantity_change=-quantity,
                 reference_id=None # Will be updated after sale is created
             ))
             # Deduct stock immediately (within the transaction)
-            product.stock_quantity -= quantity
-            session.add(product)
+            Item.stock_quantity -= quantity
+            session.add(Item)
 
         # Create sale
         sale = Sale(
@@ -93,14 +93,14 @@ class SalesService:
 
     @staticmethod
     def get_sale(session: Session, sale_id: str):
-        sale = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.product)).filter_by(id=sale_id).first()
+        sale = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.Item)).filter_by(id=sale_id).first()
         if not sale:
             return None, "Sale not found"
         return sale, None
 
     @staticmethod
     def get_all_sales(session: Session, user_id: str = None, role: str = None):
-        query = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.product))
+        query = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.Item))
         if role == "employee":
             query = query.filter(Sale.user_id == user_id)
         return query.all(), None
@@ -117,12 +117,12 @@ class SalesService:
 
         # Revert old stock
         for old_item in sale.items:
-            product = session.query(Product).filter_by(id=old_item.product_id).first()
-            if product:
-                product.stock_quantity += old_item.quantity
-                session.add(product)
+            Item = session.query(Item).filter_by(id=old_item.Item_id).first()
+            if Item:
+                Item.stock_quantity += old_item.quantity
+                session.add(Item)
                 session.add(InventoryLog(
-                    product_id=product.id,
+                    Item_id=Item.id,
                     change_type="cancellation",
                     quantity_change=old_item.quantity,
                     reference_id=sale.id,
@@ -140,19 +140,19 @@ class SalesService:
         new_inventory_logs = []
 
         for item_data in items:
-            product_id = item_data["product_id"]
+            Item_id = item_data["Item_id"]
             quantity = item_data["quantity"]
 
-            product = session.query(Product).filter_by(id=product_id, is_active=True).first()
-            if not product:
+            Item = session.query(Item).filter_by(id=Item_id, is_active=True).first()
+            if not Item:
                 session.rollback()
-                return None, f"Product with ID {product_id} not found or inactive."
-            if product.stock_quantity < quantity:
+                return None, f"Item with ID {Item_id} not found or inactive."
+            if Item.stock_quantity < quantity:
                 session.rollback()
-                return None, f"Insufficient stock for product: {product.name}. Available: {product.stock_quantity}, Requested: {quantity}"
+                return None, f"Insufficient stock for Item: {Item.name}. Available: {Item.stock_quantity}, Requested: {quantity}"
 
-            unit_price = product.selling_price
-            cost_price = product.cost_price
+            unit_price = Item.selling_price
+            cost_price = Item.cost_price
             item_total_price = unit_price * quantity
             item_profit = (unit_price - cost_price) * quantity
 
@@ -160,7 +160,7 @@ class SalesService:
             profit_at_sale += item_profit
 
             new_sale_items.append(SaleItem(
-                product_id=product_id,
+                Item_id=Item_id,
                 quantity=quantity,
                 unit_price=unit_price,
                 cost_price_at_sale=cost_price,
@@ -169,14 +169,14 @@ class SalesService:
             ))
 
             new_inventory_logs.append(InventoryLog(
-                product_id=product_id,
+                Item_id=Item_id,
                 change_type="sale",
                 quantity_change=-quantity,
                 reference_id=sale.id,
                 created_at=now_utc()
             ))
-            product.stock_quantity -= quantity
-            session.add(product)
+            Item.stock_quantity -= quantity
+            session.add(Item)
 
         sale.total_amount = total_amount
         sale.profit_at_sale = profit_at_sale
@@ -211,12 +211,12 @@ class SalesService:
 
         # Restore stock
         for item in sale.items:
-            product = session.query(Product).filter_by(id=item.product_id).first()
-            if product:
-                product.stock_quantity += item.quantity
-                session.add(product)
+            Item = session.query(Item).filter_by(id=item.Item_id).first()
+            if Item:
+                Item.stock_quantity += item.quantity
+                session.add(Item)
                 session.add(InventoryLog(
-                    product_id=product.id,
+                    Item_id=Item.id,
                     change_type="cancellation",
                     quantity_change=item.quantity,
                     reference_id=sale.id,

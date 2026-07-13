@@ -39,34 +39,34 @@ export const verifyToken = async () => {
   return response.json(); // Verify token might return {valid: false} without throwing an error
 };
 
-export const getProducts = async () => {
-  const response = await fetch(`${API_BASE_URL}/products`, {
+export const getItems = async () => {
+  const response = await fetch(`${API_BASE_URL}/items`, {
     method: 'GET',
     headers: getAuthHeaders(),
   });
   return handleResponse(response);
 };
 
-export const createProduct = async (productData) => {
-  const response = await fetch(`${API_BASE_URL}/products`, {
+export const createItem = async (itemData) => {
+  const response = await fetch(`${API_BASE_URL}/items`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-    body: JSON.stringify(productData),
+    body: JSON.stringify(itemData),
   });
   return handleResponse(response);
 };
 
-export const updateProduct = async (productId, productData) => {
-  const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+export const updateItem = async (itemId, itemData) => {
+  const response = await fetch(`${API_BASE_URL}/items/${itemId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-    body: JSON.stringify(productData),
+    body: JSON.stringify(itemData),
   });
   return handleResponse(response);
 };
 
-export const deleteProduct = async (productId) => {
-  const response = await fetch(`${API_BASE_URL}/products/${productId}`, {
+export const deleteItem = async (itemId) => {
+  const response = await fetch(`${API_BASE_URL}/items/${itemId}`, {
     method: 'DELETE',
     headers: getAuthHeaders(),
   });

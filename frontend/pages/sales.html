@@ -26,7 +26,7 @@
         <h2>Sales Dashboard</h2>
       </div>
 
-      <div class="product-grid mt-3" id="productList"></div>
+      <div class="item-grid mt-3" id="itemList"></div>
 
       <div class="card mt-3">
         <h3>Cart</h3>
@@ -51,7 +51,7 @@
   <script type="module">
     import { requireAuth, getCurrentUser, logout, getToken } from '../modules/auth.js';
     import { enqueue } from '../modules/queue.js';
-    import { getProducts, createSale } from '../services/api.js';
+    import { getItems, createSale } from '../services/api.js';
 
     requireAuth();
     const user = getCurrentUser();
@@ -61,10 +61,10 @@
       window.location.href = 'login.html';
     });
 
-    // cart state: Map keeps product uniqueness, updates quantity in place
+    // cart state: Map keeps item uniqueness, updates quantity in place
     const cart = new Map();
     let paymentMethod = null;
-    let products = [];
+    let items = [];
 
     function renderOfflineBanner() {
       document.getElementById('offlineBanner').hidden = navigator.onLine;
@@ -73,18 +73,18 @@
     window.addEventListener('offline', renderOfflineBanner);
     renderOfflineBanner();
 
-    async function loadProducts() {
-      const data = await getProducts();
-      products = data.products || [];
-      renderProducts();
+    async function loadItems() {
+      const data = await getItems();
+      items = data.items || [];
+      renderItems();
     }
 
-    function renderProducts() {
-      const el = document.getElementById('productList');
-      el.innerHTML = products.map(p => `
-        <article class="card product-card">
-          <div class="product-name">${p.name}</div>
-          <div class="product-meta mt-2">
+    function renderItems() {
+      const el = document.getElementById('itemList');
+      el.innerHTML = items.map(p => `
+        <article class="card item-card">
+          <div class="item-name">${p.name}</div>
+          <div class="item-meta mt-2">
             <span class="text-accent">₦${Number(p.selling_price).toLocaleString()}</span>
             <span class="${p.stock_quantity <= 5 ? 'stock-low' : ''}">${p.stock_quantity} in stock</span>
           </div>
@@ -97,26 +97,26 @@
       });
     }
 
-    function addToCart(productId) {
-      const product = products.find(p => p.id === productId);
-      if (!product) return;
-      const existing = cart.get(productId);
-      cart.set(productId, { product, quantity: existing ? existing.quantity + 1 : 1 });
+    function addToCart(itemId) {
+      const item = items.find(p => p.id === itemId);
+      if (!item) return;
+      const existing = cart.get(itemId);
+      cart.set(itemId, { item, quantity: existing ? existing.quantity + 1 : 1 });
       renderCart();
     }
 
     function renderCart() {
       const el = document.getElementById('cartItems');
       let total = 0;
-      el.innerHTML = [...cart.values()].map(({ product, quantity }) => {
-        const lineTotal = product.selling_price * quantity;
+      el.innerHTML = [...cart.values()].map(({ item, quantity }) => {
+        const lineTotal = item.selling_price * quantity;
         total += lineTotal;
         return `
           <div class="page-header">
-            <span>${product.name} × ${quantity}</span>
+            <span>${item.name} × ${quantity}</span>
             <span>
               ₦${lineTotal.toLocaleString()}
-              <button class="btn btn-ghost" data-remove="${product.id}">✕</button>
+              <button class="btn btn-ghost" data-remove="${item.id}">✕</button>
             </span>
           </div>
         `;
@@ -147,8 +147,8 @@
       if (!confirm('Complete this sale?')) return;
 
       const payload = {
-        items: [...cart.values()].map(({ product, quantity }) => ({
-          product_id: product.id,
+        items: [...cart.values()].map(({ item, quantity }) => ({
+          item_id: item.id,
           quantity,
         })),
         payment_method: paymentMethod,
@@ -168,7 +168,7 @@
         cart.clear();
         paymentMethod = null;
         renderCart();
-        loadProducts();
+        loadItems();
       } catch (err) {
         if (err.message && err.message.toLowerCase().includes('stock')) {
           return showError(err.message); // preserve cart per FRONTEND_SPEC §4.5
@@ -188,7 +188,7 @@
 
     document.getElementById('completeSaleBtn').addEventListener('click', completeSale);
 
-    loadProducts();
+    loadItems();
   </script>
 </body>
 </html>

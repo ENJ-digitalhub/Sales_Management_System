@@ -15,7 +15,7 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS users (
     id                  TEXT PRIMARY KEY,           -- UUID v4
     name                TEXT NOT NULL,
-    username            TEXT NOT NULL UNIQUE,
+    username            TEXT NOT NULL UNIQUE COLLATE NOCASE,
     password_hash       TEXT NOT NULL,
     role                TEXT NOT NULL CHECK (role IN (
         'admin', 'manager', 'employee'
@@ -36,18 +36,21 @@ CREATE TABLE IF NOT EXISTS users (
 
 
 -- ============================================================
--- 2. PRODUCTS
+-- 2. ITEMS
 -- ============================================================
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS items (
     id              TEXT PRIMARY KEY,               -- UUID v4
     name            TEXT NOT NULL,
-    category        TEXT,                           -- Optional
+    type            TEXT NOT NULL CHECK (type IN ('product', 'service')),
+    category_id     TEXT,                           -- Optional
     selling_price   NUMERIC(10, 2) NOT NULL CHECK (selling_price >= 0),
-    cost_price      NUMERIC(10, 2) NOT NULL CHECK (cost_price >= 0),
-    stock_quantity  INTEGER NOT NULL DEFAULT 0 CHECK (stock_quantity >= 0),
+    cost_price      NUMERIC(10, 2) CHECK (cost_price >= 0),
+    stock_quantity  INTEGER CHECK (stock_quantity >= 0),
     is_active       INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
     created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),
-    updated_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now'))  -- updated at application level
+    updated_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),  -- updated at application level
+
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
 );
 
 -- Notes:
@@ -70,10 +73,10 @@ CREATE TABLE IF NOT EXISTS sales (
         'cash', 'transfer', 'pos'
     )),
     status          TEXT NOT NULL DEFAULT 'completed' CHECK (status IN (
-        'completed', 'edited', 'cancelled'
+        'pending', 'completed', 'edited', 'cancelled'
     )),
     created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),
-    editable_until  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+20 minutes')),
+
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
 );
 
@@ -89,18 +92,18 @@ CREATE TABLE IF NOT EXISTS sales (
 CREATE TABLE IF NOT EXISTS sale_items (
     id                  TEXT PRIMARY KEY,           -- UUID v4
     sale_id             TEXT NOT NULL,
-    product_id          TEXT NOT NULL,
+    item_id          TEXT NOT NULL,
     quantity            INTEGER NOT NULL CHECK (quantity > 0),
     unit_price          NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0),      -- Price at time of sale
     cost_price_at_sale  NUMERIC(10, 2) NOT NULL CHECK (cost_price_at_sale >= 0), -- Snapshot for profit tracking
     total_price         NUMERIC(10, 2) NOT NULL CHECK (total_price >= 0),
 
     FOREIGN KEY (sale_id)    REFERENCES sales(id)    ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
+    FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE RESTRICT
 );
 
 -- Notes:
--- product_id uses RESTRICT (not CASCADE) — deleted products must be soft-deleted
+-- item_id uses RESTRICT (not CASCADE) — deleted items must be soft-deleted
 -- cost_price_at_sale is snapshotted at time of sale for accurate profit history
 
 
@@ -132,12 +135,12 @@ CREATE TABLE IF NOT EXISTS purchases (
 CREATE TABLE IF NOT EXISTS purchase_items (
     id          TEXT PRIMARY KEY,                   -- UUID v4
     purchase_id TEXT NOT NULL,
-    product_id  TEXT NOT NULL,
+    item_id  TEXT NOT NULL,
     quantity    INTEGER NOT NULL CHECK (quantity > 0),
     cost_price  NUMERIC(10, 2) NOT NULL CHECK (cost_price >= 0),
 
     FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id)  REFERENCES products(id)  ON DELETE RESTRICT
+    FOREIGN KEY (item_id)  REFERENCES items(id)  ON DELETE RESTRICT
 );
 
 
@@ -146,15 +149,15 @@ CREATE TABLE IF NOT EXISTS purchase_items (
 -- ============================================================
 CREATE TABLE IF NOT EXISTS inventory_logs (
     id              TEXT PRIMARY KEY,               -- UUID v4
-    product_id      TEXT NOT NULL,
+    item_id         TEXT NOT NULL,
     change_type     TEXT NOT NULL CHECK (change_type IN (
         'sale', 'restock', 'adjustment', 'cancellation'
     )),
-    quantity_change INTEGER NOT NULL,
+    quantity_change INTEGER NOT NULL CHECK (quantity_change != 0),
     reference_id    TEXT,                           -- sale_id or purchase_id (nullable)
     created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),
 
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
+    FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE RESTRICT
 );
 
 -- Notes:
@@ -170,13 +173,13 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     user_id     TEXT,                               -- Nullable — system actions may have no user
     action_type TEXT NOT NULL CHECK (action_type IN (
         'create_sale', 'edit_sale', 'cancel_sale', 'delete_sale',
-        'create_product', 'edit_product', 'delete_product',
+        'create_item', 'edit_item', 'delete_item',
         'create_user', 'edit_user', 'deactivate_user',
         'login', 'logout', 'approve_purchase', 'create_purchase',
         'sync_push', 'sync_conflict'
     )),
     entity_type TEXT NOT NULL CHECK (entity_type IN (
-        'sale', 'product', 'user', 'purchase', 'system'
+        'sale', 'item', 'user', 'purchase', 'system'
     )),
     entity_id   TEXT,                               -- ID of the affected record
     log_metadata    TEXT,                               -- JSON string with extra context
@@ -199,7 +202,7 @@ CREATE TABLE IF NOT EXISTS sync_queue (
     transaction_id  TEXT NOT NULL UNIQUE,
     device_id       TEXT NOT NULL,
     entity_type     TEXT NOT NULL CHECK (entity_type IN (
-        'sale', 'product', 'user', 'purchase', 'device'
+        'sale', 'item', 'user', 'purchase', 'device'
     )),
     operation       TEXT NOT NULL CHECK (operation IN (
         'CREATE', 'UPDATE', 'DELETE'
@@ -210,7 +213,8 @@ CREATE TABLE IF NOT EXISTS sync_queue (
     )),
     retry_count     INTEGER NOT NULL DEFAULT 0,
     last_attempt_at TEXT,
-    created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now'))
+    created_at      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),
+    updated_at TEXT DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now'))
 );
 
 -- Notes:
@@ -237,6 +241,14 @@ CREATE TABLE IF NOT EXISTS devices (
 -- One active device per user — enforced in auth service
 -- New login sets previous device is_active = 0 immediately
 
+-- ============================================================
+-- 10. CATEGORIES
+-- ============================================================
+CREATE TABLE IF NOT EXISTS categories (
+    id           TEXT PRIMARY KEY,                  -- UUID v4
+    name         TEXT NOT NULL UNIQUE
+);
+
 
 -- ============================================================
 -- INDEXES (Performance)
@@ -244,11 +256,12 @@ CREATE TABLE IF NOT EXISTS devices (
 CREATE INDEX IF NOT EXISTS idx_sales_user_id        ON sales(user_id);
 CREATE INDEX IF NOT EXISTS idx_sales_created_at     ON sales(created_at);
 CREATE INDEX IF NOT EXISTS idx_sale_items_sale_id   ON sale_items(sale_id);
-CREATE INDEX IF NOT EXISTS idx_sale_items_product_id ON sale_items(product_id);
-CREATE INDEX IF NOT EXISTS idx_inventory_logs_product ON inventory_logs(product_id);
+CREATE INDEX IF NOT EXISTS idx_sale_items_item_id ON sale_items(item_id);
+CREATE INDEX IF NOT EXISTS idx_inventory_logs_item ON inventory_logs(item_id);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id   ON audit_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_entity    ON audit_logs(entity_type, entity_id);
 CREATE INDEX IF NOT EXISTS idx_sync_queue_status    ON sync_queue(status);
 CREATE INDEX IF NOT EXISTS idx_sync_queue_device    ON sync_queue(device_id);
 CREATE INDEX IF NOT EXISTS idx_devices_user_id      ON devices(user_id);
 CREATE INDEX IF NOT EXISTS idx_purchases_created_by ON purchases(created_by);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_one_active_device_per_user    ON devices(user_id) WHERE is_active = 1;

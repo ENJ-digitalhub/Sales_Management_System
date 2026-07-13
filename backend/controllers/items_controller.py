@@ -1,15 +1,15 @@
 
 from flask import request, jsonify, g
-from backend.services.products_service import ProductService
+from backend.services.items_service import ItemService
 from backend.database import get_db
 from backend.utils.auth_middleware import require_auth, require_role
 from decimal import Decimal
 
-class ProductController:
+class ItemController:
     @staticmethod
     @require_auth
     @require_role("admin", "manager")
-    def create_product():
+    def create_item():
         data = request.get_json()
         name = data.get("name")
         category = data.get("category")
@@ -28,44 +28,44 @@ class ProductController:
 
         session = get_db()
         try:
-            product, error = ProductService.create_product(session, g.user.id, name, category, selling_price, cost_price, stock_quantity)
+            item, error = ItemService.create_item(session, g.user.id, name, category, selling_price, cost_price, stock_quantity)
             if error:
                 session.rollback()
                 return jsonify({"success": False, "message": error}), 400
             session.commit()
-            return jsonify({"success": True, "product": product.to_dict()}), 201
+            return jsonify({"success": True, "item": item.to_dict()}), 201
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
     @require_auth
-    def get_product(product_id):
+    def get_item(item_id):
         session = get_db()
         try:
-            product, error = ProductService.get_product(session, product_id)
+            item, error = ItemService.get_item(session, item_id)
             if error:
                 return jsonify({"success": False, "message": error}), 404
-            return jsonify({"success": True, "product": product.to_dict()}), 200
+            return jsonify({"success": True, "item": item.to_dict()}), 200
         except Exception as e:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
     @require_auth
-    def get_all_products():
+    def get_all_items():
         session = get_db()
         try:
-            products, error = ProductService.get_all_products(session)
+            items, error = ItemService.get_all_items(session)
             if error:
                 return jsonify({"success": False, "message": error}), 400
-            return jsonify({"success": True, "products": [p.to_dict() for p in products]}), 200
+            return jsonify({"success": True, "items": [p.to_dict() for p in items]}), 200
         except Exception as e:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
     @require_auth
     @require_role("admin", "manager")
-    def update_product(product_id):
+    def update_item(item_id):
         data = request.get_json()
         name = data.get("name")
         category = data.get("category")
@@ -87,12 +87,12 @@ class ProductController:
 
         session = get_db()
         try:
-            product, error = ProductService.update_product(session, product_id, g.user.id, **update_fields)
+            item, error = ItemService.update_item(session, item_id, g.user.id, **update_fields)
             if error:
                 session.rollback()
                 return jsonify({"success": False, "message": error}), 400
             session.commit()
-            return jsonify({"success": True, "product": product.to_dict()}), 200
+            return jsonify({"success": True, "item": item.to_dict()}), 200
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500
@@ -100,15 +100,15 @@ class ProductController:
     @staticmethod
     @require_auth
     @require_role("admin", "manager")
-    def delete_product(product_id):
+    def delete_item(item_id):
         session = get_db()
         try:
-            success, error = ProductService.delete_product(session, product_id, g.user.id)
+            success, error = ItemService.delete_item(session, item_id, g.user.id)
             if error:
                 session.rollback()
                 return jsonify({"success": False, "message": error}), 400
             session.commit()
-            return jsonify({"success": True, "message": "Product deactivated successfully"}), 200
+            return jsonify({"success": True, "message": "Item deactivated successfully"}), 200
         except Exception as e:
             session.rollback()
             return jsonify({"success": False, "message": str(e)}), 500

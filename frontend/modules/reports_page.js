@@ -63,8 +63,8 @@ function renderSummary(report) {
     .join('');
 }
 
-function renderTopProducts(topProducts = []) {
-  document.getElementById('top-products-body').innerHTML = topProducts.map(p => `
+function renderTopItems(topItems = []) {
+  document.getElementById('top-items-body').innerHTML = topItems.map(p => `
     <tr><td>${p.name}</td><td>${p.quantity_sold}</td><td>₦${Number(p.revenue).toLocaleString()}</td></tr>
   `).join('');
 }
@@ -94,7 +94,7 @@ async function loadReport() {
 
     const report = data.report;
     renderSummary(report);
-    renderTopProducts(report.top_products);
+    renderTopItems(report.top_items);
     renderEmployeePerformance(report.employee_performance);
     if (currentPeriod === 'yearly') renderMonthlyBreakdown(report.monthly_breakdown);
   } catch (err) {

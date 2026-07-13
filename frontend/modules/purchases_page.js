@@ -1,13 +1,13 @@
 // frontend\modules\purchases_page.js
 import { requireAuth, getCurrentUser } from './auth.js';
-import { getProducts, createPurchase, getPurchaseHistory, approvePurchase } from '../services/api.js';
+import { getItems, createPurchase, getPurchaseHistory, approvePurchase } from '../services/api.js';
 
 requireAuth();
 const user = getCurrentUser();
 const isAdmin = user && user.role === 'admin';
 
 const newPurchaseSection = document.getElementById('new-purchase-section');
-const productSelect = document.getElementById('purchase-product');
+const itemSelect = document.getElementById('purchase-item');
 const itemsList = document.getElementById('purchase-items-list');
 const purchaseForm = document.getElementById('purchase-form');
 const approveHeader = document.getElementById('approve-header');
@@ -16,13 +16,13 @@ const tableBody = document.getElementById('purchase-table-body');
 newPurchaseSection.style.display = ''; // any role can create purchases
 if (isAdmin) approveHeader.style.display = '';
 
-let products = [];
-let cartItems = []; // { product_id, name, quantity, cost_price }
+let items = [];
+let cartItems = []; // { item_id, name, quantity, cost_price }
 
-async function loadProducts() {
-  const data = await getProducts();
-  products = data.products || [];
-  productSelect.innerHTML = products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+async function loadItems() {
+  const data = await getItems();
+  items = data.items || [];
+  itemSelect.innerHTML = items.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
 }
 
 function renderItemsList() {
@@ -42,17 +42,17 @@ function renderItemsList() {
 }
 
 document.getElementById('add-item-btn').addEventListener('click', () => {
-  const productId = productSelect.value;
-  const product = products.find(p => p.id === productId);
+  const itemId = itemSelect.value;
+  const item = items.find(p => p.id === itemId);
   const quantity = Number(document.getElementById('purchase-quantity').value);
   const costPrice = document.getElementById('purchase-cost').value;
 
-  if (!product || !quantity || quantity <= 0 || !costPrice) {
-    alert('Select a product, quantity, and cost price');
+  if (!item || !quantity || quantity <= 0 || !costPrice) {
+    alert('Select a item, quantity, and cost price');
     return;
   }
 
-  cartItems.push({ product_id: productId, name: product.name, quantity, cost_price: costPrice });
+  cartItems.push({ item_id: itemId, name: item.name, quantity, cost_price: costPrice });
   renderItemsList();
   document.getElementById('purchase-quantity').value = '';
   document.getElementById('purchase-cost').value = '';
@@ -67,7 +67,7 @@ purchaseForm.addEventListener('submit', async (e) => {
 
   try {
     await createPurchase({
-      items: cartItems.map(({ product_id, quantity, cost_price }) => ({ product_id, quantity, cost_price })),
+      items: cartItems.map(({ item_id, quantity, cost_price }) => ({ item_id, quantity, cost_price })),
       supplier: document.getElementById('purchase-supplier').value || null,
     });
     cartItems = [];
@@ -111,5 +111,5 @@ async function loadHistory() {
   }
 }
 
-loadProducts();
+loadItems();
 loadHistory();

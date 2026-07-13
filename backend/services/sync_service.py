@@ -1,7 +1,7 @@
 
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
-from backend.models.models import SyncQueue, User, Product, Sale, SaleItem, Purchase, PurchaseItem, Device, AuditLog, InventoryLog
+from backend.models.models import SyncQueue, User, Item, Sale, SaleItem, Purchase, PurchaseItem, Device, AuditLog, InventoryLog
 from datetime import datetime, timezone
 from typing import Any
 import json
@@ -63,25 +63,25 @@ class SyncService:
 
                 # Apply changes based on entity_type and operation
                 # This is a simplified example; real-world would need more robust logic
-                if item.entity_type == "product":
+                if item.entity_type == "item":
                     if item.operation == "CREATE":
-                        product = Product(**payload)
-                        session.add(product)
+                        item = Item(**payload)
+                        session.add(item)
                     elif item.operation == "UPDATE":
-                        product_id = payload.get("id")
-                        if not product_id:
-                            raise ValueError("Product update payload is missing an id")
+                        item_id = payload.get("id")
+                        if not item_id:
+                            raise ValueError("Item update payload is missing an id")
                         update_data = {
-                            getattr(Product, key): value
+                            getattr(Item, key): value
                             for key, value in payload.items()
-                            if key != "id" and hasattr(Product, key)
+                            if key != "id" and hasattr(Item, key)
                         }
-                        session.query(Product).filter_by(id=str(product_id)).update(update_data)
+                        session.query(Item).filter_by(id=str(item_id)).update(update_data)
                     elif item.operation == "DELETE":
-                        product_id = payload.get("id")
-                        if not product_id:
-                            raise ValueError("Product delete payload is missing an id")
-                        session.query(Product).filter_by(id=str(product_id)).update({"is_active": False})
+                        item_id = payload.get("id")
+                        if not item_id:
+                            raise ValueError("Item delete payload is missing an id")
+                        session.query(Item).filter_by(id=str(item_id)).update({"is_active": False})
                 # Add similar logic for other entity types (User, Sale, Purchase, etc.)
 
                 item.status = "synced"
@@ -101,12 +101,12 @@ class SyncService:
         # This would fetch changes from the server's perspective to send to client
         # For simplicity, let's assume we send all changes since last_sync_time
         # In a real system, this would involve versioning or change tracking tables
-        new_products = session.query(Product).filter(Product.updated_at > last_sync_time).all()
+        new_items = session.query(Item).filter(Item.updated_at > last_sync_time).all()
         new_sales = session.query(Sale).filter(Sale.created_at > last_sync_time).all()
         # ... and so on for other entities
 
         changes = {
-            "products": [p.to_dict() for p in new_products],
+            "items": [p.to_dict() for p in new_items],
             "sales": [s.to_dict() for s in new_sales],
             # Add other entities
         }
