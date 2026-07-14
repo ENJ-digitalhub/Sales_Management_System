@@ -1,47 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manager Dashboard — Sales Management System</title>
-  <link rel="stylesheet" href="../assets/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TX RetailOS — Manager Dashboard</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
 </head>
 
 <body>
 
-  <header class="site-header">
-    <div class="container">
-      <h1>Sales Management System</h1>
-      <div id="userInfo" class="text-faint text-mono"></div>
-      <button class="btn" id="logoutBtn" type="button">Log out</button>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+
+    <div class="topbar-right">
+      <button id="notifBtn" class="icon-btn">🔔</button>
+      <span id="userInfo" class="text-mono"></span>
+      <span class="status online">● Online</span>
+      <button id="logoutBtn" class="btn">Logout</button>
     </div>
   </header>
 
-  <main>
-    <div class="container">
-      <div class="page-header mt-2">
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="store-section">
+        <button id="storeToggle" class="store-btn">🏪 My Store ▾</button>
+
+        <div id="storeMenu" class="store-menu">
+          <a href="manager_dashboard.html">Dashboard</a>
+          <a href="sales.html">Sales</a>
+          <a href="inventory.html">Inventory</a>
+          <a href="purchases.html">Purchases</a>
+          <a href="report.html">Reports</a>
+        </div>
+      </div>
+
+      <!-- SYSTEM -->
+      <div class="sidebar-section">
+        <a href="settings.html">Settings</a>
+      </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+      <div class="page-header">
         <h2>Manager Dashboard</h2>
       </div>
-      <p class="text-muted mt-2">Manager workspace — inventory approvals and reports.</p>
-      <p class="mt-2"><a href="inventory.html">Inventory</a></p>
-      <p class="mt-2"><a href="purchases.html">Purchases</a></p>
-      <p class="mt-2"><a href="report.html">Reports</a></p>
-    </div>
-  </main>
 
+      <!-- ALERTS (SHOW FIRST IF ANY) -->
+      <section class="card" id="alertsSection">
+        <h3>Alerts</h3>
+        <div id="alertsContainer" class="placeholder">
+          ⚠️ No alerts right now.
+        </div>
+      </section>
+
+      <!-- PERFORMANCE SNAPSHOT -->
+      <section class="card">
+        <h3>Performance Snapshot</h3>
+        <div class="placeholder">
+          📊 Sales, revenue, and trends coming soon.
+        </div>
+      </section>
+
+      <!-- REPORT PREVIEW -->
+      <section class="card">
+        <div class="flex-between">
+          <h3>Reports Overview</h3>
+          <a href="report.html" class="icon-btn">View Full Report →</a>
+        </div>
+
+        <div class="placeholder">
+          📈 Business reports summary coming soon.
+        </div>
+      </section>
+
+      <!-- RECENT TRANSACTIONS -->
+      <section class="card">
+
+        <div class="flex-between">
+          <h3>Recent Transactions</h3>
+          <a href="transactions.html" class="icon-btn">View All →</a>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Ref</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td colspan="5" class="text-muted">No transactions yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- STAFF ACTIVITY -->
+      <section class="card">
+        <div class="flex-between">
+          <h3>Staff Activity</h3>
+          <a href="users.html" class="icon-btn">View Staff →</a>
+        </div>
+
+        <div class="placeholder">
+          👥 Staff performance insights coming soon.
+        </div>
+      </section>
+
+      <!-- INVENTORY HIGHLIGHTS -->
+      <section class="card">
+        <div class="flex-between">
+          <h3>Inventory Highlights</h3>
+          <a href="inventory.html" class="icon-btn">View Inventory →</a>
+        </div>
+
+        <div class="placeholder">
+          📦 Low stock and top items coming soon.
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- SCRIPT -->
   <script type="module">
     import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
 
     requireAuth();
 
     const user = getCurrentUser();
-    document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+    document.getElementById('userInfo').textContent =
+      user ? `${user.name} (${user.role})` : '';
 
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
+    document.getElementById('logoutBtn').onclick = async () => {
       await logout();
       window.location.href = 'login.html';
-    });
+    };
+
+    // SIDEBAR TOGGLE
+    document.getElementById('menuToggle').onclick = () => {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    };
+
+    // STORE MENU
+    document.getElementById('storeToggle').onclick = () => {
+      document.getElementById('storeMenu').classList.toggle('hidden');
+    };
   </script>
 
 </body>
+
 </html>

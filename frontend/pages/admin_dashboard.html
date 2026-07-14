@@ -1,48 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard — Sales Management System</title>
-  <link rel="stylesheet" href="../assets/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TX RetailOS — Admin Dashboard</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
 </head>
 
 <body>
 
-  <header class="site-header">
-    <div class="container">
-      <h1>Sales Management System</h1>
-      <div id="userInfo" class="text-faint text-mono"></div>
-      <button class="btn" id="logoutBtn" type="button">Log out</button>
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+
+    <div class="topbar-right">
+      <button id="notifBtn" class="icon-btn">🔔</button>
+      <span id="userInfo" class="text-mono"></span>
+      <span id="connectionStatus" class="status online">● Online</span>
+      <button id="logoutBtn" class="btn">Logout</button>
     </div>
   </header>
 
-  <main>
-    <div class="container">
-      <div class="page-header mt-2">
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- STORE SWITCH -->
+      <div class="store-section">
+        <button id="storeToggle" class="store-btn">
+          🏪 My Store ▾
+        </button>
+
+        <div id="storeMenu" class="store-menu">
+
+          <a href="admin_dashboard.html">Dashboard</a>
+          <a href="items.html">Products</a>
+          <a href="services.html">Services</a>
+          <a href="inventory.html">Inventory</a>
+          <a href="sales.html">Sales</a>
+          <a href="purchases.html">Purchases</a>
+          <a href="report.html">Reports</a>
+
+        </div>
+      </div>
+
+      <!-- SYSTEM -->
+      <div class="sidebar-section">
+        <a href="users.html">Users</a>
+        <a href="notification.html">Notifications</a>
+        <a href="settings.html">Settings</a>
+      </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <div class="page-header">
         <h2>Admin Dashboard</h2>
       </div>
-      <p class="text-muted mt-2">Admin workspace — full system controls coming in a later phase.</p>
-      <p class="mt-2"><a href="items.html">View Items</a></p>
-      <p class="mt-2"><a href="inventory.html">Inventory</a></p>
-      <p class="mt-2"><a href="purchases.html">Purchases</a></p>
-      <p class="mt-2"><a href="report.html">Reports</a></p>
-    </div>
-  </main>
 
+      <!-- STORE HEALTH -->
+      <section class="card">
+        <h3>Store Health</h3>
+        <div class="placeholder">
+          📊 Store analytics and key performance metrics coming soon.
+        </div>
+      </section>
+
+      <!-- QUICK ACTIONS -->
+      <section class="card">
+        <h3>Quick Actions</h3>
+
+        <div class="actions">
+          <a href="sales.html" class="btn">+ Add Sale</a>
+          <a href="purchases.html" class="btn">+ Add Purchase</a>
+          <a href="users.html" class="btn">+ Admit User</a>
+        </div>
+      </section>
+
+      <!-- RECENT TRANSACTIONS -->
+      <section class="card">
+
+        <div class="flex-between">
+          <h3>Recent Transactions</h3>
+          <a href="transactions.html" class="icon-btn">View All →</a>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Ref</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="transactionsTable">
+            <tr>
+              <td colspan="5" class="text-muted">No transactions yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ACTIVITY FEED -->
+      <section class="card">
+        <h3>Activity Feed</h3>
+        <div class="placeholder">
+          📡 System activity tracking coming soon.
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <div id="notifModal" class="modal hidden">
+    <div class="modal-content">
+
+      <div class="flex-between">
+        <h3>Notifications</h3>
+        <button id="closeNotif" class="icon-btn">✕</button>
+      </div>
+
+      <div class="placeholder">
+        🔔 No new notifications yet.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCRIPT -->
   <script type="module">
     import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
 
     requireAuth();
 
     const user = getCurrentUser();
-    document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+    document.getElementById('userInfo').textContent =
+      user ? `${user.name} (${user.role})` : '';
 
     document.getElementById('logoutBtn').addEventListener('click', async () => {
       await logout();
       window.location.href = 'login.html';
     });
+
+    // SIDEBAR TOGGLE
+    document.getElementById('menuToggle').onclick = () => {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    };
+
+    // STORE DROPDOWN
+    document.getElementById('storeToggle').onclick = () => {
+      document.getElementById('storeMenu').classList.toggle('hidden');
+    };
+
+    // NOTIFICATION MODAL
+    const notifModal = document.getElementById('notifModal');
+
+    document.getElementById('notifBtn').onclick = () => {
+      notifModal.classList.remove('hidden');
+    };
+
+    document.getElementById('closeNotif').onclick = () => {
+      notifModal.classList.add('hidden');
+    };
   </script>
 
 </body>
+
 </html>

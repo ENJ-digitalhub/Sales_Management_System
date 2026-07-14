@@ -1,45 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employee Dashboard — Sales Management System</title>
-  <link rel="stylesheet" href="../assets/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TX RetailOS — Employee Dashboard</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
 </head>
 
 <body>
 
-  <header class="site-header">
-    <div class="container">
-      <h1>Sales Management System</h1>
-      <div id="userInfo" class="text-faint text-mono"></div>
-      <button class="btn" id="logoutBtn" type="button">Log out</button>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+
+    <div class="topbar-right">
+      <button id="notifBtn" class="icon-btn">🔔</button>
+      <span id="userInfo" class="text-mono"></span>
+      <span class="status online">● Online</span>
+      <button id="logoutBtn" class="btn">Logout</button>
     </div>
   </header>
 
-  <main>
-    <div class="container">
-      <div class="page-header mt-2">
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="store-section">
+        <button id="storeToggle" class="store-btn">
+          🏪 My Store ▾
+        </button>
+
+        <div id="storeMenu" class="store-menu">
+          <a href="employee_dashboard.html">Dashboard</a>
+          <a href="sales.html">Sales</a>
+          <a href="items.html">Products</a>
+          <a href="inventory.html">Inventory</a>
+        </div>
+      </div>
+
+      <!-- SYSTEM -->
+      <div class="sidebar-section">
+        <a href="settings.html">Settings</a>
+      </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- HEADER -->
+      <div class="page-header">
         <h2>Employee Dashboard</h2>
       </div>
-      <p class="text-muted mt-2">Welcome back. Ready to make a sale?</p>
-      <p class="mt-2"><a href="sales.html">Go to Sales</a></p>
-    </div>
-  </main>
 
+      <!-- PRIMARY ACTION -->
+      <section class="card">
+        <h3>Start Selling</h3>
+        <div class="actions">
+          <a href="sales.html" class="btn btn-primary">▶ Start New Sale</a>
+          <button class="btn btn-outline">Resume Last Sale (Coming Soon)</button>
+        </div>
+      </section>
+
+      <!-- ALERTS -->
+      <section class="card">
+        <h3>Alerts</h3>
+        <div class="placeholder">
+          ⚠️ Low stock and system alerts will appear here.
+        </div>
+      </section>
+
+      <!-- TODAY SNAPSHOT -->
+      <section class="card">
+        <h3>Today’s Activity</h3>
+        <div class="placeholder">
+          📊 Sales count, revenue, and last transaction coming soon.
+        </div>
+      </section>
+
+      <!-- RECENT TRANSACTIONS -->
+      <section class="card">
+        <div class="flex-between">
+          <h3>Recent Transactions</h3>
+          <a href="transactions.html" class="text-accent">View All</a>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Ref</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td colspan="4" class="text-muted">No transactions yet</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- QUICK ACTIONS -->
+      <section class="card">
+        <h3>Quick Access</h3>
+        <div class="actions">
+          <a href="sales.html" class="btn">+ New Sale</a>
+          <a href="inventory.html" class="btn btn-outline">View Inventory</a>
+        </div>
+      </section>
+
+      <!-- PRODUCT ACCESS -->
+      <section class="card">
+        <h3>Products</h3>
+        <div class="actions">
+          <a href="items.html" class="btn btn-outline">Search Products</a>
+          <button class="btn btn-outline">Frequent Items (Coming Soon)</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- NOTIFICATION MODAL -->
+  <div id="notificationModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="flex-between">
+        <h3>Notifications</h3>
+        <button id="closeNotif" class="icon-btn">✕</button>
+      </div>
+
+      <div class="placeholder mt-2">
+        🔔 Notifications preview coming soon.
+      </div>
+
+      <div class="mt-2">
+        <a href="notification.html" class="text-accent">View all notifications →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT -->
   <script type="module">
     import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
 
     requireAuth();
 
     const user = getCurrentUser();
-    document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+    document.getElementById('userInfo').textContent =
+      user ? `${user.name} (${user.role})` : '';
 
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
+    document.getElementById('logoutBtn').onclick = async () => {
       await logout();
       window.location.href = 'login.html';
-    });
+    };
+
+    // Sidebar toggle
+    document.getElementById('menuToggle').onclick = () => {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    };
+
+    // Store dropdown
+    document.getElementById('storeToggle').onclick = () => {
+      document.getElementById('storeMenu').classList.toggle('hidden');
+    };
+
+    // Notification modal
+    const notifBtn = document.getElementById('notifBtn');
+    const modal = document.getElementById('notificationModal');
+    const closeNotif = document.getElementById('closeNotif');
+
+    notifBtn.onclick = () => modal.classList.remove('hidden');
+    closeNotif.onclick = () => modal.classList.add('hidden');
   </script>
 
 </body>
+
 </html>
