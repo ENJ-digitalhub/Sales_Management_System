@@ -38,10 +38,12 @@ def create_app(config_class=Config):
     app.register_blueprint(sales_bp)
     app.register_blueprint(items_bp)
     app.register_blueprint(purchases_bp)
-    app.register_blueprint(sync_bp)
     app.register_blueprint(reports_bp)
-    if conflicts_bp is not None:
-        app.register_blueprint(conflicts_bp)
+
+    if app.config.get("SYNC_ENABLED"):
+        app.register_blueprint(sync_bp)
+        if conflicts_bp is not None:
+            app.register_blueprint(conflicts_bp)
 
     @app.teardown_appcontext
     def teardown_db(exception):

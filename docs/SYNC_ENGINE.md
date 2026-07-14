@@ -1,5 +1,9 @@
 # 📡 SYNC ENGINE — Sales Management System (Offline-First)
 
+> 🚧 **Status: Not yet implemented.** This document describes a planned
+> future capability. The current system is single-device, real-time,
+> and has no sync engine. See `ARCHITECTURE_CURRENT.md`.
+
 ---
 
 # 📚 DOCUMENT STRUCTURE

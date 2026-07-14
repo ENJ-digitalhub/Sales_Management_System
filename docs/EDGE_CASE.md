@@ -1,5 +1,9 @@
 # ⚠️ Edge Cases — Sales Management System (Offline-First POS)
 
+> 🚧 **Status: Not yet implemented.** This document describes a planned
+> future capability. The current system is single-device, real-time,
+> and has no sync engine. See `ARCHITECTURE_CURRENT.md`.
+
 This document outlines critical edge cases that can occur in the system due to offline-first architecture, local networking, and multi-device usage.
 
 The goal is to ensure data integrity, prevent silent failures, and define predictable system behavior under real-world conditions.

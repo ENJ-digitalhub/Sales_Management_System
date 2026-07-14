@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sales Dashboard — Sales Management System</title>
   <link rel="stylesheet" href="../assets/styles.css">
 </head>
+
 <body>
 
   <header class="topbar">
@@ -21,8 +23,8 @@
     </div>
   </header>
 
-  <div id="offlineBanner" class="login-error" hidden>
-    Offline Mode — changes will sync when reconnected
+  <div id="offlineNotice" class="soon-card mt-2" hidden>
+    Offline Mode & Sync — Coming Soon. You're currently offline; reconnect to continue.
   </div>
 
   <div class="layout">
@@ -168,43 +170,24 @@
     async function completeSale() {
       const errorEl = document.getElementById('saleError');
       errorEl.hidden = true;
-
       if (cart.size === 0) return showError('Cart is empty');
       if (!paymentMethod) return showError('Select a payment method');
-
       if (!confirm('Complete this sale?')) return;
 
       const payload = {
-        items: [...cart.values()].map(({ item, quantity }) => ({
-          item_id: item.id,
-          quantity,
-        })),
+        items: [...cart.values()].map(({ item, quantity }) => ({ item_id: item.id, quantity })),
         payment_method: paymentMethod,
       };
 
-      if (!navigator.onLine) {
-        await enqueue('sale', 'CREATE', payload);
-        alert('Offline — sale saved to queue, will sync on reconnect.');
-        cart.clear();
-        renderCart();
-        return;
-      }
-
       try {
-        const data = await createSale(payload);
+        await createSale(payload);
         alert('Sale completed');
         cart.clear();
         paymentMethod = null;
         renderCart();
         loadItems();
       } catch (err) {
-        if (err.message && err.message.toLowerCase().includes('stock')) {
-          return showError(err.message);
-        }
-        await enqueue('sale', 'CREATE', payload);
-        alert('Network error — sale saved to queue.');
-        cart.clear();
-        renderCart();
+        showError(err.message || 'Could not complete sale. Please try again.');
       }
     }
 
@@ -219,4 +202,5 @@
     loadItems();
   </script>
 </body>
+
 </html>

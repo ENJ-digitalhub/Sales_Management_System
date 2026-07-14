@@ -27,6 +27,8 @@ class Config:
     LOG_FILE = BASE_DIR / "app.log"
     BACKUP_DIR = BASE_DIR / "backups"
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    SYNC_ENABLED = os.getenv("SYNC_ENABLED", "False").lower() in ("true", "1", "t")
+
     
 class ProductionConfig(Config):
     DEBUG = False

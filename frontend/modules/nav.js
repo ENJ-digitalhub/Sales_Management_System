@@ -14,13 +14,11 @@ const COMMON = [
 const MANAGER_EXTRA = [
   { href: 'purchases.html', label: 'Purchases' },
   { href: 'report.html', label: 'Reports' },
-  { href: 'conflicts.html', label: 'Conflicts' },
 ];
 
 const ADMIN_EXTRA = [
   { href: 'purchases.html', label: 'Purchases' },
   { href: 'report.html', label: 'Reports' },
-  { href: 'conflicts.html', label: 'Conflicts' },
   { href: 'users.html', label: 'Users', comingSoon: true },
 ];
 

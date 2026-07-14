@@ -14,31 +14,16 @@ The Sales Management System is an **offline-first retail** management platform d
 
 It replaces manual record-keeping methods such as notebooks, Excel sheets, and loosely structured POS usage with a structured, reliable system that runs on a store’s PC and connects to mobile devices over a local network.
 
-> ⚠️ Note: This system does not replace POS hardware entirely.
-Instead, it acts as a centralized management system that improves how sales, inventory, and reporting are handled within a store.
-
-The system is designed for environments with poor or unstable internet connectivity, prioritizing local reliability over cloud dependency.
-
----
-
 ## 🧠 Core Concept
 
-One PC inside the store acts as the local server (host machine).
+TX RetailOS runs on a single central system — one server, one database,
+one source of truth. Every action (sales, stock updates, reports) writes
+directly to the database and is reflected instantly everywhere else in
+the app. There is nothing to configure, sync, or link between devices.
 
-- The PC runs the backend and database
-- Mobile devices connect via local WiFi network
-- The system operates fully offline in Phase 1
-
-This creates a private in-store network system, where all operations happen locally without internet dependence.
-
----
-
-## 💡 Why Offline First?
-
-- Many target stores operate in low or unstable network conditions
-- Sales operations must never stop due to internet failure
-- Local systems provide faster response times
-- Internet-based features will be added later, not required for core functionality
+**Offline Mode & Sync — Coming Soon.** A future version will let staff
+keep working without a connection and sync automatically once reconnected.
+This is not available yet.
 
 ---
 
@@ -173,32 +158,11 @@ These tools are restricted to developers only.
 
 ---
 
-## 📲 Installation (CLI-Based)
+## 📲 Getting Started
 
-1. Clone repository
-
-```
-git clone <repo-url>
-cd sales-management-system
-```
-
-2. Install dependencies
-
-```
-pip install -r requirements.txt
-```
-
-3. Setup system
-
-```
-python cli.py setup
-```
-
-4. Start server
-
-```
-python main.py
-```
+1. Open the app in your browser (or install it as a PWA)
+2. Log in with your account
+3. Start using it immediately — no sync setup, no device linking
 
 ---
 
