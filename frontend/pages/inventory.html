@@ -2,40 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Inventory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventory — TX RetailOS</title>
   <link rel="stylesheet" href="../assets/styles.css" />
 </head>
 <body>
-  <header>
-    <h1>Inventory</h1>
-    <span id="low-stock-banner" class="low-stock-banner" style="display:none;"></span>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+    <div class="topbar-right">
+      <span id="userInfo" class="text-mono"></span>
+      <span class="status online">● Online</span>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
   </header>
 
-  <div id="add-item-section" style="display:none;">
-    <h2>Add Item</h2>
-    <form id="add-item-form">
-      <input type="text" id="new-name" placeholder="Name" required />
-      <input type="text" id="new-category" placeholder="Category (optional)" />
-      <input type="number" id="new-selling-price" placeholder="Selling price" step="0.01" required />
-      <input type="number" id="new-cost-price" placeholder="Cost price" step="0.01" required />
-      <input type="number" id="new-stock" placeholder="Stock quantity" required />
-      <button type="submit">Add Item</button>
-    </form>
-  </div>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
 
-  <table id="item-table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Selling Price</th>
-        <th>Cost Price</th>
-        <th>Stock</th>
-        <th id="actions-header" style="display:none;">Actions</th>
-      </tr>
-    </thead>
-    <tbody id="item-table-body"></tbody>
-  </table>
+    <main class="main-content">
+      <div class="page-header">
+        <h2>Inventory</h2>
+      </div>
+
+      <span id="low-stock-banner" class="low-stock-banner" style="display:none;"></span>
+
+      <!-- Snapshot: no valuation/analytics endpoint exists yet -->
+      <section class="card">
+        <h3>Inventory Snapshot</h3>
+        <div class="soon-card">
+          📊 Stock valuation, turnover, and trend snapshots are Coming Soon —
+          this needs an aggregation endpoint the backend doesn't expose yet.
+        </div>
+      </section>
+
+      <!-- Tabs split the same GET /items response by its real `type` field -->
+      <div class="tab-row">
+        <button class="tab-btn active" data-tab="product">Products</button>
+        <button class="tab-btn" data-tab="service">Services</button>
+      </div>
+
+      <div id="add-item-section" class="card" style="display:none;">
+        <h3>Add Product</h3>
+        <form id="add-item-form" class="mt-2">
+          <input type="text" id="new-name" placeholder="Name" required />
+          <input type="text" id="new-category" placeholder="Category (optional)" />
+          <input type="number" id="new-selling-price" placeholder="Selling price" step="0.01" required />
+          <input type="number" id="new-cost-price" placeholder="Cost price" step="0.01" required />
+          <input type="number" id="new-stock" placeholder="Stock quantity" required />
+          <button type="submit" class="btn btn-primary mt-2">Add Item</button>
+        </form>
+      </div>
+
+      <div id="add-service-note" class="soon-card mt-2" style="display:none;">
+        Adding new services isn't available yet — the create endpoint doesn't accept a
+        service type. Existing seeded services are listed below (read-only).
+      </div>
+
+      <div class="card mt-3">
+        <table class="table" id="item-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Selling Price</th>
+              <th>Cost Price</th>
+              <th>Stock</th>
+              <th id="actions-header" style="display:none;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="item-table-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
 
   <script type="module" src="../modules/inventory_page.js"></script>
 </body>

@@ -29,27 +29,7 @@
   <div class="layout">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-
-      <div class="store-section">
-        <button id="storeToggle" class="store-btn">
-          🏪 My Store ▾
-        </button>
-
-        <div id="storeMenu" class="store-menu">
-          <a href="employee_dashboard.html">Dashboard</a>
-          <a href="sales.html">Sales</a>
-          <a href="items.html">Products</a>
-          <a href="inventory.html">Inventory</a>
-        </div>
-      </div>
-
-      <!-- SYSTEM -->
-      <div class="sidebar-section">
-        <a href="settings.html">Settings</a>
-      </div>
-
-    </aside>
+    <aside class="sidebar" id="sidebar"></aside>
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
@@ -151,7 +131,9 @@
   <!-- SCRIPT -->
   <script type="module">
     import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
+    import { renderSidebar } from '../modules/nav.js';
 
+    renderSidebar('employee_dashboard.html');
     requireAuth();
 
     const user = getCurrentUser();

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Users — Sales Management System</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+    <div class="topbar-right">
+      <span id="userInfo" class="text-mono"></span>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-header"><h2>User Management</h2></div>
+      <section class="card">
+        <h3>Coming Soon</h3>
+        <p class="text-muted">
+          User creation, role assignment, and deactivation aren't available yet —
+          the backend doesn't currently expose any user-management endpoints.
+        </p>
+      </section>
+    </main>
+  </div>
+  <script type="module">
+    import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
+    import { renderSidebar } from '../modules/nav.js';
+    requireAuth();
+    const user = getCurrentUser();
+    document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await logout(); window.location.href = 'login.html';
+    });
+    renderSidebar('users.html');
+    document.getElementById('menuToggle').onclick = () =>
+      document.getElementById('sidebar').classList.toggle('collapsed');
+  </script>
+</body>
+</html>

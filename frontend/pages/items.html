@@ -3,23 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Items — Sales Management System</title>
+  <title>Products — TX RetailOS</title>
   <link rel="stylesheet" href="../assets/styles.css">
 </head>
-
 <body>
 
-  <header class="site-header">
-    <div class="container">
-      <h1>Sales Management System</h1>
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+    <div class="topbar-right">
+      <span id="userInfo" class="text-mono"></span>
+      <button id="logoutBtn" class="btn">Logout</button>
     </div>
   </header>
 
-  <main>
-    <div class="container">
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
 
-      <div class="page-header mt-2">
-        <h2>Items</h2>
+    <main class="main-content">
+      <div class="page-header">
+        <h2>Products</h2>
+      </div>
+
+      <div class="form-group mt-2">
+        <input type="text" id="productSearch" placeholder="Search products by name..." />
       </div>
 
       <div id="loadingState" class="text-muted mt-2">
@@ -35,30 +44,42 @@
       </div>
 
       <div id="productList" class="product-grid mt-3" hidden></div>
+    </main>
+  </div>
 
-    </div>
-  </main>
-
-  <script type="module" src="../services/api.js"></script>
   <script type="module">
     import { getItems } from '../services/api.js';
-    import { requireAuth } from '../modules/auth.js';
+    import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
+    import { renderSidebar } from '../modules/nav.js';
 
     requireAuth();
+    const user = getCurrentUser();
+    document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await logout();
+      window.location.href = 'login.html';
+    });
+    renderSidebar('items.html');
+    document.getElementById('menuToggle').onclick = () =>
+      document.getElementById('sidebar').classList.toggle('collapsed');
 
     const loadingState = document.getElementById('loadingState');
     const errorState   = document.getElementById('errorState');
     const emptyState   = document.getElementById('emptyState');
     const productList  = document.getElementById('productList');
+    const searchInput  = document.getElementById('productSearch');
+
+    let allProducts = [];
 
     function renderItems(items) {
       loadingState.hidden = true;
 
       if (!items || items.length === 0) {
         emptyState.hidden = false;
+        productList.hidden = true;
         return;
       }
-
+      emptyState.hidden = true;
       productList.hidden = false;
       productList.innerHTML = items.map(product => `
         <article class="card product-card">
@@ -80,11 +101,18 @@
       `).join('');
     }
 
+    // Client-side search over the already-fetched real list — no search endpoint exists
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim().toLowerCase();
+      const filtered = q ? allProducts.filter(p => p.name.toLowerCase().includes(q)) : allProducts;
+      renderItems(filtered);
+    });
+
     async function loadItems() {
       try {
         const data = await getItems();
-        console.log(data)
-        renderItems(data.items);
+        allProducts = data.items || [];
+        renderItems(allProducts);
       } catch (err) {
         loadingState.hidden = true;
         errorState.hidden = false;

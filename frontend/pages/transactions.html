@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transactions — TX RetailOS</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+    <div class="topbar-right">
+      <span id="userInfo" class="text-mono"></span>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h2>Transactions</h2>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Search by receipt number..." />
+        <select id="statusFilter">
+          <option value="">All statuses</option>
+          <option value="completed">Completed</option>
+          <option value="edited">Edited</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+        <select id="methodFilter">
+          <option value="">All payment methods</option>
+          <option value="cash">Cash</option>
+          <option value="transfer">Transfer</option>
+          <option value="pos">POS</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <table class="table" id="txTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Receipt</th>
+              <th>Amount</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th id="actionsHeader" style="display:none;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="txTableBody">
+            <tr><td colspan="6" class="text-muted">Loading transactions...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="../modules/transactions_page.js"></script>
+</body>
+</html>

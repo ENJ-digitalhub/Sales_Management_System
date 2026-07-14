@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings — TX RetailOS</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+    <div class="topbar-right">
+      <span id="userInfo" class="text-mono"></span>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h2>Settings</h2>
+      </div>
+
+      <section class="card">
+        <h3>Appearance</h3>
+        <div class="flex-between mt-2">
+          <span class="text-muted">Theme</span>
+          <div class="actions">
+            <button class="btn btn-outline" id="themeDark">Dark</button>
+            <button class="btn btn-outline" id="themeLight">Light</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card mt-3">
+        <h3>Account</h3>
+        <div class="soon-card">
+          👤 Profile editing and PIN setup are Coming Soon — there's no
+          profile-update endpoint yet.
+        </div>
+      </section>
+
+      <section class="card mt-3">
+        <h3>Notifications</h3>
+        <div class="soon-card">
+          🔔 Notification preferences are Coming Soon — this needs the
+          WebSocket layer described in SYSTEM_DESIGN.md, which isn't built yet.
+        </div>
+      </section>
+
+      <section class="card mt-3">
+        <h3>Devices</h3>
+        <div class="soon-card">
+          📱 Managing your logged-in devices from here is Coming Soon.
+          Logging in from a new device already signs you out of the old one automatically.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
+    import { renderSidebar, applyStoredTheme } from '../modules/nav.js';
+
+    requireAuth();
+    const user = getCurrentUser();
+    document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await logout();
+      window.location.href = 'login.html';
+    });
+    renderSidebar('settings.html');
+    document.getElementById('menuToggle').onclick = () =>
+      document.getElementById('sidebar').classList.toggle('collapsed');
+
+    // Real, fully working — pure client-side preference, no backend needed
+    function highlightActiveTheme() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.getElementById('themeDark').classList.toggle('btn-primary', theme === 'dark');
+      document.getElementById('themeLight').classList.toggle('btn-primary', theme === 'light');
+    }
+
+    document.getElementById('themeDark').addEventListener('click', () => {
+      localStorage.setItem('theme', 'dark');
+      applyStoredTheme();
+      highlightActiveTheme();
+    });
+    document.getElementById('themeLight').addEventListener('click', () => {
+      localStorage.setItem('theme', 'light');
+      applyStoredTheme();
+      highlightActiveTheme();
+    });
+
+    highlightActiveTheme();
+  </script>
+</body>
+</html>

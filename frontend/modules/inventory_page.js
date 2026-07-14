@@ -1,43 +1,69 @@
 // frontend\modules\inventory_page.js
-import { requireAuth, getCurrentUser } from './auth.js';
+import { requireAuth, getCurrentUser, logout } from './auth.js';
+import { renderSidebar } from './nav.js';
 import { getItems, createItem, updateItem, deleteItem } from '../services/api.js';
 
 requireAuth();
 const user = getCurrentUser();
 const canManage = user && (user.role === 'admin' || user.role === 'manager');
 
+document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await logout();
+  window.location.href = 'login.html';
+});
+renderSidebar('inventory.html');
+document.getElementById('menuToggle').onclick = () =>
+  document.getElementById('sidebar').classList.toggle('collapsed');
+
 const tableBody = document.getElementById('item-table-body');
 const actionsHeader = document.getElementById('actions-header');
 const addSection = document.getElementById('add-item-section');
+const addServiceNote = document.getElementById('add-service-note');
 const addForm = document.getElementById('add-item-form');
 const lowStockBanner = document.getElementById('low-stock-banner');
 
-if (canManage) {
-  actionsHeader.style.display = '';
-  addSection.style.display = '';
+let items = [];
+let activeTab = 'product'; // filters the same fetched list by the real `type` field
+
+// Tabs — client-side split only, no new endpoint
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeTab = btn.dataset.tab;
+    render();
+  });
+});
+
+function updateSectionVisibility() {
+  if (!canManage) return;
+  addSection.style.display = activeTab === 'product' ? '' : 'none';
+  addServiceNote.style.display = activeTab === 'service' ? '' : 'none';
 }
 
-let items = [];
-
 function render() {
-  const hasLowStock = items.some(p => p.stock_quantity <= 5);
+  updateSectionVisibility();
+  const filtered = items.filter(p => (p.type || 'product') === activeTab);
+
+  const hasLowStock = filtered.some(p => p.stock_quantity !== null && p.stock_quantity <= 5);
   lowStockBanner.style.display = hasLowStock ? '' : 'none';
   lowStockBanner.textContent = hasLowStock ? '⚠ Some items are low on stock' : '';
 
-  tableBody.innerHTML = items.map(p => `
+  tableBody.innerHTML = filtered.map(p => `
     <tr>
       <td>${p.name}</td>
       <td>${p.category || '-'}</td>
       <td>₦${Number(p.selling_price).toLocaleString()}</td>
       <td>₦${Number(p.cost_price).toLocaleString()}</td>
-      <td class="${p.stock_quantity <= 5 ? 'stock-low' : ''}">${p.stock_quantity}</td>
+      <td class="${p.stock_quantity !== null && p.stock_quantity <= 5 ? 'stock-low' : ''}">${p.stock_quantity ?? '-'}</td>
       ${canManage ? `
       <td>
-        <button data-edit="${p.id}">Edit</button>
-        <button data-delete="${p.id}">Delete</button>
+        <button class="icon-btn" data-edit="${p.id}">Edit</button>
+        <button class="icon-btn" data-delete="${p.id}">Delete</button>
       </td>` : ''}
     </tr>
-  `).join('');
+  `).join('') || `<tr><td colspan="6" class="text-muted">No ${activeTab}s found</td></tr>`;
 
   if (canManage) {
     tableBody.querySelectorAll('[data-edit]').forEach(btn => {
@@ -48,6 +74,8 @@ function render() {
     });
   }
 }
+
+if (canManage) actionsHeader.style.display = '';
 
 async function loadItems() {
   const data = await getItems();

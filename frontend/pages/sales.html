@@ -8,11 +8,15 @@
 </head>
 <body>
 
-  <header class="site-header">
-    <div class="container">
-      <h1>Sales Management System</h1>
-      <div id="userInfo" class="text-faint text-mono"></div>
-      <button class="btn" id="logoutBtn" type="button">Log out</button>
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+    <div class="topbar-right">
+      <span id="userInfo" class="text-mono"></span>
+      <span class="status online">● Online</span>
+      <button id="logoutBtn" class="btn">Logout</button>
     </div>
   </header>
 
@@ -20,9 +24,11 @@
     Offline Mode — changes will sync when reconnected
   </div>
 
-  <main>
-    <div class="container">
-      <div class="page-header mt-2">
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <div class="page-header">
         <h2>Sales Dashboard</h2>
       </div>
 
@@ -45,11 +51,12 @@
         <button class="btn btn-primary btn-block mt-2" id="completeSaleBtn">Complete Sale</button>
         <div id="saleError" class="login-error mt-2" hidden></div>
       </div>
-    </div>
-  </main>
+    </main>
+  </div>
 
   <script type="module">
-    import { requireAuth, getCurrentUser, logout, getToken } from '../modules/auth.js';
+    import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
+    import { renderSidebar } from '../modules/nav.js';
     import { enqueue } from '../modules/queue.js';
     import { getItems, createSale } from '../services/api.js';
 
@@ -60,6 +67,9 @@
       await logout();
       window.location.href = 'login.html';
     });
+    renderSidebar('sales.html');
+    document.getElementById('menuToggle').onclick = () =>
+      document.getElementById('sidebar').classList.toggle('collapsed');
 
     // cart state: Map keeps item uniqueness, updates quantity in place
     const cart = new Map();

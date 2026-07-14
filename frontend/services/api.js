@@ -194,3 +194,22 @@ export const getYearlyReport = async (year) => {
   });
   return handleResponse(response);
 };
+
+export const getConflicts = async () => {
+  const response = await fetch(`${API_BASE_URL}/conflicts`, { headers: getAuthHeaders() });
+  return handleResponse(response);
+};
+
+export const getConflictById = async (transactionId) => {
+  const response = await fetch(`${API_BASE_URL}/conflicts/${transactionId}`, { headers: getAuthHeaders() });
+  return handleResponse(response);
+};
+
+export const resolveConflictItem = async (transactionId, resolution, note) => {
+  const response = await fetch(`${API_BASE_URL}/conflicts/${transactionId}/resolve`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify({ resolution, note }),
+  });
+  return handleResponse(response);
+};
