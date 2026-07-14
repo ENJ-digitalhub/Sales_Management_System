@@ -14,6 +14,7 @@
       <h1 class="app-title">TX RetailOS</h1>
     </div>
     <div class="topbar-right">
+      <button id="notifBtn" class="icon-btn">🔔</button>
       <span id="userInfo" class="text-mono"></span>
       <span class="status online">● Online</span>
       <button id="logoutBtn" class="btn">Logout</button>
@@ -30,7 +31,6 @@
 
       <span id="low-stock-banner" class="low-stock-banner" style="display:none;"></span>
 
-      <!-- Snapshot: no valuation/analytics endpoint exists yet -->
       <section class="card">
         <h3>Inventory Snapshot</h3>
         <div class="soon-card">
@@ -39,7 +39,6 @@
         </div>
       </section>
 
-      <!-- Tabs split the same GET /items response by its real `type` field -->
       <div class="tab-row">
         <button class="tab-btn active" data-tab="product">Products</button>
         <button class="tab-btn" data-tab="service">Services</button>
@@ -78,6 +77,18 @@
         </table>
       </div>
     </main>
+  </div>
+
+  <div id="notifModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="flex-between">
+        <h3>Notifications</h3>
+        <button id="closeNotif" class="icon-btn">✕</button>
+      </div>
+      <div class="placeholder">
+        🔔 No new notifications yet.
+      </div>
+    </div>
   </div>
 
   <script type="module" src="../modules/inventory_page.js"></script>

@@ -14,7 +14,9 @@
       <h1 class="app-title">TX RetailOS</h1>
     </div>
     <div class="topbar-right">
+      <button id="notifBtn" class="icon-btn">🔔</button>
       <span id="userInfo" class="text-mono"></span>
+      <span class="status online">● Online</span>
       <button id="logoutBtn" class="btn">Logout</button>
     </div>
   </header>
@@ -47,6 +49,18 @@
     </main>
   </div>
 
+  <div id="notifModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="flex-between">
+        <h3>Notifications</h3>
+        <button id="closeNotif" class="icon-btn">✕</button>
+      </div>
+      <div class="placeholder">
+        🔔 No new notifications yet.
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { getItems } from '../services/api.js';
     import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
@@ -62,6 +76,12 @@
     renderSidebar('items.html');
     document.getElementById('menuToggle').onclick = () =>
       document.getElementById('sidebar').classList.toggle('collapsed');
+
+    // Notifications (shared shell — no new functionality)
+    document.getElementById('notifBtn').onclick = () =>
+      document.getElementById('notifModal').classList.remove('hidden');
+    document.getElementById('closeNotif').onclick = () =>
+      document.getElementById('notifModal').classList.add('hidden');
 
     const loadingState = document.getElementById('loadingState');
     const errorState   = document.getElementById('errorState');
@@ -101,7 +121,6 @@
       `).join('');
     }
 
-    // Client-side search over the already-fetched real list — no search endpoint exists
     searchInput.addEventListener('input', () => {
       const q = searchInput.value.trim().toLowerCase();
       const filtered = q ? allProducts.filter(p => p.name.toLowerCase().includes(q)) : allProducts;

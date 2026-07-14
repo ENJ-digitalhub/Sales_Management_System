@@ -1,9 +1,26 @@
 // frontend\modules\reports_page.js
-import { requireAuth, getCurrentUser } from './auth.js';
+import { requireAuth, getCurrentUser, logout } from './auth.js';
+import { renderSidebar } from './nav.js';
 import { getDailyReport, getMonthlyReport, getYearlyReport } from '../services/api.js';
 
 requireAuth();
 const user = getCurrentUser();
+
+document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await logout();
+  window.location.href = 'login.html';
+});
+renderSidebar('report.html');
+document.getElementById('menuToggle').onclick = () =>
+  document.getElementById('sidebar').classList.toggle('collapsed');
+
+// Notifications (shared shell — no new functionality)
+document.getElementById('notifBtn').onclick = () =>
+  document.getElementById('notifModal').classList.remove('hidden');
+document.getElementById('closeNotif').onclick = () =>
+  document.getElementById('notifModal').classList.add('hidden');
+
 const allowed = user && (user.role === 'admin' || user.role === 'manager');
 
 const accessDenied = document.getElementById('access-denied');
@@ -12,7 +29,7 @@ const reportsContent = document.getElementById('reports-content');
 if (!allowed) {
   accessDenied.style.display = '';
   reportsContent.style.display = 'none';
-  throw new Error('Access denied'); // stop the rest of the module running
+  throw new Error('Access denied');
 } else {
   reportsContent.style.display = '';
 }

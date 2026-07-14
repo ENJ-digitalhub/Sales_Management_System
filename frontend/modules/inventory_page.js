@@ -16,6 +16,12 @@ renderSidebar('inventory.html');
 document.getElementById('menuToggle').onclick = () =>
   document.getElementById('sidebar').classList.toggle('collapsed');
 
+// Notifications (shared shell — no new functionality)
+document.getElementById('notifBtn').onclick = () =>
+  document.getElementById('notifModal').classList.remove('hidden');
+document.getElementById('closeNotif').onclick = () =>
+  document.getElementById('notifModal').classList.add('hidden');
+
 const tableBody = document.getElementById('item-table-body');
 const actionsHeader = document.getElementById('actions-header');
 const addSection = document.getElementById('add-item-section');
@@ -24,9 +30,8 @@ const addForm = document.getElementById('add-item-form');
 const lowStockBanner = document.getElementById('low-stock-banner');
 
 let items = [];
-let activeTab = 'product'; // filters the same fetched list by the real `type` field
+let activeTab = 'product';
 
-// Tabs — client-side split only, no new endpoint
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));

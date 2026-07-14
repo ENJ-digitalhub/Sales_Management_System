@@ -2,79 +2,112 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Reports</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports — TX RetailOS</title>
   <link rel="stylesheet" href="../assets/styles.css" />
 </head>
 <body>
-  <header>
-    <h1>Reports</h1>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+    <div class="topbar-right">
+      <button id="notifBtn" class="icon-btn">🔔</button>
+      <span id="userInfo" class="text-mono"></span>
+      <span class="status online">● Online</span>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
   </header>
 
-  <div id="access-denied" style="display:none;">
-    <p>You do not have permission to view this page.</p>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <h2>Reports</h2>
+      </div>
+
+      <div id="access-denied" class="card" style="display:none;">
+        <p>You do not have permission to view this page.</p>
+      </div>
+
+      <div id="reports-content" style="display:none;">
+        <nav id="period-tabs" class="tab-row">
+          <button data-period="daily" class="tab-btn active">Daily</button>
+          <button data-period="monthly" class="tab-btn">Monthly</button>
+          <button data-period="yearly" class="tab-btn">Yearly</button>
+        </nav>
+
+        <div id="period-picker" class="mt-2">
+          <input type="date" id="daily-picker" />
+          <input type="month" id="monthly-picker" style="display:none;" />
+          <input type="number" id="yearly-picker" style="display:none;" placeholder="Year" />
+        </div>
+
+        <section id="summary-section" class="card mt-3">
+          <div class="summary-card">
+            <span class="summary-label">Total Sales</span>
+            <span id="summary-total-sales" class="summary-value">-</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-label">Total Profit</span>
+            <span id="summary-total-profit" class="summary-value">-</span>
+          </div>
+          <div class="summary-card">
+            <span class="summary-label">Transactions</span>
+            <span id="summary-transaction-count" class="summary-value">-</span>
+          </div>
+        </section>
+
+        <section id="payment-breakdown-section" class="card mt-3">
+          <h3>Payment Breakdown</h3>
+          <ul id="payment-breakdown-list"></ul>
+        </section>
+
+        <section id="top-items-section" class="card mt-3">
+          <h3>Top Items</h3>
+          <table class="table">
+            <thead><tr><th>Item</th><th>Qty Sold</th><th>Revenue</th></tr></thead>
+            <tbody id="top-items-body"></tbody>
+          </table>
+        </section>
+
+        <section id="employee-performance-section" class="card mt-3">
+          <h3>Employee Performance</h3>
+          <table class="table">
+            <thead><tr><th>Name</th><th>Transactions</th><th>Total Sales</th></tr></thead>
+            <tbody id="employee-performance-body"></tbody>
+          </table>
+        </section>
+
+        <section id="monthly-breakdown-section" class="card mt-3" style="display:none;">
+          <h3>Monthly Breakdown</h3>
+          <table class="table">
+            <thead><tr><th>Month</th><th>Sales</th><th>Profit</th><th>Transactions</th></tr></thead>
+            <tbody id="monthly-breakdown-body"></tbody>
+          </table>
+        </section>
+
+        <section id="trend-chart-section" class="card mt-3">
+          <h3>Last 7 Days — Sales Trend</h3>
+          <canvas id="trend-chart" width="600" height="250"></canvas>
+        </section>
+      </div>
+    </main>
   </div>
 
-  <div id="reports-content" style="display:none;">
-    <nav id="period-tabs">
-      <button data-period="daily" class="tab-btn active">Daily</button>
-      <button data-period="monthly" class="tab-btn">Monthly</button>
-      <button data-period="yearly" class="tab-btn">Yearly</button>
-    </nav>
-
-    <div id="period-picker">
-      <input type="date" id="daily-picker" />
-      <input type="month" id="monthly-picker" style="display:none;" />
-      <input type="number" id="yearly-picker" style="display:none;" placeholder="Year" />
+  <div id="notifModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="flex-between">
+        <h3>Notifications</h3>
+        <button id="closeNotif" class="icon-btn">✕</button>
+      </div>
+      <div class="placeholder">
+        🔔 No new notifications yet.
+      </div>
     </div>
-
-    <section id="summary-section">
-      <div class="summary-card">
-        <span class="summary-label">Total Sales</span>
-        <span id="summary-total-sales" class="summary-value">-</span>
-      </div>
-      <div class="summary-card">
-        <span class="summary-label">Total Profit</span>
-        <span id="summary-total-profit" class="summary-value">-</span>
-      </div>
-      <div class="summary-card">
-        <span class="summary-label">Transactions</span>
-        <span id="summary-transaction-count" class="summary-value">-</span>
-      </div>
-    </section>
-
-    <section id="payment-breakdown-section">
-      <h2>Payment Breakdown</h2>
-      <ul id="payment-breakdown-list"></ul>
-    </section>
-
-    <section id="top-items-section">
-      <h2>Top Items</h2>
-      <table>
-        <thead><tr><th>Item</th><th>Qty Sold</th><th>Revenue</th></tr></thead>
-        <tbody id="top-items-body"></tbody>
-      </table>
-    </section>
-
-    <section id="employee-performance-section">
-      <h2>Employee Performance</h2>
-      <table>
-        <thead><tr><th>Name</th><th>Transactions</th><th>Total Sales</th></tr></thead>
-        <tbody id="employee-performance-body"></tbody>
-      </table>
-    </section>
-
-    <section id="monthly-breakdown-section" style="display:none;">
-      <h2>Monthly Breakdown</h2>
-      <table>
-        <thead><tr><th>Month</th><th>Sales</th><th>Profit</th><th>Transactions</th></tr></thead>
-        <tbody id="monthly-breakdown-body"></tbody>
-      </table>
-    </section>
-
-    <section id="trend-chart-section">
-      <h2>Last 7 Days — Sales Trend</h2>
-      <canvas id="trend-chart" width="600" height="250"></canvas>
-    </section>
   </div>
 
   <script type="module" src="../modules/reports_page.js"></script>

@@ -13,7 +13,9 @@
       <h1 class="app-title">TX RetailOS</h1>
     </div>
     <div class="topbar-right">
+      <button id="notifBtn" class="icon-btn">🔔</button>
       <span id="userInfo" class="text-mono"></span>
+      <span class="status online">● Online</span>
       <button id="logoutBtn" class="btn">Logout</button>
     </div>
   </header>
@@ -33,6 +35,18 @@
         <div id="conflictList" class="mt-2"></div>
       </div>
     </main>
+  </div>
+
+  <div id="notifModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="flex-between">
+        <h3>Notifications</h3>
+        <button id="closeNotif" class="icon-btn">✕</button>
+      </div>
+      <div class="placeholder">
+        🔔 No new notifications yet.
+      </div>
+    </div>
   </div>
 
   <script type="module" src="../modules/conflicts_page.js"></script>

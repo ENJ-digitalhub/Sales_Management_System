@@ -2,43 +2,78 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Purchases / Restock</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Purchases — TX RetailOS</title>
   <link rel="stylesheet" href="../assets/styles.css" />
 </head>
 <body>
-  <header>
-    <h1>Purchases</h1>
+
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+    <div class="topbar-right">
+      <button id="notifBtn" class="icon-btn">🔔</button>
+      <span id="userInfo" class="text-mono"></span>
+      <span class="status online">● Online</span>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
   </header>
 
-  <div id="new-purchase-section" style="display:none;">
-    <h2>New Purchase Entry</h2>
-    <form id="purchase-form">
-      <select id="purchase-item"></select>
-      <input type="number" id="purchase-quantity" placeholder="Quantity" min="1" required />
-      <input type="number" id="purchase-cost" placeholder="Cost price per unit" step="0.01" required />
-      <button type="button" id="add-item-btn">Add Item</button>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
 
-      <ul id="purchase-items-list"></ul>
+    <main class="main-content">
+      <div class="page-header">
+        <h2>Purchases</h2>
+      </div>
 
-      <input type="text" id="purchase-supplier" placeholder="Supplier (optional)" />
-      <button type="submit">Submit Purchase</button>
-    </form>
+      <div id="new-purchase-section" class="card" style="display:none;">
+        <h3>New Purchase Entry</h3>
+        <form id="purchase-form" class="mt-2">
+          <select id="purchase-item"></select>
+          <input type="number" id="purchase-quantity" placeholder="Quantity" min="1" required />
+          <input type="number" id="purchase-cost" placeholder="Cost price per unit" step="0.01" required />
+          <button type="button" id="add-item-btn" class="btn btn-outline mt-2">Add Item</button>
+
+          <ul id="purchase-items-list" class="mt-2"></ul>
+
+          <input type="text" id="purchase-supplier" placeholder="Supplier (optional)" class="mt-2" />
+          <button type="submit" class="btn btn-primary mt-2">Submit Purchase</button>
+        </form>
+      </div>
+
+      <div class="card mt-3">
+        <h3>Purchase History</h3>
+        <table class="table" id="purchase-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Supplier</th>
+              <th>Total Cost</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th id="approve-header" style="display:none;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="purchase-table-body"></tbody>
+        </table>
+      </div>
+    </main>
   </div>
 
-  <h2>Purchase History</h2>
-  <table id="purchase-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Supplier</th>
-        <th>Total Cost</th>
-        <th>Status</th>
-        <th>Created</th>
-        <th id="approve-header" style="display:none;">Action</th>
-      </tr>
-    </thead>
-    <tbody id="purchase-table-body"></tbody>
-  </table>
+  <div id="notifModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="flex-between">
+        <h3>Notifications</h3>
+        <button id="closeNotif" class="icon-btn">✕</button>
+      </div>
+      <div class="placeholder">
+        🔔 No new notifications yet.
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="../modules/purchases_page.js"></script>
 </body>

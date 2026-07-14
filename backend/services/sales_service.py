@@ -93,14 +93,14 @@ class SalesService:
 
     @staticmethod
     def get_sale(session: Session, sale_id: str):
-        sale = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.Item)).filter_by(id=sale_id).first()
+        sale = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.item)).filter_by(id=sale_id).first()
         if not sale:
             return None, "Sale not found"
         return sale, None
 
     @staticmethod
     def get_all_sales(session: Session, user_id: str = None, role: str = None):
-        query = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.Item))
+        query = session.query(Sale).options(joinedload(Sale.items).joinedload(SaleItem.item))
         if role == "employee":
             query = query.filter(Sale.user_id == user_id)
         return query.all(), None

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications — TX RetailOS</title>
+  <link rel="stylesheet" href="../assets/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <button id="menuToggle" class="icon-btn">☰</button>
+      <h1 class="app-title">TX RetailOS</h1>
+    </div>
+    <div class="topbar-right">
+      <span id="userInfo" class="text-mono"></span>
+      <button id="logoutBtn" class="btn">Logout</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+
+    <main class="main-content">
+      <div class="page-header"><h2>Notifications</h2></div>
+
+      <section class="card">
+        <h3>Coming Soon</h3>
+        <div class="soon-card">
+          🔔 Live notifications aren't available yet — this needs the
+          WebSocket layer described in SYSTEM_DESIGN.md (stock updates, sale
+          alerts, sync/conflict alerts), which hasn't been built on the
+          backend yet. Once that layer ships, this page will list every
+          notification in full, not just the topbar preview.
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
+    import { renderSidebar } from '../modules/nav.js';
+
+    requireAuth();
+    const user = getCurrentUser();
+    document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await logout();
+      window.location.href = 'login.html';
+    });
+    renderSidebar('notification.html');
+    document.getElementById('menuToggle').onclick = () =>
+      document.getElementById('sidebar').classList.toggle('collapsed');
+  </script>
+</body>
+</html>

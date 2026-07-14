@@ -16,6 +16,12 @@ renderSidebar('transactions.html');
 document.getElementById('menuToggle').onclick = () =>
   document.getElementById('sidebar').classList.toggle('collapsed');
 
+// Notifications (shared shell — no new functionality)
+document.getElementById('notifBtn').onclick = () =>
+  document.getElementById('notifModal').classList.remove('hidden');
+document.getElementById('closeNotif').onclick = () =>
+  document.getElementById('notifModal').classList.add('hidden');
+
 if (canCancel) document.getElementById('actionsHeader').style.display = '';
 
 const tableBody = document.getElementById('txTableBody');
@@ -23,14 +29,13 @@ const searchInput = document.getElementById('searchInput');
 const statusFilter = document.getElementById('statusFilter');
 const methodFilter = document.getElementById('methodFilter');
 
-let allSales = []; // GET /sales already filters to "own sales" server-side for employees
+let allSales = [];
 
 function render() {
   const q = searchInput.value.trim().toLowerCase();
   const status = statusFilter.value;
   const method = methodFilter.value;
 
-  // Client-side filtering only — GET /sales takes no query params
   const filtered = allSales.filter(s => {
     if (q && !(s.receipt_number || '').toLowerCase().includes(q)) return false;
     if (status && s.status !== status) return false;

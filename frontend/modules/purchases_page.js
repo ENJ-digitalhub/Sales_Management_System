@@ -1,10 +1,26 @@
 // frontend\modules\purchases_page.js
-import { requireAuth, getCurrentUser } from './auth.js';
+import { requireAuth, getCurrentUser, logout } from './auth.js';
+import { renderSidebar } from './nav.js';
 import { getItems, createPurchase, getPurchaseHistory, approvePurchase } from '../services/api.js';
 
 requireAuth();
 const user = getCurrentUser();
 const isAdmin = user && user.role === 'admin';
+
+document.getElementById('userInfo').textContent = user ? `${user.name} (${user.role})` : '';
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await logout();
+  window.location.href = 'login.html';
+});
+renderSidebar('purchases.html');
+document.getElementById('menuToggle').onclick = () =>
+  document.getElementById('sidebar').classList.toggle('collapsed');
+
+// Notifications (shared shell — no new functionality)
+document.getElementById('notifBtn').onclick = () =>
+  document.getElementById('notifModal').classList.remove('hidden');
+document.getElementById('closeNotif').onclick = () =>
+  document.getElementById('notifModal').classList.add('hidden');
 
 const newPurchaseSection = document.getElementById('new-purchase-section');
 const itemSelect = document.getElementById('purchase-item');
@@ -17,7 +33,7 @@ newPurchaseSection.style.display = ''; // any role can create purchases
 if (isAdmin) approveHeader.style.display = '';
 
 let items = [];
-let cartItems = []; // { item_id, name, quantity, cost_price }
+let cartItems = [];
 
 async function loadItems() {
   const data = await getItems();
