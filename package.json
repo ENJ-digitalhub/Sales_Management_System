@@ -1,0 +1,47 @@
+{
+  "name": "tx-retailos",
+  "version": "1.0.0",
+  "description": "TX RetailOS — Offline-first POS, packaged as a Windows desktop app",
+  "main": "electron/main.js",
+  "author": "ENJ DigitalHub",
+  "scripts": {
+    "start": "electron .",
+    "build:backend": "pyinstaller --onefile --name txretailos-backend --distpath backend-dist --workpath build/pyi-work --specpath build start_server.py",
+    "build": "npm run build:backend && electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.enjdigitalhub.txretailos",
+    "productName": "TX RetailOS",
+    "asar": true,
+    "files": [
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      { "from": "frontend", "to": "frontend" },
+      { "from": "backend-dist", "to": "backend-dist", "filter": ["**/*"] },
+      { "from": "database", "to": "database", "filter": ["schema.sql", "seed.sql"] }
+    ],
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TX RetailOS"
+    },
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    }
+  }
+}
