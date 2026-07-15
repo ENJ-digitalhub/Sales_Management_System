@@ -1,5 +1,5 @@
 // electron/main.js
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const net = require('net');
@@ -13,6 +13,7 @@ let mainWindow;
 let splashWindow;
 let backendProcess;
 let backendReadyCheckInterval;
+let appIsQuitting = false;
 
 const isDev = !app.isPackaged;
 
@@ -45,11 +46,15 @@ function databaseDir() {
 
 // ---------------------------------------------------------------------------
 // First-run setup: generate .env automatically so the store owner never has
-// to touch a config file (per FRONTEND_SPEC / QUICKSTART, but zero-manual-setup)
+// to hand-craft secrets. Default-user fields are left BLANK on purpose —
+// ensure_default_user() (backend side) is a no-op until they're filled in,
+// so the user can safely edit .env after first launch and just restart.
 // ---------------------------------------------------------------------------
 function ensureEnvFile() {
   const target = envFilePath();
-  if (fs.existsSync(target)) return;
+  if (fs.existsSync(target)) {
+    return { path: target, freshlyCreated: false };
+  }
 
   fs.mkdirSync(path.dirname(target), { recursive: true });
   const secretKey = crypto.randomBytes(32).toString('hex');
@@ -65,10 +70,19 @@ function ensureEnvFile() {
     'SYNC_ENABLED=False',
     `WAITRESS_HOST=${BACKEND_HOST}`,
     `WAITRESS_PORT=${BACKEND_PORT}`,
+    '',
+    '# --- Default user (auto-created on first run) ---',
+    '# Fill these in, save this file, then restart TX RetailOS to create',
+    '# your account. Leave blank to skip auto-creation entirely.',
+    'APP_DEFAULT_USERNAME=',
+    'APP_DEFAULT_PASSWORD=',
+    'APP_DEFAULT_ROLE=admin',
+    '',
   ].join('\n');
 
   fs.writeFileSync(target, envContents, 'utf-8');
   fs.mkdirSync(databaseDir(), { recursive: true });
+  return { path: target, freshlyCreated: true };
 }
 
 // ---------------------------------------------------------------------------
@@ -109,7 +123,7 @@ function waitForBackend(port, host, timeoutMs = 20000) {
 // falls back to `python start_server.py` in dev
 // ---------------------------------------------------------------------------
 async function startBackend() {
-  ensureEnvFile();
+  const { path: envPath, freshlyCreated } = ensureEnvFile();
 
   const portFree = await isPortFree(BACKEND_PORT, BACKEND_HOST);
   if (!portFree) {
@@ -119,12 +133,12 @@ async function startBackend() {
     );
   }
 
-  const env = { ...process.env };
+  const env = { ...process.env, TXRETAILOS_ENV_PATH: envPath };
 
   if (!isDev && fs.existsSync(backendExePath())) {
     backendProcess = spawn(backendExePath(), [], {
       cwd: path.dirname(backendExePath()),
-      env: { ...env, TXRETAILOS_ENV_PATH: envFilePath() },
+      env,
       windowsHide: true, // run silently, no console window
     });
   } else {
@@ -142,13 +156,26 @@ async function startBackend() {
   backendProcess.stderr?.on('data', (d) => console.error(`[backend] ${d}`));
   backendProcess.on('exit', (code) => {
     console.log(`[backend] exited with code ${code}`);
+    const wasRunning = !!backendProcess;
     backendProcess = null;
+    // If the backend dies unexpectedly while the app is still open
+    // (not during an intentional quit), tell the user instead of
+    // leaving them staring at a dead window.
+    if (wasRunning && !appIsQuitting && mainWindow) {
+      dialog.showErrorBox(
+        'TX RetailOS — Server Stopped',
+        `The local server stopped unexpectedly (exit code ${code}). ` +
+        `Please restart TX RetailOS.`
+      );
+      app.quit();
+    }
   });
   backendProcess.on('error', (err) => {
     console.error('[backend] failed to start:', err);
   });
 
   await waitForBackend(BACKEND_PORT, BACKEND_HOST);
+  return { envPath, freshlyCreated };
 }
 
 function stopBackend() {
@@ -213,7 +240,6 @@ function createMainWindow() {
 }
 
 function showErrorAndQuit(message) {
-  const { dialog } = require('electron');
   if (splashWindow) splashWindow.close();
   dialog.showErrorBox('TX RetailOS — Startup Error', message);
   app.quit();
@@ -225,20 +251,34 @@ function showErrorAndQuit(message) {
 app.whenReady().then(async () => {
   createSplashWindow();
   try {
-    await startBackend();
+    const { envPath, freshlyCreated } = await startBackend();
     createMainWindow();
+
+    if (freshlyCreated) {
+      // First-ever launch: tell the user where .env lives so they can add
+      // their default login, since the app boots successfully either way.
+      dialog.showMessageBox(mainWindow, {
+        type: 'info',
+        title: 'First-time setup',
+        message: 'TX RetailOS is ready.',
+        detail:
+          `A configuration file was created at:\n${envPath}\n\n` +
+          `To set up your login, edit APP_DEFAULT_USERNAME and ` +
+          `APP_DEFAULT_PASSWORD in that file, then restart the app.`,
+      });
+    }
   } catch (err) {
     showErrorAndQuit(err.message || String(err));
   }
 });
 
-app.on('window-all-closed', () => {
+app.on('before-quit', () => {
+  appIsQuitting = true;
   stopBackend();
-  if (process.platform !== 'darwin') app.quit();
 });
 
-app.on('before-quit', () => {
-  stopBackend();
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('activate', () => {

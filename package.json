@@ -6,6 +6,7 @@
   "author": "ENJ DigitalHub",
   "scripts": {
     "start": "electron .",
+    "dev": "electron .",
     "build:backend": "pyinstaller --onefile --name txretailos-backend --distpath backend-dist --workpath build/pyi-work --specpath build start_server.py",
     "build": "npm run build:backend && electron-builder",
     "postinstall": "electron-builder install-app-deps"

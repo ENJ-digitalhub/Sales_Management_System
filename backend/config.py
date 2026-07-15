@@ -1,12 +1,26 @@
 # backend/config.py
 import os
+import sys
 from dotenv import load_dotenv
 from pathlib import Path
 
-load_dotenv()
+# Electron (packaged mode) passes the real .env location via this env var,
+# since the userData directory isn't the process's working directory.
+_env_override = os.getenv("TXRETAILOS_ENV_PATH")
+if _env_override and Path(_env_override).exists():
+    load_dotenv(_env_override, override=True)
+else:
+    load_dotenv()
 
 class Config:
-    BASE_DIR = Path(__file__).parent.parent.resolve()
+    # When PyInstaller freezes this backend into an exe, __file__ resolves
+    # inside a temporary extraction folder — not a stable location to keep
+    # the SQLite DB or backups. Anchor BASE_DIR next to the exe instead.
+    if getattr(sys, "frozen", False):
+        BASE_DIR = Path(sys.executable).parent.resolve()
+    else:
+        BASE_DIR = Path(__file__).parent.parent.resolve()
+
     DB_PATH = BASE_DIR / "database" / "shop.db"
 
     DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
