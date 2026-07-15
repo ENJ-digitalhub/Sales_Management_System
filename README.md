@@ -138,6 +138,17 @@ Think of it as a mini internal network system inside the shop.
 - Activity logging for accountability
 - Admin-controlled permissions
 
+### First-Run Default User
+
+On first launch, the system reads `APP_DEFAULT_USERNAME`, `APP_DEFAULT_PASSWORD`, and  `APP_DEFAULT_ROLE` from `.env` and — if no user with that username already exists — creates one automatically, with the password securely hashed via bcrypt. No manual CLI step is required. This means: clone the repo, fill in `.env`, run the app, and log in immediately with the credentials you set.
+
+Why this satisfies each requirement
+Env vars + .env loading: python-dotenv's load_dotenv() is already invoked in backend/config.py; the three new vars are just additional os.getenv() reads, no new library needed.
+Idempotency: ensure_default_user does a filter_by(username=username).first() check before ever creating a row.
+Security: Password is hashed via the project's existing single hashing entry point, Security.hash_password() (bcrypt) — never stored or logged in plaintext.
+Startup hook, no manual scripts: Wired directly into create_app(), which every entry point (main.py, start_server.py, the Electron-packaged backend) already calls.
+MVP scope: One function, one call site, no new tables, no new endpoints, no sync/multi-user complexity.
+
 ### Security Focus
 
 - Prevent unauthorized changes

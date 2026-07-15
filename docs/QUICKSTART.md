@@ -10,6 +10,21 @@ pip install -r requirements.txt
 ### 2. Configure Environment
 ```bash
 cp .env.example .env
+
+Open `.env` and set:
+
+```env
+APP_DEFAULT_USERNAME=admin
+APP_DEFAULT_PASSWORD=your-secure-password
+APP_DEFAULT_ROLE=admin
+```
+
+**These three values control the account that is automatically created the first time the app runs.** You don't need to run any seed script — as soon as the backend starts (`python main.py`, `python start_server.py`, or the packaged `.exe`), it checks whether a user with `APP_DEFAULT_USERNAME` already exists in the database, and if not, creates it with the given password (hashed with bcrypt) and role.
+
+This is idempotent: if you restart the app, or if that user already exists, nothing happens — no duplicate accounts are created.
+
+To hand this system to a **new** owner/store, just change `APP_DEFAULT_USERNAME` / `APP_DEFAULT_PASSWORD` in `.env` before the very first run against a fresh database. If a database already exists with a default user in it, changing `.env` afterwards will **not** retroactively change that user's credentials — it only creates the account if it's
+missing. 
 ```
 
 ### 3. Initialize Database

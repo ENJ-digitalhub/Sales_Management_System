@@ -2,7 +2,8 @@
 from flask import Flask, jsonify, g
 from flask_cors import CORS
 from backend.config import Config
-from backend.database import create_all_tables, set_database_uri
+from backend.database import create_all_tables, set_database_uri, SessionLocal
+from backend.utils.default_user import ensure_default_user
 from backend.routes.auth import auth_bp
 from backend.routes.sales import sales_bp
 from backend.routes.items import items_bp
@@ -32,6 +33,16 @@ def create_app(config_class=Config):
     # Initialize database
     with app.app_context():
         create_all_tables()
+        # First-run bootstrap: create the default user from .env, if configured
+        # and not already present. Idempotent — safe to run on every startup.
+        bootstrap_session = SessionLocal()
+        try:
+            ensure_default_user(bootstrap_session)
+        except Exception as e:
+            bootstrap_session.rollback()
+            print(f"[bootstrap] Failed to ensure default user: {e}")
+        finally:
+            bootstrap_session.close()
 
     # Register blueprints
     app.register_blueprint(auth_bp)

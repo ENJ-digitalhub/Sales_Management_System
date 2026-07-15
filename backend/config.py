@@ -28,6 +28,12 @@ class Config:
     BACKUP_DIR = BASE_DIR / "backups"
     BACKUP_DIR.mkdir(parents=True, exist_ok=True)
     SYNC_ENABLED = os.getenv("SYNC_ENABLED", "False").lower() in ("true", "1", "t")
+    
+    # First-run default user (see backend/utils/default_user.py).
+    # Optional: if either of these is missing, no default user is created.
+    APP_DEFAULT_USERNAME = os.getenv("APP_DEFAULT_USERNAME")
+    APP_DEFAULT_PASSWORD = os.getenv("APP_DEFAULT_PASSWORD")
+    APP_DEFAULT_ROLE = os.getenv("APP_DEFAULT_ROLE", "admin")
 
     
 class ProductionConfig(Config):
