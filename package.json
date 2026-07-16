@@ -12,8 +12,8 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "devDependencies": {
-    "electron": "^31.0.0",
-    "electron-builder": "^24.13.3"
+    "electron": "^43.1.1",
+    "electron-builder": "^26.15.3"
   },
   "build": {
     "appId": "com.enjdigitalhub.txretailos",
@@ -24,12 +24,35 @@
       "package.json"
     ],
     "extraResources": [
-      { "from": "frontend", "to": "frontend" },
-      { "from": "backend-dist", "to": "backend-dist", "filter": ["**/*"] },
-      { "from": "database", "to": "database", "filter": ["schema.sql", "seed.sql"] }
+      {
+        "from": "frontend",
+        "to": "frontend"
+      },
+      {
+        "from": "backend-dist",
+        "to": "backend-dist",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "database",
+        "to": "database",
+        "filter": [
+          "schema.sql",
+          "seed.sql"
+        ]
+      }
     ],
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "assets/icon.ico"
     },
     "nsis": {
@@ -44,5 +67,8 @@
       "output": "dist",
       "buildResources": "assets"
     }
+  },
+  "allowScripts": {
+    "electron@43.1.1": true
   }
 }

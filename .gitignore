@@ -3,3 +3,12 @@ base.txt
 __pycache__/
 .venv
 database/shop.db
+
+# Node / Electron
+node_modules/
+dist/
+backend-dist/
+build/
+
+# PyInstaller
+*.spec
