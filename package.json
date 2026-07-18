@@ -7,6 +7,8 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron .",
+    "dist": "electron-builder",
+    "pack": "electron-builder --dir",
     "build:backend": "pyinstaller --onefile --name txretailos-backend --distpath backend-dist --workpath build/pyi-work --specpath build start_server.py",
     "build": "npm run build:backend && electron-builder",
     "postinstall": "electron-builder install-app-deps"
@@ -61,13 +63,13 @@
       "artifactName": "${productName}-Setup-${version}.${ext}",
       "license": "LICENSE.txt"
     },
-
     "directories": {
       "output": "dist",
       "buildResources": "assets"
     }
   },
   "allowScripts": {
-    "electron@43.1.1": true
+    "electron@43.1.1": true,
+    "electron-winstaller@5.4.0": true
   }
 }
