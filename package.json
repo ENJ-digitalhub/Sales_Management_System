@@ -4,7 +4,6 @@
   "description": "TX RetailOS — Offline-first POS, packaged as a Windows desktop app",
   "main": "electron/main.js",
   "author": "ENJ DigitalHub",
-
   "scripts": {
     "start": "electron .",
     "dev": "electron .",
@@ -12,21 +11,17 @@
     "build": "npm run build:backend && electron-builder",
     "postinstall": "electron-builder install-app-deps"
   },
-
   "devDependencies": {
     "electron": "^43.1.1",
     "electron-builder": "^26.15.3"
   },
-
   "build": {
     "appId": "com.enjdigitalhub.txretailos",
     "productName": "TX RetailOS",
     "asar": true,
-
     "files": [
       "**/*"
     ],
-
     "extraResources": [
       {
         "from": "frontend",
@@ -35,18 +30,36 @@
       {
         "from": "backend-dist",
         "to": "backend-dist",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       },
       {
         "from": "database",
         "to": "database",
-        "filter": ["schema.sql", "seed.sql"]
+        "filter": [
+          "schema.sql",
+          "seed.sql"
+        ]
       }
     ],
-
     "win": {
-      "target": "portable",
+      "target": "nsis",
       "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TX RetailOS",
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "license": "LICENSE.txt"
     },
 
     "directories": {
@@ -54,7 +67,6 @@
       "buildResources": "assets"
     }
   },
-
   "allowScripts": {
     "electron@43.1.1": true
   }
