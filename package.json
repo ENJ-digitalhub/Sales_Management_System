@@ -22,7 +22,11 @@
     "productName": "TX RetailOS",
     "asar": true,
     "files": [
-      "**/*"
+      "electron/**/*",
+      "dist/**/*",
+      "backend/**/*",
+      "start_server.py",
+      "package.json"
     ],
     "extraResources": [
       {

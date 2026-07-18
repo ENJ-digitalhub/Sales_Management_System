@@ -28,7 +28,7 @@ function backendExePath() {
   const exeName = process.platform === 'win32'
     ? 'txretailos-backend.exe'
     : 'txretailos-backend';
-  return path.join(resourcesRoot(), 'backend-dist', exeName);
+  return path.join(resourcesRoot(), 'dist', exeName);
 }
 
 function envFilePath() {
@@ -144,7 +144,7 @@ async function startBackend() {
   } else {
     // Dev fallback — run straight from source with system Python
     const backendRoot = path.join(__dirname, '..');
-    const pythonBin = process.platform === 'win32' ? 'python' : 'python3';
+    const pythonBin = process.platform === 'win32' ? 'py' : 'python3';
     backendProcess = spawn(pythonBin, ['start_server.py'], {
       cwd: backendRoot,
       env,
