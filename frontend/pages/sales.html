@@ -176,15 +176,14 @@
       if (!confirm('Complete this sale?')) return;
 
       const payload = {
-        items: cart.map(item => ({
+        items: [...cart.values()].map(({ item, quantity }) => ({
           item_id: item.id,
-          quantity: item.quantity
+          quantity
         })),
         payment_method: paymentMethod
       };
 
       try {
-        console.log("SALE PAYLOAD:", payload);
         await createSale(payload);
         alert('Sale completed');
         cart.clear();

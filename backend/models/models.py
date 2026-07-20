@@ -46,7 +46,7 @@ class Item(Base):
     id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
     name: Mapped[str] = mapped_column(String(100))
     type: Mapped[str] = mapped_column(String(20), default="product")
-    category_id: Mapped[str | None] = mapped_column(ForeignKey("categories.id"))
+    category: Mapped[str | None] = mapped_column(String(50))
     selling_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     cost_price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     stock_quantity: Mapped[int] = mapped_column(Integer, default=0)
@@ -54,7 +54,6 @@ class Item(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=now_utc, onupdate=now_utc)
 
-    category: Mapped["Categories"] = relationship()
     sale_items: Mapped[list["SaleItem"]] = relationship("SaleItem", back_populates="item")
     purchase_items: Mapped[list["PurchaseItem"]] = relationship("PurchaseItem", back_populates="item")
     inventory_logs: Mapped[list["InventoryLog"]] = relationship("InventoryLog", back_populates="item")

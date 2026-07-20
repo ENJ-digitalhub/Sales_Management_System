@@ -7,7 +7,6 @@ from decimal import Decimal
 
 class ItemController:
     @staticmethod
-    @require_auth
     @require_role("admin", "manager")
     def create_item():
         data = request.get_json()
@@ -39,7 +38,6 @@ class ItemController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     def get_item(item_id):
         session = get_db()
         try:
@@ -51,7 +49,6 @@ class ItemController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     def get_all_items():
         session = get_db()
         try:
@@ -63,7 +60,6 @@ class ItemController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     @require_role("admin", "manager")
     def update_item(item_id):
         data = request.get_json()
@@ -98,7 +94,6 @@ class ItemController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     @require_role("admin", "manager")
     def delete_item(item_id):
         session = get_db()

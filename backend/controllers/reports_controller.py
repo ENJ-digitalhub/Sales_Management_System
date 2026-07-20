@@ -6,7 +6,6 @@ from datetime import datetime
 
 class ReportsController:
     @staticmethod
-    @require_auth
     @require_role("admin", "manager")
     def get_daily_report():
         date_str = request.args.get("date")
@@ -25,7 +24,6 @@ class ReportsController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     @require_role("admin", "manager")
     def get_monthly_report():
         month = request.args.get("month")
@@ -44,7 +42,6 @@ class ReportsController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     @require_role("admin", "manager")
     def get_yearly_report():
         year = request.args.get("year")
@@ -63,7 +60,6 @@ class ReportsController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     @require_role("admin", "manager")
     def get_employee_report(user_id):
         from_date = request.args.get("from")

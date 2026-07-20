@@ -10,7 +10,6 @@ from backend.models.models import SyncQueue
 
 class SyncController:
     @staticmethod
-    @require_auth
     def push_changes():
         data = request.get_json()
         changes = data.get("changes") # List of {entity_type, operation, payload}
@@ -44,7 +43,6 @@ class SyncController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     def pull_changes():
         last_sync_time_str = request.args.get("last_sync_time")
         if not last_sync_time_str:
@@ -63,7 +61,6 @@ class SyncController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     def resolve_conflict():
         data = request.get_json() or {}
         transaction_id = data.get("transaction_id")

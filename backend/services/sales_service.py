@@ -20,7 +20,7 @@ class SalesService:
             item_id = item_data["item_id"]
             quantity = item_data["quantity"]
 
-            item = session.query(item).filter_by(id=item_id, is_active=True).first()
+            item = session.query(Item).filter_by(id=item_id, is_active=True).first()
             if not item:
                 session.rollback()
                 return None, f"Item with ID {item_id} not found or inactive."
@@ -64,8 +64,7 @@ class SalesService:
             profit_at_sale=profit_at_sale,
             payment_method=payment_method,
             status="completed",
-            created_at=now_utc(),
-            editable_until=now_utc() + timedelta(minutes=20)
+            created_at=now_utc()
         )
         session.add(sale)
         session.flush() # Flush to get sale.id
@@ -118,7 +117,7 @@ class SalesService:
 
         # Revert old stock
         for old_item in sale.items:
-            item = session.query(item).filter_by(id=old_item.item_id).first()
+            item = session.query(Item).filter_by(id=old_item.item_id).first()
             if item:
                 item.stock_quantity += old_item.quantity
                 session.add(item)
@@ -144,7 +143,7 @@ class SalesService:
             item_id = item_data["item_id"]
             quantity = item_data["quantity"]
 
-            item = session.query(item).filter_by(id=item_id, is_active=True).first()
+            item = session.query(Item).filter_by(id=item_id, is_active=True).first()
             if not item:
                 session.rollback()
                 return None, f"item with ID {item_id} not found or inactive."
@@ -211,15 +210,15 @@ class SalesService:
             return None, "Sale is already cancelled"
 
         # Restore stock
-        for item in sale.items:
-            item = session.query(item).filter_by(id=item.item_id).first()
-            if item:
-                item.stock_quantity += item.quantity
-                session.add(item)
+        for sale_item in sale.items:
+            product = session.query(Item).filter_by(id=sale_item.item_id).first()
+            if product:
+                product.stock_quantity += sale_item.quantity
+                session.add(product)
                 session.add(InventoryLog(
-                    item_id=item.id,
+                    item_id=product.id,
                     change_type="cancellation",
-                    quantity_change=item.quantity,
+                    quantity_change=sale_item.quantity,
                     reference_id=sale.id,
                     created_at=now_utc()
                 ))

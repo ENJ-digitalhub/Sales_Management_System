@@ -5,7 +5,6 @@ from backend.utils.auth_middleware import require_auth, require_role
 
 class PurchasesController:
     @staticmethod
-    @require_auth
     def create_purchase():
         data = request.get_json() or {}
         items = data.get("items")
@@ -27,7 +26,6 @@ class PurchasesController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     def get_purchase(purchase_id):
         session = get_db()
         try:
@@ -39,7 +37,6 @@ class PurchasesController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     def get_purchase_history():
         session = get_db()
         try:
@@ -51,7 +48,6 @@ class PurchasesController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     @require_role("admin")
     def approve_purchase(purchase_id):
         session = get_db()

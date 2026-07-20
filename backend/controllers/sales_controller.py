@@ -7,7 +7,6 @@ from backend.models.models import Sale
 
 class SalesController:
     @staticmethod
-    @require_auth
     def create_sale():
         data = request.get_json()
         items = data.get("items")
@@ -29,7 +28,6 @@ class SalesController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     def get_all_sales():
         session = get_db()
         try:
@@ -41,7 +39,6 @@ class SalesController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     def get_sale(sale_id):
         session = get_db()
         try:
@@ -53,7 +50,6 @@ class SalesController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     def edit_sale(sale_id):
         data = request.get_json()
         items = data.get("items")
@@ -77,7 +73,6 @@ class SalesController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     @require_role("admin", "manager")
     def cancel_sale(sale_id):
         session = get_db()
@@ -93,7 +88,6 @@ class SalesController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     @require_role("admin")
     def delete_sale(sale_id):
         session = get_db()
@@ -109,7 +103,6 @@ class SalesController:
             return jsonify({"success": False, "message": str(e)}), 500
 
     @staticmethod
-    @require_auth
     def request_edit(sale_id):
         data = request.get_json() or {}
         reason = data.get("reason")
