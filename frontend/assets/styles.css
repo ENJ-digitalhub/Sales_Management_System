@@ -152,6 +152,8 @@ p:last-child {
 /* Sidebar */
 .sidebar {
   width: 240px;
+  min-width: 240px;
+  flex-shrink: 0;
   background: var(--surface);
   border-right: 1px solid var(--border-soft);
   padding: 16px;
@@ -159,24 +161,46 @@ p:last-child {
   flex-direction: column;
   gap: 20px;
   transition: width 0.2s ease;
+  overflow: hidden;
 }
 
 .sidebar.collapsed {
   width: 70px;
+  min-width: 70px;
 }
 
 /* Sidebar links */
 .sidebar a {
-  display: block;
+  display: flex;
   padding: 10px 12px;
   border-radius: var(--radius-sm);
   color: var(--text-muted);
   font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  gap: 5px;
+}
+
+.sidebar.collapsed a {
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebar.collapsed .label {
+  display: none;
+}
+.sidebar.collapsed .badge-soon {
+  display: none;
 }
 
 .sidebar a:hover {
   background: var(--surface-2);
   color: var(--text);
+}
+
+.sidebar-icon{
+  color: var(--text-muted);
 }
 
 /* Main content */
@@ -199,6 +223,9 @@ p:last-child {
   padding: 10px 12px;
   border-radius: var(--radius-sm);
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .store-menu {
@@ -332,6 +359,7 @@ p:last-child {
   margin-left: 6px;
   vertical-align: middle;
 }
+
 .sidebar a.active-link {
   background: var(--surface-2);
   color: var(--accent);
@@ -344,6 +372,7 @@ p:last-child {
   border-bottom: 1px solid var(--border-soft);
   margin-bottom: 16px;
 }
+
 .tab-btn {
   background: transparent;
   border: none;
@@ -353,6 +382,7 @@ p:last-child {
   font-weight: 600;
   border-bottom: 2px solid transparent;
 }
+
 .tab-btn.active {
   color: var(--accent);
   border-bottom-color: var(--accent);
@@ -376,6 +406,7 @@ p:last-child {
   align-items: center;
   margin-bottom: 16px;
 }
+
 .filter-bar input,
 .filter-bar select {
   background: var(--surface-2);
@@ -607,16 +638,41 @@ button.btn-outline.btn-primary {
 }
 
 /* ---------- Text utilities ---------- */
-.text-muted { color: var(--text-muted); }
-.text-faint { color: var(--text-faint); }
-.text-accent { color: var(--accent); font-weight: 600; }
-.text-mono { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted); }
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-faint {
+  color: var(--text-faint);
+}
+
+.text-accent {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
 
 /* ---------- Spacing utilities ---------- */
-.mt-1 { margin-top: 8px; }
-.mt-2 { margin-top: 12px; }
-.mt-3 { margin-top: 20px; }
-.mt-4 { margin-top: 28px; }
+.mt-1 {
+  margin-top: 8px;
+}
+
+.mt-2 {
+  margin-top: 12px;
+}
+
+.mt-3 {
+  margin-top: 20px;
+}
+
+.mt-4 {
+  margin-top: 28px;
+}
 
 /* ---------- Grids (Sales / Products) ---------- */
 .item-grid,

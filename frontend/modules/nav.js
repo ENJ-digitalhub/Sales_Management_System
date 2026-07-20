@@ -5,26 +5,26 @@
 import { getCurrentUser } from './auth.js';
 
 const COMMON = [
-  { href: 'sales.html', label: 'Sales' },
-  { href: 'items.html', label: 'Products' },
-  { href: 'inventory.html', label: 'Inventory' },
-  { href: 'transactions.html', label: 'Transactions' },
+  { href: 'sales.html', label: 'Sales', icon: '../assets/icons/sales.svg' },
+  { href: 'items.html', label: 'Products', icon: '../assets/icons/products.svg' },
+  { href: 'inventory.html', label: 'Inventory', icon: '../assets/icons/inventory.svg' },
+  { href: 'transactions.html', label: 'Transactions', icon: '../assets/icons/transactions.svg' },
 ];
 
 const MANAGER_EXTRA = [
-  { href: 'purchases.html', label: 'Purchases' },
-  { href: 'report.html', label: 'Reports' },
+  { href: 'purchases.html', label: 'Purchases', icon: '../assets/icons/purchases.svg' },
+  { href: 'report.html', label: 'Reports', icon: '../assets/icons/reports.svg' },
 ];
 
 const ADMIN_EXTRA = [
-  { href: 'purchases.html', label: 'Purchases' },
-  { href: 'report.html', label: 'Reports' },
-  { href: 'users.html', label: 'Users', comingSoon: true },
+  { href: 'purchases.html', label: 'Purchases', icon: '../assets/icons/purchases.svg' },
+  { href: 'report.html', label: 'Reports', icon: '../assets/icons/reports.svg' },
+  { href: 'users.html', label: 'Users', icon: '../assets/icons/users.svg', comingSoon: true },
 ];
 
 const SYSTEM = [
-  { href: 'notification.html', label: 'Notifications', comingSoon: true },
-  { href: 'settings.html', label: 'Settings' },
+  { href: 'notification.html', label: 'Notifications', icon: '../assets/icons/notifications.svg', comingSoon: true },
+  { href: 'settings.html', label: 'Settings', icon: '../assets/icons/settings.svg' },
 ];
 
 function dashboardHref(role) {
@@ -33,10 +33,17 @@ function dashboardHref(role) {
   return 'employee_dashboard.html';
 }
 
-function link({ href, label, comingSoon }, active) {
+function link({ href, label, icon, comingSoon }, active) {
   const cls = active ? ' class="active-link"' : '';
   const badge = comingSoon ? ' <span class="badge-soon">Soon</span>' : '';
-  return `<a href="${href}"${cls}>${label}${badge}</a>`;
+
+  return `
+    <a href="${href}"${cls}>
+      <img src="${icon}" class="sidebar-icon">
+      <span class="label">${label}</span>
+      ${badge}
+    </a>
+  `;
 }
 
 /** Applies the saved theme preference. Pure client-side — no backend involved. */
@@ -54,7 +61,10 @@ export function renderSidebar(activeHref) {
   const user = getCurrentUser();
   const role = user?.role || 'employee';
 
-  const storeLinks = [{ href: dashboardHref(role), label: 'Dashboard' }, ...COMMON];
+  const storeLinks = [
+    { href: dashboardHref(role), label: 'Dashboard', icon: '../assets/icons/dashboard.svg' },
+    ...COMMON
+  ];
   if (role === 'manager') storeLinks.push(...MANAGER_EXTRA);
   if (role === 'admin') storeLinks.push(...ADMIN_EXTRA);
 
