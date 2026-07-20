@@ -7,7 +7,7 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron .",
-    "dist": "electron-builder",
+    "dist": "npm run build && electron-builder",
     "pack": "electron-builder --dir",
     "build:backend": "pyinstaller --onefile --name txretailos-backend --distpath backend-dist --workpath build/pyi-work --specpath build start_server.py",
     "build": "npm run build:backend && electron-builder",
@@ -21,10 +21,14 @@
     "appId": "com.enjdigitalhub.txretailos",
     "productName": "TX RetailOS",
     "asar": true,
+    "asarUnpack": [
+      "backend-dist/**/*"
+    ],
     "files": [
       "electron/**/*",
-      "dist/**/*",
+      "frontend/**/*",
       "backend/**/*",
+      "backend-dist/**/*",
       "start_server.py",
       "package.json"
     ],
@@ -54,9 +58,8 @@
       "icon": "assets/icon.ico"
     },
     "nsis": {
-      "oneClick": true,
+      "oneClick": false,
       "perMachine": true,
-      "allowToChangeInstallationDirectory": true,
       "allowElevation": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,

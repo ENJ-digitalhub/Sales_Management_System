@@ -1,5 +1,6 @@
 // frontend\services\api.js
-const API_BASE_URL = window.location.origin;
+const API_BASE_URL = window.API_BASE_URL || "http://127.0.0.1:5000";
+// localStorage.clear()
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -8,8 +9,12 @@ const getAuthHeaders = () => {
 
 const handleResponse = async (response) => {
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Something went wrong');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      errorData.message ||
+      errorData.error ||
+      `HTTP ${response.status}`
+    );
   }
   return response.json();
 };
@@ -36,7 +41,7 @@ export const verifyToken = async () => {
     method: 'GET',
     headers: getAuthHeaders(),
   });
-  return response.json(); // Verify token might return {valid: false} without throwing an error
+  return handleResponse(response); // Verify token might return {valid: false} without throwing an error
 };
 
 export const getItems = async () => {

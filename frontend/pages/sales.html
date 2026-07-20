@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sales Dashboard — Sales Management System</title>
   <link rel="stylesheet" href="../assets/styles.css">
+  <link rel="shortcut icon" href="../assets/favicon.ico" type="image/x-icon">
 </head>
 
 <body>
@@ -23,7 +24,7 @@
     </div>
   </header>
 
-  <div id="offlineNotice" class="soon-card mt-2" hidden>
+  <div id="offlineBanner" class="soon-card mt-2" hidden>
     Offline Mode & Sync — Coming Soon. You're currently offline; reconnect to continue.
   </div>
 
@@ -175,11 +176,15 @@
       if (!confirm('Complete this sale?')) return;
 
       const payload = {
-        items: [...cart.values()].map(({ item, quantity }) => ({ item_id: item.id, quantity })),
-        payment_method: paymentMethod,
+        items: cart.map(item => ({
+          item_id: item.id,
+          quantity: item.quantity
+        })),
+        payment_method: paymentMethod
       };
 
       try {
+        console.log("SALE PAYLOAD:", payload);
         await createSale(payload);
         alert('Sale completed');
         cart.clear();
@@ -187,7 +192,7 @@
         renderCart();
         loadItems();
       } catch (err) {
-        showError(err.message || 'Could not complete sale. Please try again.');
+        console.log(err.message || 'Could not complete sale. Please try again.');
       }
     }
 

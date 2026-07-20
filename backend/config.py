@@ -22,6 +22,8 @@ class Config:
         BASE_DIR = Path(__file__).parent.parent.resolve()
 
     DB_PATH = BASE_DIR / "database" / "shop.db"
+    
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     DEBUG = os.getenv("DEBUG", "False").lower() in ("true", "1", "t")
 

@@ -28,7 +28,7 @@ function backendExePath() {
   const exeName = process.platform === 'win32'
     ? 'txretailos-backend.exe'
     : 'txretailos-backend';
-  return path.join(resourcesRoot(), 'dist', exeName);
+  return path.join(resourcesRoot(), 'backend-dist', exeName);
 }
 
 function envFilePath() {
@@ -139,7 +139,7 @@ async function startBackend() {
     backendProcess = spawn(backendExePath(), [], {
       cwd: path.dirname(backendExePath()),
       env,
-      windowsHide: true, // run silently, no console window
+      windowsHide: false, // run silently, no console window
     });
   } else {
     // Dev fallback — run straight from source with system Python
@@ -208,7 +208,9 @@ function createSplashWindow() {
   splashWindow.loadFile(path.join(__dirname, 'loading.html'));
 }
 
-function createMainWindow() {
+async function createMainWindow() {
+  await startBackend();
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,

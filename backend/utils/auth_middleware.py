@@ -1,4 +1,4 @@
-
+# backend\utils\auth_middleware.py
 from functools import wraps
 from flask import request, jsonify, g
 from backend.utils.jwt_utils import decode_token
