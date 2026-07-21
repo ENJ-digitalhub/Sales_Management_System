@@ -1,0 +1,1 @@
+>> On Android Chrome: tap ⋮ → "Add to Home screen." This works over your store WiFi even without the app installing automatically, and gives staff a shortcut icon.

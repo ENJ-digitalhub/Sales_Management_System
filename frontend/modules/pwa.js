@@ -22,6 +22,8 @@ window.addEventListener("beforeinstallprompt", (e) => {
 export function wireInstallButton() {
   const btn = document.getElementById("installBtn");
   if (!btn) return;
+  // Already a desktop app inside Electron — installing a PWA on top is meaningless.
+  if (navigator.userAgent.includes("Electron")) return;
   btn.addEventListener("click", async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
