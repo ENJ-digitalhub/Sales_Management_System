@@ -48,7 +48,7 @@ function link({ href, label, icon, comingSoon }, active) {
 
   return `
     <a href="${href}"${cls}>
-      <img src="${icon}" class="sidebar-icon">
+      <span class="sidebar-icon" style="--icon-url: url('${icon}')"></span>
       <span class="label">${label}</span>
       ${badge}
     </a>
@@ -79,7 +79,7 @@ export function renderSidebar(activeHref) {
 
   sidebar.innerHTML = `
     <div class="store-section">
-      <button id="storeToggle" class="store-btn">🏪 My Store ▾</button>
+      <button id="storeToggle" class="store-btn">My Store ▾</button>
       <div id="storeMenu" class="store-menu">
         ${storeLinks.map(l => link(l, l.href === activeHref)).join('')}
       </div>

@@ -199,8 +199,20 @@ p:last-child {
   color: var(--text);
 }
 
-.sidebar-icon{
-  color: var(--text-muted);
+.sidebar-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  background-color: currentColor;   /* now inherits from parent <a> */
+  -webkit-mask-image: var(--icon-url);
+  mask-image: var(--icon-url);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 /* Main content */
@@ -219,6 +231,7 @@ p:last-child {
   width: 100%;
   text-align: left;
   background: var(--surface-2);
+  color: var(--accent-dim);
   border: 1px solid var(--border);
   padding: 10px 12px;
   border-radius: var(--radius-sm);
@@ -277,6 +290,7 @@ p:last-child {
   padding: 8px 10px;
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
+  color: var(--border);
 }
 
 .icon-btn:hover {
