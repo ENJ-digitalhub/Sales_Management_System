@@ -1,5 +1,5 @@
 # backend\app.py
-from flask import Flask, jsonify, g
+from flask import Flask, jsonify, g, send_file
 from flask_cors import CORS
 from backend.config import Config
 from backend.database import create_all_tables, set_database_uri, SessionLocal
@@ -68,7 +68,15 @@ def create_app(config_class=Config):
 
     @app.route("/")
     def index():
-        return app.send_static_file("index.html")
+        index_path = os.path.join(frontend_dir, "index.html")
+
+        if not os.path.exists(index_path):
+            return jsonify({
+                "error": "index.html missing",
+                "path": index_path
+            }), 404
+
+        return send_file(index_path)
 
     @app.route("/frontend/<path:path>")
     def serve_frontend(path):

@@ -1,9 +1,10 @@
 {
   "name": "tx-retailos",
+  "productName": "TX RetailOS",
   "version": "1.0.0",
   "description": "TX RetailOS — Offline-first POS, packaged as a Windows desktop app",
   "main": "electron/main.js",
-  "author": "ENJ DigitalHub",
+  "author": "Trexave Technologies",
   "scripts": {
     "start": "electron .",
     "dev": "electron .",
@@ -18,8 +19,7 @@
     "electron-builder": "^26.15.3"
   },
   "build": {
-    "appId": "com.enjdigitalhub.txretailos",
-    "productName": "TX RetailOS",
+    "appId": "com.trexave.txretailos",
     "asar": true,
     "asarUnpack": [
       "backend-dist/**/*"
