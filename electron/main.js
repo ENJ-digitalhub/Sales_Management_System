@@ -4,16 +4,21 @@ const path = require('path');
 const fs = require('fs');
 const net = require('net');
 const crypto = require('crypto');
+const envContents = fs.readFileSync(envPath, 'utf-8')
+.replace(/^WAITRESS_PORT=.*$/m, `WAITRESS_PORT=${resolvedBackendPort}`);
+fs.writeFileSync(envPath, envContents, 'utf-8');
 const { spawn } = require('child_process');
 
 const BACKEND_PORT = 5000;
 const BACKEND_HOST = '127.0.0.1';
+
 
 let mainWindow;
 let splashWindow;
 let backendProcess;
 let backendReadyCheckInterval;
 let appIsQuitting = false;
+let resolvedBackendPort = BACKEND_PORT;
 
 const isDev = !app.isPackaged;
 
@@ -125,15 +130,23 @@ function waitForBackend(port, host, timeoutMs = 20000) {
 async function startBackend() {
   const { path: envPath, freshlyCreated } = ensureEnvFile();
 
-  const portFree = await isPortFree(BACKEND_PORT, BACKEND_HOST);
-  if (!portFree) {
+  const portFree = async function findAvailablePort(startPort, host, maxAttempts = 10) {
+    let port = startPort;
+    for (let i = 0; i < maxAttempts; i++) {
+      if (await isPortFree(port, host)) return port;
+      port += 1;
+    }
     throw new Error(
-      `Port ${BACKEND_PORT} is already in use. Close any other running ` +
-      `instance of TX RetailOS (or whatever is using that port) and try again.`
+      `Could not find a free port between ${startPort} and ${startPort + maxAttempts - 1}. ` +
+      `Close other applications and try again.`
     );
   }
 
-  const env = { ...process.env, TXRETAILOS_ENV_PATH: envPath };
+  const env = {
+    ...process.env,
+    TXRETAILOS_ENV_PATH: envPath,
+    WAITRESS_PORT: String(resolvedBackendPort),
+  };
 
   if (!isDev && fs.existsSync(backendExePath())) {
     backendProcess = spawn(backendExePath(), [], {
@@ -209,15 +222,14 @@ function createSplashWindow() {
 }
 
 async function createMainWindow() {
-  await startBackend();
-
+  // backend already started by the caller — do NOT call startBackend() here
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 960,
     minHeight: 640,
     show: false,
-    autoHideMenuBar: true, // hides File/Edit/View menu bar
+    autoHideMenuBar: true,
     icon: path.join(__dirname, '..', 'assets', 'icon.ico'),
     title: 'TX RetailOS',
     backgroundColor: '#0B0D10',
@@ -229,7 +241,7 @@ async function createMainWindow() {
   });
 
   mainWindow.setMenuBarVisibility(false);
-  mainWindow.loadURL(`http://${BACKEND_HOST}:${BACKEND_PORT}/`);
+  mainWindow.loadURL(`http://${BACKEND_HOST}:${resolvedBackendPort}/`); // see fix #3 below
 
   mainWindow.once('ready-to-show', () => {
     if (splashWindow) splashWindow.close();
@@ -254,7 +266,7 @@ app.whenReady().then(async () => {
   createSplashWindow();
   try {
     const { envPath, freshlyCreated } = await startBackend();
-    createMainWindow();
+    await createMainWindow();
 
     if (freshlyCreated) {
       // First-ever launch: tell the user where .env lives so they can add
@@ -284,5 +296,8 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+  // Only recreate the window — backend is already running (or app is quitting)
+  if (BrowserWindow.getAllWindows().length === 0 && backendProcess) {
+    createMainWindow();
+  }
 });
