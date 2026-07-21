@@ -4,9 +4,6 @@ const path = require('path');
 const fs = require('fs');
 const net = require('net');
 const crypto = require('crypto');
-const envContents = fs.readFileSync(envPath, 'utf-8')
-.replace(/^WAITRESS_PORT=.*$/m, `WAITRESS_PORT=${resolvedBackendPort}`);
-fs.writeFileSync(envPath, envContents, 'utf-8');
 const { spawn } = require('child_process');
 
 const BACKEND_PORT = 5000;
@@ -130,7 +127,7 @@ function waitForBackend(port, host, timeoutMs = 20000) {
 async function startBackend() {
   const { path: envPath, freshlyCreated } = ensureEnvFile();
 
-  const portFree = async function findAvailablePort(startPort, host, maxAttempts = 10) {
+  const findAvailablePort = async (startPort, host, maxAttempts = 10) => {
     let port = startPort;
     for (let i = 0; i < maxAttempts; i++) {
       if (await isPortFree(port, host)) return port;
@@ -140,7 +137,14 @@ async function startBackend() {
       `Could not find a free port between ${startPort} and ${startPort + maxAttempts - 1}. ` +
       `Close other applications and try again.`
     );
-  }
+  };
+
+  resolvedBackendPort = await findAvailablePort(BACKEND_PORT, BACKEND_HOST);
+
+  // Persist the resolved port into .env so backend/config.py (python-dotenv) picks it up
+  const envContents = fs.readFileSync(envPath, 'utf-8')
+    .replace(/^WAITRESS_PORT=.*$/m, `WAITRESS_PORT=${resolvedBackendPort}`);
+  fs.writeFileSync(envPath, envContents, 'utf-8');
 
   const env = {
     ...process.env,
@@ -187,7 +191,7 @@ async function startBackend() {
     console.error('[backend] failed to start:', err);
   });
 
-  await waitForBackend(BACKEND_PORT, BACKEND_HOST);
+  await waitForBackend(resolvedBackendPort, BACKEND_HOST);
   return { envPath, freshlyCreated };
 }
 
