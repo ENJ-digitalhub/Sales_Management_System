@@ -85,16 +85,16 @@ class PurchasesService:
         if purchase.status != "pending":
             return None, "Only pending purchases can be approved"
 
-        for item in purchase.items:
-            item = session.query(Item).filter_by(id=item.item_id).first()
-            if not item or not item.is_active:
-                return None, f"Item with ID {item.item_id} not found or inactive"
-            item.stock_quantity += item.quantity
-            session.add(item)
+        for purchase_item in purchase.items:
+            product = session.query(Item).filter_by(id=purchase_item.item_id).first()
+            if not product or not product.is_active:
+                return None, f"Item with ID {purchase_item.item_id} not found or inactive"
+            product.stock_quantity += purchase_item.quantity
+            session.add(product)
             session.add(InventoryLog(
-                item_id=item.id,
+                item_id=product.id,
                 change_type="restock",
-                quantity_change=item.quantity,
+                quantity_change=purchase_item.quantity,
                 reference_id=purchase.id,
                 created_at=datetime.now(timezone.utc)
             ))
