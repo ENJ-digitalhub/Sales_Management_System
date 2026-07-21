@@ -7,6 +7,10 @@
   <title>TX RetailOS — Manager Dashboard</title>
   <link rel="stylesheet" href="../assets/styles.css" />
   <link rel="shortcut icon" href="../assets/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#0B0D10">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 
 <body>
@@ -21,7 +25,8 @@
     <div class="topbar-right">
       <button id="notifBtn" class="icon-btn">🔔</button>
       <span id="userInfo" class="text-mono"></span>
-      <span class="status online">● Online</span>
+      <button id="installBtn" class="btn btn-outline" hidden>Install App</button>
+      <!-- <span id="connectionStatus" class="status online">● Online</span> -->
       <button id="logoutBtn" class="btn">Logout</button>
     </div>
   </header>
@@ -125,10 +130,12 @@
   <script type="module">
     import { requireAuth, getCurrentUser, logout } from '../modules/auth.js';
     import { renderSidebar } from '../modules/nav.js';
+    import { wireInstallButton } from '../modules/pwa.js';
+
 
     renderSidebar('manager_dashboard.html');
-
     requireAuth();
+    wireInstallButton();
 
     const user = getCurrentUser();
     document.getElementById('userInfo').textContent =

@@ -7,6 +7,10 @@
   <title>Login — Sales Management System</title>
   <link rel="stylesheet" href="../assets/styles.css">
   <link rel="shortcut icon" href="../assets/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#0B0D10">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 
 <body>
@@ -50,6 +54,8 @@
   </main>
   <script type="module">
     import { login, getCurrentUser, getDashboardForRole, isAuthenticated } from '../modules/auth.js';
+    import { wireInstallButton } from '../modules/pwa.js';
+
 
     // If already logged in, skip the login form entirely
     if (isAuthenticated()) {
