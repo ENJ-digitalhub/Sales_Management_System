@@ -1,10 +1,11 @@
 {
     "name": "TX RetailOS",
     "short_name": "RetailOS",
-    "start_url": "/pages/index.html",
+    "start_url": "/",
     "display": "standalone",
     "background_color": "#0B0D10",
     "theme_color": "#0B0D10",
+
     "icons": [
         {
             "src": "/assets/icons/app-icon-192.png",
@@ -29,6 +30,20 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
+        }
+    ],
+
+    "screenshots": [
+        {
+            "src": "/assets/screenshots/desktop.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide"
+        },
+        {
+            "src": "/assets/screenshots/mobile.png",
+            "sizes": "720x1280",
+            "type": "image/png"
         }
     ]
 }
