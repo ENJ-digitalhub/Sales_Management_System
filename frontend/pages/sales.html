@@ -114,9 +114,14 @@
     renderOfflineBanner();
 
     async function loadItems() {
-      const data = await getItems();
-      items = data.items || [];
-      renderItems();
+      try {
+        const data = await getItems();
+        items = data.items || [];
+        renderItems();
+      } catch (err) {
+        document.getElementById('itemList').innerHTML =
+          '<p class="text-muted">Offline — item data unavailable. Reconnect to the store PC to continue.</p>';
+      }
     }
 
     function renderItems() {

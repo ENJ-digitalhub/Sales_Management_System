@@ -24,6 +24,15 @@ export function wireInstallButton() {
   if (!btn) return;
   // Already a desktop app inside Electron — installing a PWA on top is meaningless.
   if (navigator.userAgent.includes("Electron")) return;
+
+  // No native prompt available (iOS Safari, some Android/LAN browsers) —
+  // still show the button, but explain how to install manually.
+  if (!deferredPrompt) {
+    btn.hidden = false;
+    btn.addEventListener("click", showManualInstallInstructions);
+    return;
+  }
+
   btn.addEventListener("click", async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
@@ -31,4 +40,12 @@ export function wireInstallButton() {
     deferredPrompt = null;
     btn.hidden = true;
   });
+}
+
+function showManualInstallInstructions() {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const msg = isIOS
+    ? "To install: tap Share, then \"Add to Home Screen.\""
+    : "To install: open your browser menu, then \"Add to Home Screen\" or \"Install App.\"";
+  alert(msg);
 }
