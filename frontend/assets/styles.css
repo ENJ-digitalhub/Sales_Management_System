@@ -231,7 +231,7 @@ p:last-child {
   width: 100%;
   text-align: left;
   background: var(--surface-2);
-  color: var(--accent-dim);
+  color: #FFAE63;
   border: 1px solid var(--border);
   padding: 10px 12px;
   border-radius: var(--radius-sm);
@@ -290,7 +290,7 @@ p:last-child {
   padding: 8px 10px;
   border-radius: var(--radius-sm);
   font-size: 0.9rem;
-  color: var(--border);
+  color: #E0E0E0;
 }
 
 .icon-btn:hover {
@@ -320,7 +320,7 @@ p:last-child {
   border: 1px dashed var(--border);
   border-radius: var(--radius-sm);
   padding: 18px;
-  color: var(--text-faint);
+  color: #9EA3AC;
   font-size: 0.9rem;
 }
 
