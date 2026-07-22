@@ -21,25 +21,20 @@ window.addEventListener("beforeinstallprompt", (e) => {
 
 export function wireInstallButton() {
   const btn = document.getElementById("installBtn");
-  if (!btn) return;
-  // Already a desktop app inside Electron — installing a PWA on top is meaningless.
-  if (navigator.userAgent.includes("Electron")) return;
-
-  // No native prompt available (iOS Safari, some Android/LAN browsers) —
-  // still show the button, but explain how to install manually.
-  if (!deferredPrompt) {
-    btn.hidden = false;
-    btn.addEventListener("click", showManualInstallInstructions);
-    return;
-  }
+  if (!btn || navigator.userAgent.includes("Electron")) return;
 
   btn.addEventListener("click", async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    btn.hidden = true;
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      btn.hidden = true;
+    } else {
+      showManualInstallInstructions();
+    }
   });
+
+  if (deferredPrompt) btn.hidden = false; // in case the event already fired
 }
 
 function showManualInstallInstructions() {
