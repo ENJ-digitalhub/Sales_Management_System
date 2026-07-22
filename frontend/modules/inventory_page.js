@@ -83,9 +83,14 @@ function render() {
 if (canManage) actionsHeader.style.display = '';
 
 async function loadItems() {
-  const data = await getItems();
-  items = data.items || [];
-  render();
+  try {
+    const data = await getItems();
+    items = data.items || [];
+    render();
+  } catch (err) {
+    tableBody.innerHTML =
+      `<tr><td colspan="6" class="login-error">Offline — item data unavailable. Reconnect to the store PC to continue.</td></tr>`;
+  }
 }
 
 async function editItem(itemId) {

@@ -116,6 +116,10 @@ async function loadReport() {
     if (currentPeriod === 'yearly') renderMonthlyBreakdown(report.monthly_breakdown);
   } catch (err) {
     console.error('Failed to load report:', err);
+    document.getElementById('reports-content').insertAdjacentHTML(
+      'afterbegin',
+      '<div class="login-error mt-2">Offline — report data unavailable. Reconnect to the store PC to continue.</div>'
+    );
   }
 }
 

@@ -36,9 +36,13 @@ let items = [];
 let cartItems = [];
 
 async function loadItems() {
-  const data = await getItems();
-  items = data.items || [];
-  itemSelect.innerHTML = items.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  try {
+    const data = await getItems();
+    items = data.items || [];
+    itemSelect.innerHTML = items.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  } catch (err) {
+    itemSelect.innerHTML = '<option value="">Offline — items unavailable</option>';
+  }
 }
 
 function renderItemsList() {
@@ -96,34 +100,39 @@ purchaseForm.addEventListener('submit', async (e) => {
 });
 
 async function loadHistory() {
-  const data = await getPurchaseHistory();
-  const purchases = data.purchases || [];
+  try {
+    const data = await getPurchaseHistory();
+    const purchases = data.purchases || [];
 
-  tableBody.innerHTML = purchases.map(p => `
-    <tr>
-      <td>${p.id.slice(0, 8)}</td>
-      <td>${p.supplier || '-'}</td>
-      <td>₦${Number(p.total_cost).toLocaleString()}</td>
-      <td>${p.status}</td>
-      <td>${new Date(p.created_at).toLocaleString()}</td>
-      ${isAdmin ? `
-      <td>
-        ${p.status === 'pending' ? `<button data-approve="${p.id}">Approve</button>` : '-'}
-      </td>` : ''}
-    </tr>
-  `).join('');
+    tableBody.innerHTML = purchases.map(p => `
+      <tr>
+        <td>${p.id.slice(0, 8)}</td>
+        <td>${p.supplier || '-'}</td>
+        <td>₦${Number(p.total_cost).toLocaleString()}</td>
+        <td>${p.status}</td>
+        <td>${new Date(p.created_at).toLocaleString()}</td>
+        ${isAdmin ? `
+        <td>
+          ${p.status === 'pending' ? `<button data-approve="${p.id}">Approve</button>` : '-'}
+        </td>` : ''}
+      </tr>
+    `).join('');
 
-  if (isAdmin) {
-    tableBody.querySelectorAll('[data-approve]').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        try {
-          await approvePurchase(btn.dataset.approve);
-          await loadHistory();
-        } catch (err) {
-          alert(err.message || 'Failed to approve purchase');
-        }
+    if (isAdmin) {
+      tableBody.querySelectorAll('[data-approve]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          try {
+            await approvePurchase(btn.dataset.approve);
+            await loadHistory();
+          } catch (err) {
+            alert(err.message || 'Failed to approve purchase');
+          }
+        });
       });
-    });
+    }
+  } catch (err) {
+    tableBody.innerHTML =
+      `<tr><td colspan="6" class="login-error">Offline — purchase history unavailable.</td></tr>`;
   }
 }
 
